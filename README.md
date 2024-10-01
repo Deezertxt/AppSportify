@@ -22,10 +22,6 @@ entran en la terminal a _/AppSportify_ y ejecutan
 
 ..luego el mismo comando en _/AppSportify/client_
 
-# PARA SUBIR SUS CAMBIOS A SUS RAMAS
-
--> git push origin _*nombre de su rama*_
-
 # USO DE RAMAS *:
 
 Rama principal **MAIN** para versiones oficiales/lanzamientos oficiales
@@ -51,9 +47,8 @@ YY a trabajar 7u7r..!
 
 
 
-#main -> v0
+#main
   |
 develop
     \
     Diaz-> ajaxd -> aja2
-
