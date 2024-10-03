@@ -164,18 +164,28 @@
     </footer>
 <!-- Scripts -->
 <script type="module">
-    import { isPDF } from '../utils/fileValidator.js';
+    import { isPDF, hasTextInPDF } from '../utils/fileValidator.js';
 
-    document.getElementById('resumen').addEventListener('change', (event) => {
+    document.getElementById('resumen').addEventListener('change', async (event) => {
         const file = event.target.files[0];
         
-        // Llamar a la función isPDF para validar el archivo
+        // Verificar si es un archivo PDF
         if (!isPDF(file)) {
             alert('Por favor, seleccione un archivo PDF válido.');
-            event.target.value = '';
+            event.target.value = ''; // Limpiar el input
+            return;
+        }
+
+        // Verificar si el PDF tiene texto seleccionable
+        const hasText = await hasTextInPDF(file);
+        if (!hasText) {
+            alert('El PDF parece contener solo imágenes. Por favor, suba un PDF con texto seleccionable.');
+            event.target.value = ''; // Limpiar el input
         }
     });
 </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 
 
 </body>
