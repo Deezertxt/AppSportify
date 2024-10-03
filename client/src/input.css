@@ -1,0 +1,39 @@
+@import "tailwindcss/base";
+
+@import "tailwindcss/components";
+
+@import "tailwindcss/utilities";
+
+@layer components{
+    .botonNav{
+        @apply ml-4 px-10 py-2 rounded-md text-sm leading-5 font-medium text-white font-semibold hover:bg-second hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700;
+    }
+
+    .labelSubida{
+        @apply block text-sm font-medium text-gray-700;
+    }
+
+    .inputTextoSubida{
+        @apply mt-1 block w-full p-2 border border-gray-300 rounded-md;
+    }
+
+    .inputTextArea{
+        @apply resize-none mt-1 block w-full p-4 border border-gray-300 rounded-md;
+    }
+
+    .comboBoxSubida {
+        @apply mt-1 block w-full p-2 border border-gray-300 rounded-md;
+    }
+
+    .selectorDoc{
+        @apply mt-1 block w-full p-2 border border-gray-300 rounded-md;
+    }
+
+    .subirImg{
+        @apply bg-second hover:bg-secondDarker hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700 text-white px-4 py-2 rounded-md;
+    }
+
+    .quitarImg{
+        @apply bg-third hover:bg-thirdDarker hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700 text-white text-white px-4 py-2 rounded-md;
+    }
+}
