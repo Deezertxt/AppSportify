@@ -2,10 +2,6 @@
 
 -> git clone *URL del repositorio*
 
-# Una vez clonado el repositorio (IMPORTANTE)
-
-Se mueven a la rama *develop* y apartir de ahi crear su propia rama
-
 # Instalar dependencias (IMPORTANTE)
 
 entran en la terminal a _/AppSportify_ y ejecutan
@@ -29,10 +25,3 @@ entran en la terminal a _/AppSportify_ y ejecutan
 
 
 
-
-
-
-
-
-
-#main -> v0
