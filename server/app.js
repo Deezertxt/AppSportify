@@ -8,9 +8,11 @@ const prismaClient = new PrismaClient();
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.send("funca")
-})
+// app.get('/', (req, res) => {
+//     res.send("funca")
+// })
+
+app.use('/publicar', )
 
 
 app.listen(PORT, () => {
