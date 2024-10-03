@@ -71,7 +71,7 @@
 
     <form>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto p-6">
-            <!-- izquierda -->
+            <!-- Izquierda -->
             <div class="space-y-4 w-full">
                 <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700" for="nombre">Nombre</label>
@@ -99,13 +99,12 @@
                 </div>
             </div>
 
-            <!-- DERECHA -->
+            <!-- Derecha -->
             <div class="space-y-4">
                 <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700" for="resumen">Documento (PDF)</label>
-                    <input class="mt-1 block w-full p-2 border border-gray-300 rounded-md" type="file" id="resumen" accept=".pdf" required>
+                    <input class="mt-1 block w-full p-2 border border-gray-300 rounded-md" type="file" id="resumen" accept=".pdf" required>                 
                 </div>
-
                 <div class="flex flex-col items-center justify-center space-y-4">
                     <label class="block text-sm font-medium text-gray-700">Portada</label>
                     <div class="w-64 h-64 bg-gray-200 border border-gray-300 rounded-md flex items-center justify-center">
@@ -163,6 +162,21 @@
             </div>  
         </nav>
     </footer>
-    
+<!-- Scripts -->
+<script type="module">
+    import { isPDF } from 'client\src\pages';
+
+    document.getElementById('resumen').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        
+        // Llamar a la función isPDF para validar el archivo
+        if (!isPDF(file)) {
+            alert('Por favor, seleccione un archivo PDF válido.');
+            event.target.value = '';
+        }
+    });
+</script>
+
+
 </body>
 </html>
