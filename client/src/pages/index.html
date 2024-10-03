@@ -164,7 +164,7 @@
     </footer>
 <!-- Scripts -->
 <script type="module">
-    import { isPDF } from 'client\src\pages';
+    import { isPDF } from '../utils/fileValidator.js';
 
     document.getElementById('resumen').addEventListener('change', (event) => {
         const file = event.target.files[0];

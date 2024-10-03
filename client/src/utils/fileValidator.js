@@ -1,7 +1,5 @@
-console.log("fileValidator.js loaded");
-
+// Define the isPDF function
 const isPDF = (file) => {
-    // Verificar si el archivo tiene la extensión '.pdf'
     if (!file || !file.name) {
         return false;
     }
@@ -9,6 +7,5 @@ const isPDF = (file) => {
     return fileExtension === 'pdf';
 };
 
-module.exports = {
-    isPDF,
-};
+// Export the isPDF function
+export { isPDF };
