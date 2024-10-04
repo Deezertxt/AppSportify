@@ -1,3 +1,4 @@
+//EXAMPLE SERVER
 import express from "express";
 import cors from "cors";
 import {dirname, join} from 'path'
