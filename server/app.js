@@ -5,7 +5,6 @@ import {subirImagen} from './utils/cloudinary.js' //metodo para subir imagen
 
 const app = express();
 const prismaClient = new PrismaClient();
-const cloudinary = 
 app.use(express.json());
 app.use(fileUpload());
 
