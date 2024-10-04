@@ -172,7 +172,7 @@
         // Verificar si es un archivo PDF
         if (!isPDF(file)) {
             alert('Por favor, seleccione un archivo PDF válido.');
-            event.target.value = ''; // Limpiar el input
+            event.target.value = '';
             return;
         }
 
@@ -180,7 +180,7 @@
         const hasText = await hasTextInPDF(file);
         if (!hasText) {
             alert('El PDF parece contener solo imágenes. Por favor, suba un PDF con texto seleccionable.');
-            event.target.value = ''; // Limpiar el input
+            event.target.value = ''; 
         }
     });
 </script>
