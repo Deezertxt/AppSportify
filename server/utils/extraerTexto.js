@@ -1,3 +1,4 @@
+//MODULO PARA EXTRAER TEXTO
 const fs = require('fs');
 const pdf = require('pdf-parser');
 
