@@ -1,3 +1,4 @@
+//MODULO PARA SUBIR IMAGENES AL CLOUDINARY
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
