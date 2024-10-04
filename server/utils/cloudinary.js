@@ -1,9 +1,13 @@
-const cloudinary = require('cloudinary').v2;
+import dotenv from 'dotenv';
+import {v2 as cloudinary} from 'cloudinary';
+
+//const cloudinary = require('cloudinary').v2;
+dotenv.config();
 
 cloudinary.config({
-    cloud_name: "sportifyCloud",
-    api_key: "166833119645142",
-    api_secret: "30OETcQAxpObCu0bLhiE63s21KI"
+    cloud_name: process.env.CLOUDNAME,
+    api_key: process.env.CLOUD_API_KEY,
+    api_secret: process.env.CLOUD_API_SECRET
 })
 
 const subirImagen = async (rutaDeImagen) => {
