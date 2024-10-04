@@ -9,7 +9,7 @@ cloudinary.config({
 const subirImagen = async (rutaDeImagen) => {
     try {
         const resultado = await cloudinary.uploader.upload(rutaDeImagen, {
-          folder: 'uploads', // Puedes personalizar la carpeta en Cloudinary
+          folder: 'portadas', 
         });
         return resultado;
     } catch (error) {

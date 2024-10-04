@@ -3,9 +3,9 @@ const pdf = require('pdf-parser');
 
 const extraerTexto = async (ruta) => {
     try {
-        const dataBuffer = fs.readFileSync(ruta);  // Leer el archivo PDF
-        const data = await pdf(dataBuffer);            // Extraer el texto del PDF
-        console.log(data.text);                        // Mostrar el texto extraído en consola
+        const dataBuffer = fs.readFileSync(ruta); 
+        const data = await pdf(dataBuffer);            
+        console.log(data.text);                        
         return data.text;
       } catch (error) {
         console.error('Error al extraer texto del PDF:', error);
