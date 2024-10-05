@@ -22,12 +22,17 @@ function Navbar() {
                 </li>
 
                 <li>
+                    <Link to={"publicar"}>Publicar</Link>
+                </li>
+
+                <li>
                     <Link to={"biblioteca"}>Biblioteca</Link>
                 </li>
 
                 <li>
                     <Link to={"reproductor"}>Reproductor</Link>
                 </li>
+
             </ul>
         </div>
 
