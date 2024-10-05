@@ -5,4 +5,4 @@ const prisma = new PrismaClient();
 
 //module.exports = {prisma}
 
-export default {PrismaClient};
+export default prisma;
