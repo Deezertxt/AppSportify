@@ -1,6 +1,8 @@
 //MODULO PARA EXTRAER TEXTO
-const fs = require('fs');
-const pdf = require('pdf-parser');
+import fs from 'fs';
+import pdf from 'pdf-parser';
+//const fs = require('fs');
+//const pdf = require('pdf-parser');
 
 const extraerTexto = async (ruta) => {
     try {

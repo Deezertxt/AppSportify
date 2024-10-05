@@ -4,7 +4,7 @@ import {v2 as cloudinary} from 'cloudinary';
 //const cloudinary = require('cloudinary').v2;
 dotenv.config();
 //MODULO PARA SUBIR IMAGENES AL CLOUDINARY
-const cloudinary = require('cloudinary').v2;
+
 
 cloudinary.config({
     cloud_name: process.env.CLOUDNAME,
