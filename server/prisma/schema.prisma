@@ -1,23 +1,49 @@
+// prisma/schema.prisma
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider = "mysql"  // Usando PostgreSQL como base de datos
+  url      = env("DATABASE_URL")  // La URL de conexión estará en el archivo .env
 }
 
-model post {
-  id       Int    @id @default(autoincrement())
-  nombre   String
-  apellido String
-  edad     Int
+// Definición de la tabla User para gestionar el registro de usuarios
+model User {
+  id          Int      @id @default(autoincrement())  // Campo ID autoincremental
+  name        String   @db.VarChar(100)               // Nombre del usuario, máximo 100 caracteres
+  email       String   @unique                        // Email único
+  password    String   @db.VarChar(255)               // Contraseña cifrada
+  createdAt   DateTime @default(now())                // Fecha de creación
+  updatedAt   DateTime @updatedAt                     // Fecha de actualización automática
+  library     Library[]                               //Relation to Library table (1-n)
 }
 
-model usuarios {
-  id_usuarios      Int     @id @default(autoincrement())
-  nombre_usuario   String? @db.VarChar(50)
-  apellido_usuario String? @db.VarChar(50)
-  correo           String? @db.VarChar(50)
-  contrasenia      String? @db.VarChar(50)
+model Audiobook {
+  id          Int       @id @default(autoincrement())  // Auto-incremental ID field
+  title       String    @db.VarChar(255)               // Audiobook title, max 255 characters
+  categoryId  Int                                      // Relation to Category table
+  category    Category  @relation(fields: [categoryId], references: [id]) // Foreign key to Category
+  description String?   @db.Text                       // Optional description field (Text for long text)
+  author      String    @db.VarChar(100)               // Author of the audiobook, max 100 characters
+  createdAt   DateTime  @default(now())                // Creation date
+  updatedAt   DateTime  @updatedAt                     // Auto-updating timestamp
+  library     Library[]                               // Relation to Library table (1-n)
+}
+
+model Library {
+  id           Int       @id @default(autoincrement())  // Auto-incremental ID field
+  userId       Int                                      // Relation to User table
+  audiobookId  Int                                      // Relation to Audiobook table
+  audiobook    Audiobook @relation(fields: [audiobookId], references: [id]) // Foreign key to Audiobook
+  user         User      @relation(fields: [userId], references: [id])      // Foreign key to User
+  favorite     Boolean   @default(false)                // If the audiobook is marked as favorite
+  played       Boolean   @default(false)                // If the audiobook has been played
+}
+
+model Category {
+  id       Int         @id @default(autoincrement())  // Auto-incremental ID field
+  name     String      @db.VarChar(100)               // Category name, max 100 characters
+  audiobooks Audiobook[]                              // Relation to Audiobook table (1-n)
 }
