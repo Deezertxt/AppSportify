@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState } from 'react';
 
 function Reproductor() {
@@ -22,7 +23,7 @@ function Reproductor() {
                     distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore
                     enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio
                     aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea
-                    corporis dolores voluptate, eos unde dolorem ut!</p>
+                    corporis dolores voluptate, eos unde dolorem ut! </p>
             </div>
             <div className="flex flex-col justify-center items-center max-w-xl mx-auto border rounded p-6">
 
@@ -107,7 +108,6 @@ function Reproductor() {
                 </div>
             </div>
         </div>
-
     )
 }
 
