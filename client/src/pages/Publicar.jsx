@@ -49,7 +49,7 @@ function Publicar() {
 
                             <div className="flex flex-col">
                                 <label htmlFor="equipos" className="uppercase font-bold">Equipo*</label>
-                                <select name="equipos" id="equipos" className="border rounded-lg p-2">
+                                <select name="equipos" id="equipos" className="border rounded-lg p-2" required>
                                     <option value="equipo1">Equipo 1</option>
                                     <option value="equipo2">Equipo 2</option>
                                     <option value="equipo3">Equipo 3</option>
@@ -59,7 +59,7 @@ function Publicar() {
 
                             <div>
                                 <label htmlFor="documento" className="uppercase font-bold">Documento*</label>
-                                <input type="file" name="file-input" id="file-input" className="block w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none file:bg-gray-50 file:border-0 file:me-4 file:py-3 file:px-4"/>
+                                <input type="file" name="file-input" id="file-input" className="block cursor-pointer file:cursor-pointer w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none file:bg-gray-50 file:border-0 file:me-4 file:py-3 file:px-4" required/>
                             </div>
                         </div>
 
@@ -68,7 +68,7 @@ function Publicar() {
                                 <label htmlFor="descripcion" className="uppercase font-bold">Descripcion*</label>
                                 <textarea name="descripcion" id="descripcion" cols="30" rows="10"
                                           placeholder="Descripcion"
-                                          className=" p-2 resize-none border rounded-lg max-h-24"/>
+                                          className=" p-2 resize-none border rounded-lg max-h-24" required/>
                             </div>
 
                             <div>

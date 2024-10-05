@@ -16,28 +16,35 @@ function Navbar() {
         </div>
 
         <div>
-            <ul className="flex gap-24  uppercase">
+            <ul className="flex gap-24">
                 <li>
-                    <Link to={"/"}>Inicio</Link>
+                    <Link to={"/"} className="hover:underline hover:underline-offset-4 hover:decoration-4">Inicio</Link>
                 </li>
 
                 <li>
-                    <Link to={"publicar"}>Publicar</Link>
+                    <Link to={"publicar"}
+                          className="hover:underline hover:underline-offset-4 hover:decoration-4">Publicar</Link>
                 </li>
 
                 <li>
-                    <Link to={"biblioteca"}>Biblioteca</Link>
+                    <Link to={"biblioteca"}
+                          className="hover:underline hover:underline-offset-4 hover:decoration-4">Biblioteca</Link>
                 </li>
 
                 <li>
-                    <Link to={"reproductor"}>Reproductor</Link>
+                    <Link to={"reproductor"}
+                          className="hover:underline hover:underline-offset-4 hover:decoration-4">Reproductor</Link>
                 </li>
 
+                <li>
+                    <Link to={"equipos"}
+                          className="hover:underline hover:underline-offset-4 hover:decoration-4">Equipos</Link>
+                </li>
             </ul>
         </div>
 
         <div className="flex items-center gap-3  font-bold">
-        <div>
+            <div>
                 <svg width="71" height="75" viewBox="0 0 71 75" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M35.2209 37.8207C31.9923 37.8207 29.2284 36.615 26.9293 34.2037C24.6301 31.7924 23.4806 28.8937 23.4806 25.5076C23.4806 22.1215 24.6301 19.2228 26.9293 16.8115C29.2284 14.4002 31.9923 13.1946 35.2209 13.1946C38.4495 13.1946 41.2134 14.4002 43.5125 16.8115C45.8117 19.2228 46.9612 22.1215 46.9612 25.5076C46.9612 28.8937 45.8117 31.7924 43.5125 34.2037C41.2134 36.615 38.4495 37.8207 35.2209 37.8207ZM11.7402 62.4467V53.8276C11.7402 52.0833 12.1683 50.48 13.0243 49.0178C13.8804 47.5556 15.0177 46.4398 16.4364 45.6702C19.4693 44.0798 22.5511 42.887 25.6819 42.0917C28.8126 41.2965 31.9923 40.8989 35.2209 40.8989C38.4495 40.8989 41.6292 41.2965 44.7599 42.0917C47.8907 42.887 50.9725 44.0798 54.0054 45.6702C55.4241 46.4398 56.5614 47.5556 57.4175 49.0178C58.2735 50.48 58.7016 52.0833 58.7016 53.8276V62.4467H11.7402ZM17.6104 56.2902H52.8314V53.8276C52.8314 53.2633 52.6969 52.7502 52.4278 52.2885C52.1588 51.8267 51.8041 51.4676 51.3639 51.2111C48.7223 49.8259 46.0563 48.787 43.3658 48.0943C40.6753 47.4017 37.9603 47.0554 35.2209 47.0554C32.4815 47.0554 29.7665 47.4017 27.076 48.0943C24.3856 48.787 21.7195 49.8259 19.0779 51.2111C18.6377 51.4676 18.283 51.8267 18.014 52.2885C17.7449 52.7502 17.6104 53.2633 17.6104 53.8276V56.2902ZM35.2209 31.6641C36.8352 31.6641 38.2171 31.0613 39.3667 29.8557C40.5163 28.65 41.0911 27.2007 41.0911 25.5076C41.0911 23.8146 40.5163 22.3652 39.3667 21.1596C38.2171 19.9539 36.8352 19.3511 35.2209 19.3511C33.6066 19.3511 32.2247 19.9539 31.0751 21.1596C29.9255 22.3652 29.3507 23.8146 29.3507 25.5076C29.3507 27.2007 29.9255 28.65 31.0751 29.8557C32.2247 31.0613 33.6066 31.6641 35.2209 31.6641Z"
