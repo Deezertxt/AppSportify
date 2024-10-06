@@ -1,11 +1,23 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 
 function Reproductor() {
     const [value, setValue] = useState(0);
+    const [fontSize, setFontSize] = useState(16);
+
+    const MIN_FONT_SIZE = 12;
+    const MAX_FONT_SIZE = 32;
 
     const handleChange = (event) => {
         setValue(event.target.value);
+    };
+
+    const increaseFontSize = () => {
+        setFontSize((prevSize) => Math.min(prevSize + 2, MAX_FONT_SIZE));
+    };
+
+    const decreaseFontSize = () => {
+        setFontSize((prevSize) => Math.max(prevSize - 2, MIN_FONT_SIZE));
     };
 
     return (
@@ -14,16 +26,41 @@ function Reproductor() {
                 <span className="font-bold text-2xl">Reproducir Audiolibro</span>
                 <span>Nombre del Audiolibro</span>
             </div>
-            <div className="mx-96  border rounded p-8">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in
-                    quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos
-                    earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum
-                    dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate,
-                    eos unde dolorem ut! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat
-                    distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore
-                    enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio
-                    aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea
-                    corporis dolores voluptate, eos unde dolorem ut! </p>
+
+            <div className="flex flex-col justify-center gap-4">
+                <textarea
+                    readOnly
+                    rows="10"
+                    cols="50"
+                    style={{overflow: 'auto', fontSize: `${fontSize}px` }}
+                    className="border rounded-lg shadow p-6 w-1/2 h-96 mx-auto resize-none"
+                >
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut!
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut!
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut!
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut!
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut!
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut!
+                </textarea>
+                <div className="flex justify-between  mx-auto w-1/2">
+                    <button onClick={increaseFontSize} className="flex gap-1 text-xl font-medium items-center">A
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                             className="lucide lucide-circle-plus">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M8 12h8"></path>
+                            <path d="M12 8v8"></path>
+                        </svg>
+                    </button>
+                    <button onClick={decreaseFontSize} className="flex gap-1 text-xl font-medium items-center">A
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                             className="lucide lucide-circle-minus">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M8 12h8"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
             <div className="flex flex-col justify-center items-center max-w-xl mx-auto border rounded p-6">
 
@@ -39,7 +76,7 @@ function Reproductor() {
                     </button>
 
                     <button>
-                        <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" fill="none"
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                              className="lucide lucide-heart h-8 w-8">
                             <path
