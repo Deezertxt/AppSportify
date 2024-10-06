@@ -62,7 +62,7 @@ function Reproductor() {
                     </button>
                 </div>
             </div>
-            <div className="flex gap-6 justify-center items-center max-w-xl mx-auto border rounded p-6">
+            <div className="flex gap-6 justify-center items-center max-w-xl mx-auto border rounded-lg p-6">
 
                 <div>
                     <img src="https://placehold.co/300x300" alt="" className="rounded-lg"/>
