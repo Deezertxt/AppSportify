@@ -23,19 +23,19 @@ function Reproductor() {
         const chunkSize = 200; // Adjust chunk size as needed
         const words = text.split(' ');
         const textChunks = [];
-        let chunk = '';
+        let chunk = ' ';
 
         words.forEach(word => {
             if ((chunk + word).length <= chunkSize) {
                 chunk += `${word} `;
             } else {
-                textChunks.push(chunk.trim());
-                chunk = `${word} `;
+                textChunks.push(chunk.trim() + ' ');
+                chunk = ` ${word} `;
             }
         });
 
-        if (chunk) {
-            textChunks.push(chunk.trim());
+        if (chunk.trim()) {
+            textChunks.push(chunk.trim() + ' ');
         }
 
         setChunks(textChunks);
@@ -96,15 +96,23 @@ function Reproductor() {
             </div>
 
             <div className="flex flex-col justify-center gap-4">
-                <textarea
-                    readOnly
-                    rows="10"
-                    cols="50"
+                <div
                     style={{overflow: 'auto', fontSize: `${fontSize}px`}}
                     className="border rounded-lg shadow p-6 w-1/2 h-96 mx-auto resize-none"
                 >
-                {text}
-                </textarea>
+                    {chunks.map((chunk, index) => (
+                        <span
+                            key={index}
+                            style={{
+                                fontWeight: index === value ? 'bold' : 'normal',
+                                fontSize: index === value ? `${fontSize + 3}px` : `${fontSize}px`,
+                                transition: 'font-size 0.3s ease'
+                            }}
+                        >
+                            {chunk}
+                        </span>
+                    ))}
+                </div>
                 <div className="flex justify-between  mx-auto w-1/2">
                     <button onClick={increaseFontSize} className="flex gap-1 text-xl font-medium items-center">A
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
