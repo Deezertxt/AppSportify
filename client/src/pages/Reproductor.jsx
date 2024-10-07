@@ -4,9 +4,23 @@ import React, {useState} from 'react';
 function Reproductor() {
     const [value, setValue] = useState(0);
     const [fontSize, setFontSize] = useState(16);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const text = "MODELO DE NEGOCIO\n" +
+        "Mantener una vida activa es esencial para el ser humano, un concepto que se ha evidenciado a lo largo de la historia. Con el tiempo, han surgido diversas disciplinas deportivas, alcanzando aproximadamente 149. En este contexto, hemos decidido enfocarnos en el baloncesto, especialmente en la NBA, que es la liga más reconocida a nivel mundial y el tercer deporte más visto y practicado. Esta elección se debe a su amplio público y a la pasión que genera entre los aficionados.\n" +
+        "A pesar de ser el tercer deporte más conocido existen pocas plataformas donde los aficionados o incluso los mismos jugadores puedan encontrar inspiración, motivación e información acerca de la disciplina para su propio desarrollo.\n" +
+        "\n" +
+        "\n" +
+        "El aprendizaje ha sido un pilar esencial en la sociedad, y la lectura, una de sus formas más comunes, suele resultar tediosa para muchas personas al intentar finalizar un libro. En respuesta a esta problemática, han surgido herramientas que utilizan tecnología de inteligencia artificial, como el text-to-speech, para crear resúmenes de libros, facilitando el acceso a la información sin la necesidad de leer el texto completo.\n" +
+        "Las estadísticas recientes revelan un cambio significativo en los hábitos de consumo de contenido entre los jóvenes de 17 a 25 años, aunque una minoría significativa también reveló a gente mayor de 33 años. Un 70,4% de ellos prefiere el formato digital sobre el físico, debido a factores como la falta de tiempo y la dificultad para mantener la atención en la lectura prolongada. Además, la mayoría de los encuestados dedican entre 30 minutos y una hora a la lectura casual, lo que ha incrementado el uso de formatos breves, como los audiolibros. Un 53,7% de los encuestados prefiere escuchar audiolibros de 15 minutos o menos, resaltando la necesidad de contenido adaptado a tiempos de atención más cortos.\n" +
+        "Otra estadística relevante es que el 92,6% de los encuestados valora una plataforma que ofrezca resúmenes de textos referentes a la vida saludable, lo que refleja un gran interés por herramientas que faciliten el acceso eficiente a la información. \n" +
+        "Resumidamente, los resultados obtenidos por el trabajo de campo nos muestra una opinión positiva en cuanto a la realización de una página web en Bolivia, sobre temas deportivos basados en audiolibros y resúmenes textuales. \n";
+
+
 
     const MIN_FONT_SIZE = 12;
     const MAX_FONT_SIZE = 32;
+
+
 
     const handleChange = (event) => {
         setValue(event.target.value);
@@ -18,6 +32,17 @@ function Reproductor() {
 
     const decreaseFontSize = () => {
         setFontSize((prevSize) => Math.max(prevSize - 2, MIN_FONT_SIZE));
+    };
+
+    const handlePlayPause = () => {
+        if (isPlaying) {
+            window.speechSynthesis.cancel();
+        } else {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-ES';
+            window.speechSynthesis.speak(utterance);
+        }
+        setIsPlaying(!isPlaying);
     };
 
     return (
@@ -35,12 +60,7 @@ function Reproductor() {
                     style={{overflow: 'auto', fontSize: `${fontSize}px` }}
                     className="border rounded-lg shadow p-6 w-1/2 h-96 mx-auto resize-none"
                 >
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut!
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut!
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut!
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut!
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut!
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestias id placeat distinctio illum in quod omnis laboriosam laudantium ea cupiditate, cumque ad aliquam est tempore enim libero eaque quos earum? Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio aliquam magni labore rerum dolores iusto laborum nulla veniam illum ratione, dolor architecto! Ea corporis dolores voluptate, eos unde dolorem ut!
+                {text}
                 </textarea>
                 <div className="flex justify-between  mx-auto w-1/2">
                     <button onClick={increaseFontSize} className="flex gap-1 text-xl font-medium items-center">A
@@ -65,13 +85,13 @@ function Reproductor() {
             <div className="flex gap-6 justify-center items-center max-w-xl mx-auto border rounded-lg p-6">
 
                 <div>
-                    <img src="https://placehold.co/300x300" alt="" className="rounded-lg"/>
+                    <img src="https://placehold.co/200x250" alt="" className="rounded-lg"/>
                 </div>
 
 
                 <div className="flex flex-col items-center">
                     <div className="flex items-center gap-4">
-                        <button>
+                        <button id="add-library">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                                  className="lucide lucide-circle-plus h-8 w-8">
@@ -81,7 +101,7 @@ function Reproductor() {
                             </svg>
                         </button>
 
-                        <button>
+                        <button id="favorite">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                                  className="lucide lucide-heart h-8 w-8">
@@ -90,7 +110,7 @@ function Reproductor() {
                             </svg>
                         </button>
 
-                        <button>
+                        <button id="redo">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                                  className="lucide lucide-rotate-ccw h-12 w-12">
@@ -99,17 +119,26 @@ function Reproductor() {
                             </svg>
                         </button>
 
-                        <button>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                 stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                                 className="lucide lucide-circle-pause h-16 w-16">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="10" x2="10" y1="15" y2="9"></line>
-                                <line x1="14" x2="14" y1="15" y2="9"></line>
-                            </svg>
+                        <button onClick={handlePlayPause} id="play-pause">
+                            {isPlaying ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                                     className="lucide lucide-circle-pause h-16 w-16">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="10" x2="10" y1="15" y2="9"></line>
+                                    <line x1="14" x2="14" y1="15" y2="9"></line>
+                                </svg>
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                                     strokeLinejoin="round" className="lucide lucide-circle-play h-16 w-16">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                                </svg>
+                            )}
                         </button>
 
-                        <button>
+                        <button id="undo">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                                  className="lucide lucide-rotate-cw h-12 w-12">
@@ -118,11 +147,11 @@ function Reproductor() {
                             </svg>
                         </button>
 
-                        <button className="text-2xl">
+                        <button id="speed" className="text-2xl">
                             <span>X1</span>
                         </button>
 
-                        <button>
+                        <button id="volume">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                                  className="lucide lucide-volume-2 h-8 w-8">
