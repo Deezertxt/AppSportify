@@ -41,6 +41,12 @@ function Reproductor() {
         setChunks(textChunks);
     }, [text]);
 
+    useEffect(() => {
+        if (isPlaying) {
+            textToSpeech(chunks[value]);
+        }
+    }, [value, isPlaying]);
+
     const textToSpeech = (text) => {
         const synth = synthRef.current;
         const utterance = new SpeechSynthesisUtterance(text);
@@ -48,7 +54,6 @@ function Reproductor() {
         utterance.onend = () => {
             if (value < chunks.length - 1) {
                 setValue((prevValue) => prevValue + 1);
-                textToSpeech(chunks[value + 1]);
             } else {
                 setIsPlaying(false);
             }
@@ -57,8 +62,9 @@ function Reproductor() {
     };
 
     const handleChange = (event) => {
-        setValue(event.target.value);
-        console.log(chunks[event.target.value]);
+        const newValue = parseInt(event.target.value, 10);
+        setValue(newValue);
+        console.log(chunks[newValue]);
         handlePause();
     };
 
@@ -73,7 +79,6 @@ function Reproductor() {
     const handlePlay = () => {
         const synth = synthRef.current;
         synth.cancel(); // Cancel any ongoing speech synthesis
-        textToSpeech(chunks[value]);
         setIsPlaying(true);
     };
 
@@ -82,6 +87,7 @@ function Reproductor() {
         synth.pause();
         setIsPlaying(false);
     };
+
     return (
         <div className="flex flex-col justify-center py-10 gap-8">
             <div className="flex flex-col items-center">
