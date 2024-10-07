@@ -69,6 +69,24 @@ function Reproductor() {
         synth.speak(utterance);
     };
 
+    const handleBackward = () => {
+        if (value > 0) {
+            const synth = synthRef.current;
+            synth.cancel(); // Cancel any ongoing speech synthesis
+            setValue((prevValue) => prevValue - 1);
+            setIsPlaying(true);
+        }
+    };
+
+    const handleForward = () => {
+        if (value < chunks.length - 1) {
+            const synth = synthRef.current;
+            synth.cancel(); // Cancel any ongoing speech synthesis
+            setValue((prevValue) => prevValue + 1);
+            setIsPlaying(true);
+        }
+    };
+
     const handleChange = (event) => {
         const newValue = parseInt(event.target.value, 10);
         setValue(newValue);
@@ -171,7 +189,7 @@ function Reproductor() {
                             </svg>
                         </button>
 
-                        <button id="redo">
+                        <button id="backward" onClick={handleBackward}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                                  className="lucide lucide-rotate-ccw h-12 w-12">
@@ -199,7 +217,7 @@ function Reproductor() {
                             )}
                         </button>
 
-                        <button id="undo">
+                        <button id="fordward" onClick={handleForward}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                                  className="lucide lucide-rotate-cw h-12 w-12">
