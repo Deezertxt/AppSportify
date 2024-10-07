@@ -5,6 +5,8 @@ import Biblioteca from "./pages/Biblioteca.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
+import Equipos from './pages/equipos.jsx';
+import Biografias from './pages/Biografias.jsx';
 
 function App() {
     return(
@@ -14,6 +16,8 @@ function App() {
                 <Route path="/" element={<TaskPage/>}/>
                 <Route path="/reproductor" element={<Reproductor/>}/>
                 <Route path="/biblioteca" element={<Biblioteca/>}/>
+                <Route path="/equipos" element={<Equipos/>}/>
+                <Route path="/biografias" element={<Biografias/>}/>
                 <Route path="*" element={<NotFound/>}/>
             </Routes>
             <Footer/>

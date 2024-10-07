@@ -16,17 +16,17 @@ function Navbar() {
         </div>
 
         <div>
-            <ul className="flex gap-24  uppercase">
-                <li>
-                    <Link to={"/"}>Inicio</Link>
+            <ul className="flex gap-24  uppercase ">
+                <li className="ml-4 px-10 py-2 leading-5 font-medium font-semibold hover:text-gray-300 transition duration-250 ease-in-out">
+                    <Link to={"/"}>Biografia</Link>
                 </li>
 
-                <li>
-                    <Link to={"biblioteca"}>Biblioteca</Link>
+                <li className="ml-4 px-10 py-2 leading-5 font-medium font-semibold hover:text-gray-300 transition duration-250 ease-in-out">
+                    <Link to={"biblioteca"}>Equipos</Link>
                 </li>
 
-                <li>
-                    <Link to={"reproductor"}>Reproductor</Link>
+                <li className="ml-4 px-10 py-2 leading-5 font-medium font-semibold hover:text-gray-300 transition duration-250 ease-in-out">
+                    <Link to={"reproductor"}>NBA</Link>
                 </li>
             </ul>
         </div>
@@ -40,7 +40,9 @@ function Navbar() {
                 </svg>
             </div>
             <div>
-                Nombre de Usuario
+                <p className="ml-4 py-2 leading-5 font-medium font-semibold hover:text-gray-300 transition duration-250 ease-in-out">
+                    Nombre de Usuario
+                </p>
             </div>
         </div>
     </nav>
