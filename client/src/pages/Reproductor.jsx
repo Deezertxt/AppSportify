@@ -1,11 +1,11 @@
-// eslint-disable-next-line no-unused-vars
-import React, {useState} from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function Reproductor() {
     const [value, setValue] = useState(0);
     const [fontSize, setFontSize] = useState(16);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [isPaused, setIsPaused] = useState(false);
+    const [chunks, setChunks] = useState([]);
+    const synthRef = useRef(window.speechSynthesis);
     const text = "MODELO DE NEGOCIO\n" +
         "Mantener una vida activa es esencial para el ser humano, un concepto que se ha evidenciado a lo largo de la historia. Con el tiempo, han surgido diversas disciplinas deportivas, alcanzando aproximadamente 149. En este contexto, hemos decidido enfocarnos en el baloncesto, especialmente en la NBA, que es la liga más reconocida a nivel mundial y el tercer deporte más visto y practicado. Esta elección se debe a su amplio público y a la pasión que genera entre los aficionados.\n" +
         "A pesar de ser el tercer deporte más conocido existen pocas plataformas donde los aficionados o incluso los mismos jugadores puedan encontrar inspiración, motivación e información acerca de la disciplina para su propio desarrollo.\n" +
@@ -16,13 +16,50 @@ function Reproductor() {
         "Otra estadística relevante es que el 92,6% de los encuestados valora una plataforma que ofrezca resúmenes de textos referentes a la vida saludable, lo que refleja un gran interés por herramientas que faciliten el acceso eficiente a la información. \n" +
         "Resumidamente, los resultados obtenidos por el trabajo de campo nos muestra una opinión positiva en cuanto a la realización de una página web en Bolivia, sobre temas deportivos basados en audiolibros y resúmenes textuales. \n";
 
-
     const MIN_FONT_SIZE = 12;
     const MAX_FONT_SIZE = 32;
 
+    useEffect(() => {
+        const chunkSize = 200; // Adjust chunk size as needed
+        const words = text.split(' ');
+        const textChunks = [];
+        let chunk = '';
+
+        words.forEach(word => {
+            if ((chunk + word).length <= chunkSize) {
+                chunk += `${word} `;
+            } else {
+                textChunks.push(chunk.trim());
+                chunk = `${word} `;
+            }
+        });
+
+        if (chunk) {
+            textChunks.push(chunk.trim());
+        }
+
+        setChunks(textChunks);
+    }, [text]);
+
+    const textToSpeech = (text) => {
+        const synth = synthRef.current;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES';
+        utterance.onend = () => {
+            if (value < chunks.length - 1) {
+                setValue((prevValue) => prevValue + 1);
+                textToSpeech(chunks[value + 1]);
+            } else {
+                setIsPlaying(false);
+            }
+        };
+        synth.speak(utterance);
+    };
 
     const handleChange = (event) => {
         setValue(event.target.value);
+        console.log(chunks[event.target.value]);
+        handlePause();
     };
 
     const increaseFontSize = () => {
@@ -34,27 +71,17 @@ function Reproductor() {
     };
 
     const handlePlay = () => {
-        const synth = window.speechSynthesis;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'es-ES';
-
-        if (isPaused) {
-            synth.resume();
-        } else {
-            synth.speak(utterance);
-        }
-
+        const synth = synthRef.current;
+        synth.cancel(); // Cancel any ongoing speech synthesis
+        textToSpeech(chunks[value]);
         setIsPlaying(true);
-        setIsPaused(false);
     };
 
     const handlePause = () => {
-        const synth = window.speechSynthesis;
+        const synth = synthRef.current;
         synth.pause();
         setIsPlaying(false);
-        setIsPaused(true);
     };
-
     return (
         <div className="flex flex-col justify-center py-10 gap-8">
             <div className="flex flex-col items-center">
@@ -178,7 +205,7 @@ function Reproductor() {
                             <input
                                 type="range"
                                 min="0"
-                                max="100"
+                                max={chunks.length - 1}
                                 value={value}
                                 onChange={handleChange}
                                 className="w-full"
