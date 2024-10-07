@@ -6,6 +6,7 @@ function Reproductor() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [chunks, setChunks] = useState([]);
     const synthRef = useRef(window.speechSynthesis);
+    const textContainerRef = useRef(null);
     const text = "MODELO DE NEGOCIO\n" +
         "Mantener una vida activa es esencial para el ser humano, un concepto que se ha evidenciado a lo largo de la historia. Con el tiempo, han surgido diversas disciplinas deportivas, alcanzando aproximadamente 149. En este contexto, hemos decidido enfocarnos en el baloncesto, especialmente en la NBA, que es la liga más reconocida a nivel mundial y el tercer deporte más visto y practicado. Esta elección se debe a su amplio público y a la pasión que genera entre los aficionados.\n" +
         "A pesar de ser el tercer deporte más conocido existen pocas plataformas donde los aficionados o incluso los mismos jugadores puedan encontrar inspiración, motivación e información acerca de la disciplina para su propio desarrollo.\n" +
@@ -46,6 +47,13 @@ function Reproductor() {
             textToSpeech(chunks[value]);
         }
     }, [value, isPlaying]);
+
+    useEffect(() => {
+        const currentChunk = document.getElementById(`chunk-${value}`);
+        if (currentChunk) {
+            currentChunk.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, [value]);
 
     const textToSpeech = (text) => {
         const synth = synthRef.current;
@@ -97,15 +105,17 @@ function Reproductor() {
 
             <div className="flex flex-col justify-center gap-4">
                 <div
+                    ref={textContainerRef}
                     style={{overflow: 'auto', fontSize: `${fontSize}px`}}
                     className="border rounded-lg shadow p-6 w-1/2 h-96 mx-auto resize-none"
                 >
                     {chunks.map((chunk, index) => (
                         <span
                             key={index}
+                            id={`chunk-${index}`}
                             style={{
                                 fontWeight: index === value ? 'bold' : 'normal',
-                                fontSize: index === value ? `${fontSize + 3}px` : `${fontSize}px`,
+                                fontSize: index === value ? `${fontSize + 0.5}px` : `${fontSize}px`,
                                 transition: 'font-size 0.3s ease'
                             }}
                         >
