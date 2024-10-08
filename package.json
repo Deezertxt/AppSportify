@@ -9,7 +9,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "-> git clone *URL del repositorio*",
   "dependencies": {
     "@prisma/client": "^5.20.0",
     "appsportify": "file:",
