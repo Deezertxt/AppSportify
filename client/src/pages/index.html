@@ -69,7 +69,7 @@
 
     <h1 class="text-center">Publicar contenido</h1>
 
-    <form>
+    <form action="/api/upload" method="POST" enctype="multipart/form-data">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto p-6">
             <!-- Izquierda -->
             <div class="space-y-4 w-full">
@@ -108,12 +108,11 @@
                 <div class="flex flex-col items-center justify-center space-y-4">
                     <label class="block text-sm font-medium text-gray-700">Portada</label>
                     <div class="w-64 h-64 bg-gray-200 border border-gray-300 rounded-md flex items-center justify-center">
-                        <img src="images/placeholder.png" alt="Portada" class="h-32 w-32">
-                    </div>
+                        <img src="images/placeholder.png" alt="Portada" class="h-full w-full object-cover">
+                    </div>                    
                     <div class="flex space-x-4">
                         <label for="subir" class="bg-second hover:bg-secondDarker hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700 text-white px-4 py-2 rounded-md">Subir portada</label>
                         <input type="file" class="hidden" accept="image/*" name="subir" id="subir" required>
-                        <!--falta el script para que quite y ponga la imagen-->
                         <button class="bg-third hover:bg-thirdDarker hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700 text-white text-white px-4 py-2 rounded-md">Quitar Portada</button>
                     </div>
                 </div>
@@ -183,6 +182,41 @@
             event.target.value = ''; 
         }
     });
+</script>
+<script>
+document.getElementById('subir').addEventListener('change', (event) => {
+    const file = event.target.files[0];
+
+    // Verificar que sea una imagen válida (jpg, jpeg, png)
+    const validImageTypes = ['image/jpeg', 'image/png'];
+    if (!validImageTypes.includes(file.type)) {
+        alert('Por favor, seleccione un archivo de imagen válido (JPG, JPEG, PNG).');
+        event.target.value = '';
+        return;
+    }
+
+    // Verificar el tamaño de la imagen (máximo 2MB)
+    const maxSizeMB = 2;
+    if (file.size > maxSizeMB * 1024 * 1024) {
+        alert('La imagen es demasiado grande. El tamaño máximo es de 2MB.');
+        event.target.value = '';
+        return;
+    }
+
+    // Mostrar la previsualización de la imagen
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const imageElement = document.querySelector('.w-64 img');
+        if (imageElement) {
+            imageElement.src = e.target.result; // Cambiar la imagen por la previsualización
+        } else {
+            console.error('No se encontró la imagen para previsualizar.');
+        }
+    };
+    reader.readAsDataURL(file);
+});
+
+
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
