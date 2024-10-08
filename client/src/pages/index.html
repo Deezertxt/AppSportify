@@ -185,6 +185,26 @@
     });
 </script>
 
+<script type="module">
+    import { isValidCover } from '../utils/fileCoverValidator.js';
+
+    document.getElementById('portada').addEventListener('change', async (event) => {
+	//obtenemos archivo subido
+        const file = event.target.files[0];
+        
+        //Valida si la imagen es del formato deseado
+        const isValid = await isValidCover(file, 600, 800);
+
+        if (!isValid) {
+            alert('Por favor, seleccione una imagen válida (PNG o JPG) con dimensiones mínimas de 600x800 píxeles.');
+            event.target.value = '';  //Reinicia input
+            return;
+        }
+
+        alert('La portada es válida y cumple con los requisitos.');
+    });
+</script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 
 
