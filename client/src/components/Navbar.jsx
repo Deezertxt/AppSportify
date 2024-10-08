@@ -52,7 +52,9 @@ function Navbar() {
                 </svg>
             </div>
             <div>
-                Nombre de Usuario
+                <p className="ml-4 py-2 leading-5 font-medium font-semibold hover:text-gray-300 transition duration-250 ease-in-out">
+                    Nombre de Usuario
+                </p>
             </div>
         </div>
     </nav>
