@@ -1,1 +1,0 @@
-Modelos de datos (ORM o consultas SQL)

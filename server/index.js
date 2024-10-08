@@ -9,7 +9,7 @@ dotenv.config();
 //const routes = require('./src/api/endPoints');
 const app = express();
 const port = 3000;
-
+const routes = require('./src/api/endPoints');
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -20,9 +20,7 @@ app.use(cors({
     credentials: true
 }));
 
-app.use('/', routes, (req, res) => {
-    res.send("jalando")
-});
+app.use('/', routes);
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
