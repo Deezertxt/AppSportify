@@ -1,4 +1,4 @@
-//MODULO PARA EXTRAER TEXTO
+//MODULO PARA EXTRAER TEXTO Y SUBIR A LA DB
 import fs from 'fs';
 import pdf from 'pdf-parse/lib/pdf-parse.js';
 
