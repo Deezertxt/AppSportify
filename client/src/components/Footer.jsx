@@ -4,7 +4,7 @@ function Footer() {
   return (
     <footer className="text-white font-medium text-xl text-center bg-[#6177A6] flex items-center justify-between p-4">
         <div>
-            <p>Derechos Reservados</p>
+            <p className="ml-4 px-10 py-2 leading-5 font-medium font-semibold hover:text-gray-300 transition duration-250 ease-in-out">Derechos Reservados</p>
         </div>
         <div className="flex items-center gap-3">
             <Link to={"https://tailwindcss.com/docs/align-items"}>

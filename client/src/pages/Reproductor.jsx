@@ -6,6 +6,7 @@ function Reproductor() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [chunks, setChunks] = useState([]);
     const synthRef = useRef(window.speechSynthesis);
+    const textContainerRef = useRef(null);
     const text = "MODELO DE NEGOCIO\n" +
         "Mantener una vida activa es esencial para el ser humano, un concepto que se ha evidenciado a lo largo de la historia. Con el tiempo, han surgido diversas disciplinas deportivas, alcanzando aproximadamente 149. En este contexto, hemos decidido enfocarnos en el baloncesto, especialmente en la NBA, que es la liga más reconocida a nivel mundial y el tercer deporte más visto y practicado. Esta elección se debe a su amplio público y a la pasión que genera entre los aficionados.\n" +
         "A pesar de ser el tercer deporte más conocido existen pocas plataformas donde los aficionados o incluso los mismos jugadores puedan encontrar inspiración, motivación e información acerca de la disciplina para su propio desarrollo.\n" +
@@ -23,23 +24,36 @@ function Reproductor() {
         const chunkSize = 200; // Adjust chunk size as needed
         const words = text.split(' ');
         const textChunks = [];
-        let chunk = '';
+        let chunk = ' ';
 
         words.forEach(word => {
             if ((chunk + word).length <= chunkSize) {
                 chunk += `${word} `;
             } else {
-                textChunks.push(chunk.trim());
-                chunk = `${word} `;
+                textChunks.push(chunk.trim() + ' ');
+                chunk = ` ${word} `;
             }
         });
 
-        if (chunk) {
-            textChunks.push(chunk.trim());
+        if (chunk.trim()) {
+            textChunks.push(chunk.trim() + ' ');
         }
 
         setChunks(textChunks);
     }, [text]);
+
+    useEffect(() => {
+        if (isPlaying) {
+            textToSpeech(chunks[value]);
+        }
+    }, [value, isPlaying]);
+
+    useEffect(() => {
+        const currentChunk = document.getElementById(`chunk-${value}`);
+        if (currentChunk) {
+            currentChunk.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, [value]);
 
     const textToSpeech = (text) => {
         const synth = synthRef.current;
@@ -48,7 +62,6 @@ function Reproductor() {
         utterance.onend = () => {
             if (value < chunks.length - 1) {
                 setValue((prevValue) => prevValue + 1);
-                textToSpeech(chunks[value + 1]);
             } else {
                 setIsPlaying(false);
             }
@@ -56,9 +69,28 @@ function Reproductor() {
         synth.speak(utterance);
     };
 
+    const handleBackward = () => {
+        if (value > 0) {
+            const synth = synthRef.current;
+            synth.cancel(); // Cancel any ongoing speech synthesis
+            setValue((prevValue) => prevValue - 1);
+            setIsPlaying(true);
+        }
+    };
+
+    const handleForward = () => {
+        if (value < chunks.length - 1) {
+            const synth = synthRef.current;
+            synth.cancel(); // Cancel any ongoing speech synthesis
+            setValue((prevValue) => prevValue + 1);
+            setIsPlaying(true);
+        }
+    };
+
     const handleChange = (event) => {
-        setValue(event.target.value);
-        console.log(chunks[event.target.value]);
+        const newValue = parseInt(event.target.value, 10);
+        setValue(newValue);
+        console.log(chunks[newValue]);
         handlePause();
     };
 
@@ -73,7 +105,6 @@ function Reproductor() {
     const handlePlay = () => {
         const synth = synthRef.current;
         synth.cancel(); // Cancel any ongoing speech synthesis
-        textToSpeech(chunks[value]);
         setIsPlaying(true);
     };
 
@@ -82,6 +113,7 @@ function Reproductor() {
         synth.pause();
         setIsPlaying(false);
     };
+
     return (
         <div className="flex flex-col justify-center py-10 gap-8">
             <div className="flex flex-col items-center">
@@ -90,15 +122,25 @@ function Reproductor() {
             </div>
 
             <div className="flex flex-col justify-center gap-4">
-                <textarea
-                    readOnly
-                    rows="10"
-                    cols="50"
+                <div
+                    ref={textContainerRef}
                     style={{overflow: 'auto', fontSize: `${fontSize}px`}}
                     className="border rounded-lg shadow p-6 w-1/2 h-96 mx-auto resize-none"
                 >
-                {text}
-                </textarea>
+                    {chunks.map((chunk, index) => (
+                        <span
+                            key={index}
+                            id={`chunk-${index}`}
+                            style={{
+                                fontWeight: index === value ? 'bold' : 'normal',
+                                fontSize: index === value ? `${fontSize + 0.5}px` : `${fontSize}px`,
+                                transition: 'font-size 0.3s ease'
+                            }}
+                        >
+                            {chunk}
+                        </span>
+                    ))}
+                </div>
                 <div className="flex justify-between  mx-auto w-1/2">
                     <button onClick={increaseFontSize} className="flex gap-1 text-xl font-medium items-center">A
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -147,7 +189,7 @@ function Reproductor() {
                             </svg>
                         </button>
 
-                        <button id="redo">
+                        <button id="backward" onClick={handleBackward}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                                  className="lucide lucide-rotate-ccw h-12 w-12">
@@ -175,7 +217,7 @@ function Reproductor() {
                             )}
                         </button>
 
-                        <button id="undo">
+                        <button id="fordward" onClick={handleForward}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                                  className="lucide lucide-rotate-cw h-12 w-12">
