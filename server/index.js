@@ -20,9 +20,13 @@ app.use(cors({
     credentials: true
 }));
 
-app.use('/', routes, (req, res) => {
-    res.send("jalando")
-});
+app.use(cors({
+    origin: ["http://localhost:5174"],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    credentials: true
+}));
+
+app.use('/', routes);
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);

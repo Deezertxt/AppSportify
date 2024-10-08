@@ -36,10 +36,6 @@ function Navbar() {
                           className="hover:underline hover:underline-offset-4 hover:decoration-4">Reproductor</Link>
                 </li>
 
-                <li>
-                    <Link to={"equipos"}
-                          className="hover:underline hover:underline-offset-4 hover:decoration-4">Equipos</Link>
-                </li>
             </ul>
         </div>
 
