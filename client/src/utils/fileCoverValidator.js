@@ -1,4 +1,4 @@
-export const isValidCover = (file) => {
+export const isValidCover = (file, width = 600, height = 800) => {
     try {
         if (!file || !file.name) {
             console.error('Archivo inválido o sin nombre.');
