@@ -23,19 +23,19 @@ function Publicar() {
     };
 
     return (
-        <div className="my-8 px-4">
+        <div className="my-8">
             <div className="flex flex-col items-center">
                 <span className="font-bold text-2xl">Publicacion de Contenido</span>
             </div>
 
             <div className="flex justify-center">
-                <form className="w-full max-w-3xl">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
-                        <div className="flex flex-col gap-4">
+                <form className="w-1/2">
+                    <div className="flex justify-between gap-20 my-8">
+                        <div className="flex flex-col w-1/2 justify-between">
                             <div className="flex flex-col">
                                 <label htmlFor="nombre" className="uppercase font-bold">Nombre*</label>
                                 <input type="text" id="nombre"
-                                       className="border rounded-lg p-2 text-center"
+                                       className=" border rounded-lg p-2 text-center"
                                        placeholder="Nombre del Recurso" required/>
                             </div>
 
@@ -46,13 +46,14 @@ function Publicar() {
                                        placeholder="Nombre del Recurso" required/>
                             </div>
 
+
                             <div className="flex flex-col">
-                                <label htmlFor="equipos" className="uppercase font-bold">Equipo*</label>
+                                <label htmlFor="equipos" className="uppercase font-bold">Categoria*</label>
                                 <select name="equipos" id="equipos" className="border rounded-lg p-2" required>
-                                    <option value="equipo1">Equipo 1</option>
-                                    <option value="equipo2">Equipo 2</option>
-                                    <option value="equipo3">Equipo 3</option>
-                                    <option value="equipo4">Equipo 4</option>
+                                    <option value="equipo1">Seleccione una categoria</option>
+                                    <option value="equipo2"></option>
+                                    <option value="equipo3"></option>
+                                    <option value="equipo4"></option>
                                 </select>
                             </div>
 
@@ -62,12 +63,12 @@ function Publicar() {
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col w-1/2 gap-14">
                             <div className="flex flex-col">
                                 <label htmlFor="descripcion" className="uppercase font-bold">Descripcion*</label>
                                 <textarea name="descripcion" id="descripcion" cols="30" rows="10"
                                           placeholder="Descripcion"
-                                          className="p-2 resize-none border rounded-lg max-h-24" required/>
+                                          className=" p-2 resize-none border rounded-lg h-full" required/>
                             </div>
 
                             <div>
@@ -75,7 +76,7 @@ function Publicar() {
                                 <div id="dropZone"
                                      className="p-10 bg-white text-gray-500 font-semibold text-base rounded-2xl flex flex-col items-center justify-center border-2 border-gray-300 border-dashed font-[sans-serif]"
                                      onDrop={handleDrop}
-                                     onDragOver={handleDragOver}>
+                                    onDragOver={handleDragOver}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
                                          fill="none"
                                          stroke="currentColor" strokeWidth="2" strokeLinecap="round"

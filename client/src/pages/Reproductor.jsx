@@ -5,6 +5,7 @@ function Reproductor() {
     const [fontSize, setFontSize] = useState(16);
     const [isPlaying, setIsPlaying] = useState(false);
     const [chunks, setChunks] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const synthRef = useRef(window.speechSynthesis);
     const textContainerRef = useRef(null);
     const text = "MODELO DE NEGOCIO\n" +
@@ -114,6 +115,19 @@ function Reproductor() {
         setIsPlaying(false);
     };
 
+    const handleOpenModal = () => {
+        const synth = synthRef.current;
+        synth.cancel(); // Cancel any ongoing speech synthesis
+        setIsPlaying(false);
+        setIsModalOpen(true);
+        document.body.style.overflow = 'hidden'; // Disable background scroll
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        document.body.style.overflow = 'auto'; // Re-enable background scroll
+    };
+
     return (
         <div className="flex flex-col justify-center py-10 gap-8">
             <div className="flex flex-col items-center">
@@ -122,31 +136,47 @@ function Reproductor() {
             </div>
 
             <div className="flex flex-col justify-center gap-4">
-                <div
-                    ref={textContainerRef}
-                    style={{overflow: 'auto', fontSize: `${fontSize}px`}}
-                    className="border rounded-lg shadow p-6 w-1/2 h-96 mx-auto resize-none"
-                >
-                    {chunks.map((chunk, index) => (
-                        <span
-                            key={index}
-                            id={`chunk-${index}`}
-                            style={{
-                                fontWeight: index === value ? 'bold' : 'normal',
-                                fontSize: index === value ? `${fontSize + 0.5}px` : `${fontSize}px`,
-                                transition: 'font-size 0.3s ease'
-                            }}
-                        >
+                <div className="relative w-1/2 mx-auto">
+                    <div
+                        ref={textContainerRef}
+                        style={{overflow: 'auto', fontSize: `${fontSize}px`}}
+                        className="border rounded-lg shadow py-6 px-12 h-96  resize-none"
+                    >
+                        {chunks.map((chunk, index) => (
+                            <span
+                                key={index}
+                                id={`chunk-${index}`}
+                                style={{
+                                    fontWeight: index === value ? 'bold' : 'normal',
+                                    fontSize: index === value ? `${fontSize + 0.5}px` : `${fontSize}px`,
+                                    transition: 'font-size 0.3s ease'
+                                }}
+                            >
                             {chunk}
                         </span>
-                    ))}
+                        ))}
+                    </div>
+                    <div className="absolute bottom-1 right-3">
+                        <button id="maximize" onClick={handleOpenModal}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                                 className="lucide lucide-maximize">
+                                <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+                                <path d="M21 8V5a2 2 0 0 0-2-2h-3"></path>
+                                <path d="M3 16v3a2 2 0 0 0 2 2h3"></path>
+                                <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
+
                 <div className="flex justify-between  mx-auto w-1/2">
                     <button onClick={increaseFontSize} className="flex gap-1 text-xl font-medium items-center">A
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                              className="lucide lucide-circle-plus">
-                            <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="10"></circle>
                             <path d="M8 12h8"></path>
                             <path d="M12 8v8"></path>
                         </svg>
@@ -253,15 +283,31 @@ function Reproductor() {
                                 className="w-full"
                             />
                         </div>
-
-                        <div className="flex items-center justify-between w-full">
-                            <span id="tiempoActual" className="text-sm">0:00</span>
-                            <span id="tiempoTotal" className="text-sm">n:00</span>
-                        </div>
                     </div>
                 </div>
 
             </div>
+
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white relative p-8 rounded-lg h-screen shadow-lg max-w-3xl w-full">
+                        <div className="absolute top-1.5 left-1.5">
+                            <button onClick={handleCloseModal}>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                                     strokeLinejoin="round" className="lucide lucide-x w-6 h-6">
+                                    <path d="M18 6 6 18"></path>
+                                    <path d="m6 6 12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <textarea className="w-full h-full resize-none border border-gray-300 shadow rounded p-3">
+                            {text}
+                        </textarea>
+
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
