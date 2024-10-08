@@ -29,8 +29,8 @@ function Publicar() {
             </div>
 
             <div className="flex justify-center">
-                <form className="max-w-3xl">
-                    <div className="flex justify-between gap-8 my-8">
+                <form className="w-1/2">
+                    <div className="flex justify-between gap-20 my-8">
                         <div className="flex flex-col w-1/2 justify-between">
                             <div className="flex flex-col">
                                 <label htmlFor="nombre" className="uppercase font-bold">Nombre*</label>
@@ -63,12 +63,12 @@ function Publicar() {
                             </div>
                         </div>
 
-                        <div className="flex flex-col w-1/2 gap-4">
+                        <div className="flex flex-col w-1/2 gap-14">
                             <div className="flex flex-col">
                                 <label htmlFor="descripcion" className="uppercase font-bold">Descripcion*</label>
                                 <textarea name="descripcion" id="descripcion" cols="30" rows="10"
                                           placeholder="Descripcion"
-                                          className=" p-2 resize-none border rounded-lg max-h-24" required/>
+                                          className=" p-2 resize-none border rounded-lg h-full" required/>
                             </div>
 
                             <div>
