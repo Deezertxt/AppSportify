@@ -18,9 +18,11 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
+    "express-fileupload": "^1.5.1",
     "morgan": "^1.10.0",
     "mysql2": "^3.11.3",
     "nodemon": "^3.1.7",
+    "pdf-parse": "^1.1.1",
     "pdf-parser": "^1.0.5"
   }
 }
