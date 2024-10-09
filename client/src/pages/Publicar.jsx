@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import select from "react-select";       
-import { createAudiobook, getCategories } from '../api/api';  // Importamos el servicio
+import select from 'react-select';
+import { isValidCover } from "../utils/fileCoverValidator";
+import { createAudiobook, getCategories, uploadFiles } from '../api/api';  // Importamos el servicio
 
 
 function Publicar() {
     const [fileName, setFileName] = useState("");
+    const [preview, setPreview] = useState(null); // Estado para la vista previa de la imagen
     const [formData, setFormData] = useState({
         title: "",
         author: "",
@@ -13,6 +15,9 @@ function Publicar() {
         documento: null,  // Para el documento adjunto
         portada: null,    // Para la portada
     });
+
+    const [modalMessage, setModalMessage] = useState(null);  // Estado para el mensaje del modal
+
     const [categories, setCategories] = useState([]);
     useEffect(() => {
         const fetchCategories = async () => {
@@ -27,15 +32,21 @@ function Publicar() {
         fetchCategories();
     }, []);
 
-    const handleDrop = (event) => {
+    const handleDrop = async (event) => {
         event.preventDefault();
         const file = event.dataTransfer.files[0];
         if (file) {
-            setFileName(file.name);
-            setFormData({
-                ...formData,
-                portada: file
-            });
+            const isValid = await isValidCover(file, 200, 300); // Validar el archivo aquí
+            if (isValid) {
+                setFileName(file.name);
+                setFormData({
+                    ...formData,
+                    portada: file,
+                });
+                setPreview(URL.createObjectURL(file)); // Crear vista previa de la imagen
+            } else {
+                alert("La portada no es válida. Asegúrese de que sea una imagen jpg, jpeg o png con dimensiones adecuadas.");
+            }
         }
     };
 
@@ -43,11 +54,34 @@ function Publicar() {
         event.preventDefault();
     };
 
-    const handleFileChange = (event) => {
+    const handleFileChange = async (event) => {
         const file = event.target.files[0];
         if (file) {
-            setFileName(file.name);
+            const isValid = await isValidCover(file, 200, 300);
+            if (isValid) {
+                setFileName(file.name);
+                setFormData({
+                    ...formData,
+                    portada: file,
+                });
+                updatePreview(file);
+            } else {
+                alert("La portada no es válida. Asegúrese de que sea una imagen jpg, jpeg o png con dimensiones adecuadas.");
+            }
         }
+    };
+
+    const updatePreview = (file) => {
+        setFileName(file.name);
+        setFormData({
+            ...formData,
+            portada: file,
+        });
+        const fileUrl = URL.createObjectURL(file); // Crear vista previa
+        setPreview(fileUrl);
+
+        // Limpiar la vista previa cuando se desmonte el componente
+        return () => URL.revokeObjectURL(fileUrl);
     };
 
     const handleChange = (e) => {
@@ -69,35 +103,62 @@ function Publicar() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Enviar los datos del formulario a la API
         try {
-            const audiobookData = {
-                title: formData.titulo,
-                author: formData.autor,
-                categoryId: formData.categoria,
-                description: formData.descripcion,
-                documento: formData.documento, // El archivo del documento
-                portada: formData.portada      // El archivo de portada
-            };
+            // Creamos un FormData para subir archivos
+            const data = new FormData();
 
-            // Llamada al servicio para registrar el audiolibro
-            const response = await createAudiobook(audiobookData);
-            console.log('Publicación registrada con éxito', response);
+            // Añadimos los archivos al FormData
+            if (formData.documento) {
+                data.append('pdf', formData.documento);  // Subimos el archivo PDF
+            }
+            if (formData.portada) {
+                data.append('portada', formData.portada);  // Subimos la imagen de la portada
+            }
 
-            // Reseteamos el formulario después del éxito
-            setFormData({
-                title: "",
-                author: "",
-                category: "",
-                description: "",
-                documento: null,
-                portada: null
-            });
-            setFileName(""); // Reseteamos el nombre del archivo
+            // Realizamos la petición de subida de archivos
+            const uploadResponse = await uploadFiles(data); // No especificamos headers aquí
 
+            // Revisamos si la subida fue exitosa
+            if (uploadResponse.status === 200) {
+                // Extraemos los datos de los archivos subidos
+                const { portadaPath, pdfPath } = uploadResponse.data;
+
+                // Llamamos al servicio para registrar el audiolibro en la base de datos
+                const audiobookData = {
+                    title: formData.titulo,
+                    author: formData.autor,
+                    categoryId: formData.categoria,
+                    description: formData.descripcion,
+                    portada: portadaPath, // Ruta de la portada subida
+                    documento: pdfPath // Ruta del documento subido
+                };
+
+                const response = await createAudiobook(audiobookData);
+                console.log('Publicación registrada con éxito:', response);
+                // Mostrar mensaje de éxito
+                setModalMessage("¡Publicación registrada con éxito!");
+
+                // Reseteamos el formulario después del éxito
+                setFormData({
+                    title: "",
+                    author: "",
+                    categoryId: "",
+                    description: "",
+                    documento: null,
+                    portada: null
+                });
+                setFileName(""); // Limpiar nombre del archivo
+            }
         } catch (error) {
-            console.error("Error al registrar la publicación:", error);
+            console.error("Error al subir archivos o registrar la publicación:", error);
+            setModalMessage("Error al registrar la publicación. Intenta de nuevo.");
         }
+    };
+
+    // Función para cerrar el modal y refrescar la página
+    const closeModal = () => {
+        setModalMessage(null);
+        window.location.reload();  // Refrescar la página
     };
 
     return (
@@ -160,6 +221,7 @@ function Publicar() {
                             <div>
                                 <label htmlFor="documento" className="uppercase font-bold">Documento*</label>
                                 <input
+                                  accept = ".pdf"
                                     type="file"
                                     name="documento"
                                     id="documento"
@@ -192,7 +254,7 @@ function Publicar() {
                                     id="dropZone"
                                     className="p-10 bg-white text-gray-500 font-semibold text-base rounded-2xl flex flex-col items-center justify-center border-2 border-gray-300 border-dashed"
                                     onDrop={handleDrop}
-                                    onDragOver={handleDragOver}
+                                    onDragOver={(e) => e.preventDefault()}
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -216,17 +278,18 @@ function Publicar() {
                                     <p id="fileName" className="text-xs font-medium text-gray-400 mt-1">
                                         {fileName || "IMAGEN menor a 5MB"}
                                     </p>
+                                    {preview && <img src={preview} alt="Vista previa" className="mt-2 w-full h-auto rounded" />} {/* Vista previa de la imagen */}
                                     <input
                                         type="file"
-                                        id="cv"
-                                        name="cv"
+                                        id="portada"
+                                        name="portada"
                                         className="hidden"
                                         onChange={handleFileChange}
                                     />
                                     <div
-                                       id="chooseFile"
-                                       className="mt-4 flex h-9 px-6 flex-col bg-[#d4dde9] text-[#4e5a7f] border border-[#4e5a7f] rounded-xl shadow text-xs font-semibold leading-4 items-center justify-center cursor-pointer focus:outline-none" onClick={() => document.getElementById('cv').click()}>
-                                      Elegir Archivo
+                                        className="mt-4 flex h-9 px-6 bg-gray-300 text-gray-700 border border-gray-700 rounded-lg"
+                                        onClick={() => document.getElementById('portada').click()}>
+                                        Elegir Archivo
                                     </div>
                                 </div>
                             </div>
@@ -256,8 +319,22 @@ function Publicar() {
                     </button>
                 </form>
             </div>
+            {/* Modal emergente */}
+            {modalMessage && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+                    <div className="bg-white p-8 rounded-lg shadow-lg">
+                        <p>{modalMessage}</p>
+                        <button
+                            className="mt-4 bg-blue-500 text-white p-2 rounded"
+                            onClick={closeModal}
+                        >
+                            Aceptar
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
-}                              
+}
 
 export default Publicar;
