@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import select from "react-select";       
+import select from "react-select";
 import { createAudiobook, getCategories } from '../api/api';  // Importamos el servicio
-
 
 function Publicar() {
     const [fileName, setFileName] = useState("");
@@ -14,6 +13,8 @@ function Publicar() {
         portada: null,    // Para la portada
     });
     const [categories, setCategories] = useState([]);
+    const [modalMessage, setModalMessage] = useState(null);  // Estado para el mensaje del modal
+
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -69,22 +70,24 @@ function Publicar() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Enviar los datos del formulario a la API
         try {
             const audiobookData = {
                 title: formData.titulo,
                 author: formData.autor,
                 categoryId: formData.categoria,
                 description: formData.descripcion,
-                documento: formData.documento, // El archivo del documento
-                portada: formData.portada      // El archivo de portada
+                documento: formData.documento,
+                portada: formData.portada
             };
 
             // Llamada al servicio para registrar el audiolibro
             const response = await createAudiobook(audiobookData);
             console.log('Publicación registrada con éxito', response);
 
-            // Reseteamos el formulario después del éxito
+            // Mostrar mensaje de éxito
+            setModalMessage("¡Publicación registrada con éxito!");
+
+            // Limpiar formulario
             setFormData({
                 title: "",
                 author: "",
@@ -93,11 +96,18 @@ function Publicar() {
                 documento: null,
                 portada: null
             });
-            setFileName(""); // Reseteamos el nombre del archivo
+            setFileName("");  // Limpiar nombre de archivo
 
         } catch (error) {
             console.error("Error al registrar la publicación:", error);
+            setModalMessage("Error al registrar la publicación. Intenta de nuevo.");
         }
+    };
+
+    // Función para cerrar el modal y refrescar la página
+    const closeModal = () => {
+        setModalMessage(null);
+        window.location.reload();  // Refrescar la página
     };
 
     return (
@@ -256,8 +266,23 @@ function Publicar() {
                     </button>
                 </form>
             </div>
+
+            {/* Modal emergente */}
+            {modalMessage && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+                    <div className="bg-white p-8 rounded-lg shadow-lg">
+                        <p>{modalMessage}</p>
+                        <button
+                            className="mt-4 bg-blue-500 text-white p-2 rounded"
+                            onClick={closeModal}
+                        >
+                            Aceptar
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
-}                              
+}
 
 export default Publicar;
