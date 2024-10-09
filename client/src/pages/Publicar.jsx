@@ -1,41 +1,59 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 function Publicar() {
-    const [fileName, setFileName] = useState("");
+    // Estado para manejar la imagen de la portada
+    const [portada, setPortada] = useState(null);
 
-    const handleDrop = (event) => {
-        event.preventDefault();
-        const file = event.dataTransfer.files[0];
-        if (file) {
-            setFileName(file.name);
+    // Estado para manejar otros archivos si es necesario
+    const [documento, setDocumento] = useState(null);
+
+    // Maneja la selección de la imagen de portada
+    const handlePortadaChange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPortada(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert("Por favor, selecciona un archivo de imagen válido.");
         }
     };
 
-    const handleDragOver = (event) => {
-        event.preventDefault();
+    // Maneja la eliminación de la imagen de portada
+    const handleClearPortada = () => {
+        setPortada(null);
+        document.getElementById("file-image-input").value = null;
     };
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setFileName(file.name);
-        }
+    // Maneja la selección de documentos si es necesario
+    const handleDocumentoChange = (e) => {
+        const file = e.target.files[0];
+        // Aquí puedes agregar lógica para manejar documentos si es necesario
+        setDocumento(file);
+    };
+
+    // Maneja la eliminación de documentos si es necesario
+    const handleClearDocumento = () => {
+        setDocumento(null);
+        document.getElementById("file-input").value = null;
     };
 
     return (
         <div className="my-8">
             <div className="flex flex-col items-center">
-                <span className="font-bold text-2xl">Publicacion de Contenido</span>
+                <span className="font-bold text-2xl">Publicación de Contenido</span>
             </div>
 
             <div className="flex justify-center">
                 <form className="w-1/2">
                     <div className="flex justify-between gap-20 my-8">
-                        <div className="flex flex-col w-1/2 justify-between">
+                        <div className="flex flex-col w-1/2 gap-8">
                             <div className="flex flex-col">
                                 <label htmlFor="nombre" className="uppercase font-bold">Nombre*</label>
                                 <input type="text" id="nombre"
-                                       className=" border rounded-lg p-2 text-center"
+                                       className="border rounded-lg p-2 text-center"
                                        placeholder="Nombre del Recurso" required/>
                             </div>
 
@@ -46,56 +64,89 @@ function Publicar() {
                                        placeholder="Nombre del Recurso" required/>
                             </div>
 
-
-                            <div className="flex flex-col">
-                                <label htmlFor="equipos" className="uppercase font-bold">Equipo*</label>
-                                <select name="equipos" id="equipos" className="border rounded-lg p-2" required>
-                                    <option value="equipo1">Equipo 1</option>
-                                    <option value="equipo2">Equipo 2</option>
-                                    <option value="equipo3">Equipo 3</option>
-                                    <option value="equipo4">Equipo 4</option>
-                                </select>
-                            </div>
-
                             <div>
                                 <label htmlFor="documento" className="uppercase font-bold">Documento*</label>
-                                <input type="file" name="file-input" id="file-input" className="block cursor-pointer file:cursor-pointer w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none file:bg-gray-50 file:border-0 file:me-4 file:py-3 file:px-4" required/>
+                                <div className="flex gap-4">
+                                    <input
+                                        type="file"
+                                        name="file-input"
+                                        id="file-input"
+                                        accept=".pdf,.doc,.docx,.txt" // Acepta solo formatos de documento
+                                        className="block cursor-pointer file:cursor-pointer w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none file:bg-gray-50 file:border-0 file:me-4 file:py-3 file:px-4"
+                                        onChange={handleDocumentoChange}
+                                        required
+                                    />
+                                    <button type="button" onClick={handleClearDocumento}
+                                            className="px-2 py-1 bg-red-500 text-white rounded">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                                             strokeLinecap="round" strokeLinejoin="round"
+                                             className="lucide lucide-trash-2">
+                                            <path d="M3 6h18"></path>
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                            <line x1="10" x2="10" y1="11" y2="17"></line>
+                                            <line x1="14" x2="14" y1="11" y2="17"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col">
+                                <label htmlFor="descripcion" className="uppercase font-bold">Descripción*</label>
+                                <textarea name="descripcion" id="descripcion"
+                                          placeholder="Descripción"
+                                          className="p-2 resize-none border rounded-lg h-20" required/>
                             </div>
                         </div>
 
-                        <div className="flex flex-col w-1/2 gap-14">
-                            <div className="flex flex-col">
-                                <label htmlFor="descripcion" className="uppercase font-bold">Descripcion*</label>
-                                <textarea name="descripcion" id="descripcion" cols="30" rows="10"
-                                          placeholder="Descripcion"
-                                          className=" p-2 resize-none border rounded-lg h-full" required/>
-                            </div>
+                        <div className="flex flex-col w-1/2 gap-12">
 
-                            <div>
+                            <div className="flex flex-col gap-4">
                                 <label htmlFor="dropZone" className="uppercase font-bold">Portada*</label>
-                                <div id="dropZone"
-                                     className="p-10 bg-white text-gray-500 font-semibold text-base rounded-2xl flex flex-col items-center justify-center border-2 border-gray-300 border-dashed font-[sans-serif]"
-                                     onDrop={handleDrop}
-                                    onDragOver={handleDragOver}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
-                                         fill="none"
-                                         stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-                                         strokeLinejoin="round"
-                                         className="lucide lucide-file-text">
-                                        <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
-                                        <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
-                                        <path d="M10 9H8"></path>
-                                        <path d="M16 13H8"></path>
-                                        <path d="M16 17H8"></path>
-                                    </svg>
-                                    <p className="hidden lg:block">Arrastar y Soltar</p>
-                                    <p id="fileName"
-                                       className="text-xs font-medium text-gray-400 mt-1">{fileName || "IMAGEN menor a 5MB"}</p>
-                                    <input type="file" id="cv" name="cv" className="hidden" onChange={handleFileChange}/>
-                                    <div id="chooseFile"
-                                         className="mt-4 flex h-9 px-6 flex-col bg-[#d4dde9] text-[#4e5a7f] border border-[#4e5a7f] rounded-xl shadow text-xs font-semibold leading-4 items-center justify-center cursor-pointer focus:outline-none" onClick={() => document.getElementById('cv').click()}>
-                                        Elegir Archivo
-                                    </div>
+                                <div className="relative rounded border flex justify-center items-center p-4 h-64">
+                                    {portada ? (
+                                        <img src={portada} alt="Portada" className="object-cover w-full h-full rounded" />
+                                    ) : (
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                             fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                                             strokeLinejoin="round" className="lucide lucide-book-image h-48 w-48 stroke-gray-500">
+                                            <path d="m20 13.7-2.1-2.1a2 2 0 0 0-2.8 0L9.7 17"></path>
+                                            <path
+                                                d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"></path>
+                                            <circle cx="10" cy="8" r="2"></circle>
+                                        </svg>
+                                    )}
+                                </div>
+                                <div className="flex gap-4">
+                                    <input
+                                        type="file"
+                                        name="file-image-input"
+                                        id="file-image-input"
+                                        accept="image/*" // Solo acepta imágenes
+                                        className="block cursor-pointer file:cursor-pointer w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none file:bg-gray-50 file:border-0 file:me-4 file:py-3 file:px-4"
+                                        onChange={handlePortadaChange}
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleClearPortada}
+                                        className={`px-2 py-1 bg-red-500 text-white rounded ${
+                                            !portada ? 'opacity-50 cursor-not-allowed' : ''
+                                        }`}
+                                        disabled={!portada} // Deshabilita el botón si no hay portada
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                                             strokeLinecap="round" strokeLinejoin="round"
+                                             className="lucide lucide-trash-2">
+                                            <path d="M3 6h18"></path>
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                            <line x1="10" x2="10" y1="11" y2="17"></line>
+                                            <line x1="14" x2="14" y1="11" y2="17"></line>
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
                         </div>
