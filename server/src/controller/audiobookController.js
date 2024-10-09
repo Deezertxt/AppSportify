@@ -5,21 +5,25 @@ const createAudiobook = async (req, res) => {
   const { title, categoryId, description, author } = req.body;
 
   try {
+
+    // Crear el nuevo audiolibro en la base de datos
     const newAudiobook = await prisma.audiobook.create({
       data: {
         title,
-        categoryId,
+        categoryId: parseInt(categoryId), // Asegurarse de que el valor sea un entero
         description,
         author,
       },
     });
 
+    // Responder con éxito
     res.status(201).json(newAudiobook);
   } catch (error) {
     console.error('Error creating Audiobook:', error);
     res.status(500).json({ error: 'Error creating book', details: error.message });
   }
 };
+
 
 // Eliminar un libro
 const deleteAudioBook = async (req, res) => {
@@ -44,6 +48,16 @@ const deleteAudioBook = async (req, res) => {
   }
 };
 
+// Obtener todos los audiolibros
+const getAudiobooks = async (req, res) => {
+  try {
+    const audiobooks = await prisma.audiobook.findMany(); // Obtiene todos los registros de audiolibros
+    res.status(200).json(audiobooks);
+  } catch (error) {
+    console.error('Error fetching audiobooks:', error);
+    res.status(500).json({ error: 'Error fetching audiobooks', details: error.message });
+  }
+};
 // Obtener un libro por su ID
 const getAudioBookById = async (req, res) => {
   const { id } = req.params;
@@ -97,4 +111,5 @@ module.exports = {
   deleteAudioBook,
   getAudioBookById,
   updateAudiobook,
+  getAudiobooks,
 };
