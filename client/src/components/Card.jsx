@@ -1,4 +1,5 @@
-function Card() {
+import React from "react";
+function Card({title, author}) {
     return (
         <div className="border shadow rounded-2xl">
             <div>
@@ -6,8 +7,8 @@ function Card() {
             </div>
 
             <div className="p-4">
-                <span className="font-bold">TITULO</span>
-                <p>Autor</p>
+            <span className="font-bold">{title}</span>
+            <p>{author}</p>
             </div>
         </div>
     )
