@@ -1,6 +1,10 @@
+import select from 'react-select'
 function TasksPage() {
     return (
-        <div>Tasks Page</div>
+        <div>
+            <select/>
+        </div>
+        
     )
 }
 
