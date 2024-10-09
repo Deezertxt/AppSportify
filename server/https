@@ -27,3 +27,5 @@ http://localhost:3000/api/library/add        añadir biblioteca para un usuario 
 http://localhost:3000/api/library/get/1       obtener biblioteca con id 1 es ejemplo
 
 http://localhost:3000/api/library/delete/1/1   eliminar biblioteca con id usuario/id audiolibro 1/1
+
+http://localhost:3000/api/uploads/upload      subir archivos pdf o image
