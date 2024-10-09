@@ -200,7 +200,7 @@ function Reproductor() {
 
                 <div className="flex flex-col items-center">
                     <div className="flex items-center gap-4">
-                        <button id="add-library">
+                        {/* <button id="add-library">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                                  className="lucide lucide-circle-plus h-8 w-8">
@@ -217,7 +217,7 @@ function Reproductor() {
                                 <path
                                     d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
                             </svg>
-                        </button>
+                        </button> */}
 
                         <button id="backward" onClick={handleBackward}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -256,7 +256,7 @@ function Reproductor() {
                             </svg>
                         </button>
 
-                        <button id="speed" className="text-2xl">
+                        {/* <button id="speed" className="text-2xl">
                             <span>X1</span>
                         </button>
 
@@ -269,7 +269,7 @@ function Reproductor() {
                                 <path d="M16 9a5 5 0 0 1 0 6"></path>
                                 <path d="M19.364 18.364a9 9 0 0 0 0-12.728"></path>
                             </svg>
-                        </button>
+                        </button> */}
                     </div>
 
                     <div className="w-full">

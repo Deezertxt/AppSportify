@@ -4,12 +4,12 @@ const userRoutes = require('../routes/user.routes')
 const audiobookRoutes = require('../routes/audiobook.routes')
 const libraryRoutes = require('../routes/library.routes')
 const categoryRoutes = require('../routes/category.routes')
-
+const uploadRoutes = require('../routes/upload.routes')
 
 router.use('/api/user', userRoutes);
 router.use('/api/audiobook',audiobookRoutes);
 router.use('/api/library', libraryRoutes);
 router.use('/api/category', categoryRoutes);
-
+router.use('/api/uploads', uploadRoutes);
 
 module.exports = router;
