@@ -16,6 +16,8 @@ http://localhost:3000/api/audiobook/register   registrar audiolibro
 
 http://localhost:3000/api/audiobook/put/1     actualizar audiolibro con id 1 es ejemplo
 
+http://localhost:3000/api/audiobook/get       obtener todos los audiolibros
+
 http://localhost:3000/api/audiobook/get/1     obtener audiolibro por id 1 es ejemplo
 
 http://localhost:3000/api/audiobook/delete/2   eliminar audiolibro por id 2 es ejemplo
