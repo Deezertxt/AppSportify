@@ -170,6 +170,7 @@ function Publicar() {
                             <div>
                                 <label htmlFor="documento" className="uppercase font-bold">Documento*</label>
                                 <input
+                                    accept=".pdf"
                                     type="file"
                                     name="documento"
                                     id="documento"
