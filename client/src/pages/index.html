@@ -69,60 +69,62 @@
 
     <h1 class="text-center">Publicar contenido</h1>
 
-    <form action="/api/upload" method="POST" enctype="multipart/form-data">
+    <form action="http://localhost:3000/api/upload/audiobook" method="POST" enctype="multipart/form-data">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto p-6">
             <!-- Izquierda -->
             <div class="space-y-4 w-full">
                 <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700" for="nombre">Nombre</label>
-                    <input class="mt-1 block w-full p-2 border border-gray-300 rounded-md" type="text" id="nombre" placeholder="Nombre del audiolibro" required>
+                    <input class="mt-1 block w-full p-2 border border-gray-300 rounded-md" type="text" name="title" id="nombre" placeholder="Nombre del audiolibro" required>
                 </div>
-
+    
                 <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700" for="autor">Autor</label>
-                    <input class="mt-1 block w-full p-2 border border-gray-300 rounded-md" type="text" id="autor" placeholder="Autor del audiolibro" required>
+                    <input class="mt-1 block w-full p-2 border border-gray-300 rounded-md" type="text" name="author" id="autor" placeholder="Autor del audiolibro" required>
                 </div>
-
+    
                 <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700" for="categoria">Categoría</label>
-                    <select class="mt-1 block w-full p-2 border border-gray-300 rounded-md" id="categoria">
+                    <select class="mt-1 block w-full p-2 border border-gray-300 rounded-md" name="categoryId" id="categoria" required>
                         <option value="">Seleccione una categoría</option>
-                        <option value="">Categoria 1</option>
-                        <option value="">Categoria 2</option>
-                        <option value="">Categoria 3</option>
+                        <option value="1">Categoria 1</option>
+                        <option value="2">Categoria 2</option>
+                        <option value="3">Categoria 3</option>
                     </select>
                 </div>
-
+    
                 <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700" for="descripcion">Descripción</label>
-                    <textarea class="resize-none mt-1 block w-full p-4 border border-gray-300 rounded-md" id="descripcion" placeholder="Descripción del audiolibro" required></textarea>
+                    <textarea class="resize-none mt-1 block w-full p-4 border border-gray-300 rounded-md" name="description" id="descripcion" placeholder="Descripción del audiolibro" required></textarea>
                 </div>
             </div>
-
+    
             <!-- Derecha -->
             <div class="space-y-4">
                 <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700" for="resumen">Documento (PDF)</label>
-                    <input class="mt-1 block w-full p-2 border border-gray-300 rounded-md" type="file" id="resumen" accept=".pdf" required>                 
+                    <input class="mt-1 block w-full p-2 border border-gray-300 rounded-md" type="file" name="pdfFile" id="resumen" accept=".pdf" required>                 
                 </div>
                 <div class="flex flex-col items-center justify-center space-y-4">
                     <label class="block text-sm font-medium text-gray-700">Portada</label>
                     <div class="w-64 h-64 bg-gray-200 border border-gray-300 rounded-md flex items-center justify-center">
-                        <img src="images/placeholder.png" alt="Portada" class="h-full w-full object-cover">
-                    </div>                    
+                        <img id="portada-preview" src="images/placeholder.png" alt="Portada" class="h-full w-full object-cover">
+                    </div>
                     <div class="flex space-x-4">
                         <label for="subir" class="bg-second hover:bg-secondDarker hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700 text-white px-4 py-2 rounded-md">Subir portada</label>
-                        <input type="file" class="hidden" accept="image/*" name="subir" id="subir" required>
-                        <button class="bg-third hover:bg-thirdDarker hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700 text-white text-white px-4 py-2 rounded-md">Quitar Portada</button>
-                    </div>
+                        <input type="file" class="hidden" accept="image/*" name="coverImage" id="subir"> <!-- Name corregido -->
+                        <button type="button" id="quitar-portada" class="bg-third hover:bg-thirdDarker hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700 text-white px-4 py-2 rounded-md">Quitar Portada</button>
+                    </div>                    
                 </div>
             </div>
         </div>
-
+    
         <div class="text-center mt-8 mb-4">
             <button class="bg-second hover:bg-secondDarker hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700 text-white px-6 py-2 rounded-md">Publicar</button>
         </div>
     </form>
+    
+    
 
     <footer class="bg-gray-800 text-white">
         <script src="//unpkg.com/alpinejs" defer></script>
@@ -162,6 +164,7 @@
         </nav>
     </footer>
 <!-- Scripts -->
+ <!--Script de evento subir portada-->
 <script type="module">
     import { isPDF, hasTextInPDF } from '../utils/fileValidator.js';
 
@@ -183,40 +186,51 @@
         }
     });
 </script>
+<!--Script de evento subir portada-->
 <script>
-document.getElementById('subir').addEventListener('change', (event) => {
-    const file = event.target.files[0];
+    document.getElementById('subir').addEventListener('change', (event) => {
+        const file = event.target.files[0];
 
-    // Verificar que sea una imagen válida (jpg, jpeg, png)
-    const validImageTypes = ['image/jpeg', 'image/png'];
-    if (!validImageTypes.includes(file.type)) {
-        alert('Por favor, seleccione un archivo de imagen válido (JPG, JPEG, PNG).');
-        event.target.value = '';
-        return;
-    }
-
-    // Verificar el tamaño de la imagen (máximo 2MB)
-    const maxSizeMB = 2;
-    if (file.size > maxSizeMB * 1024 * 1024) {
-        alert('La imagen es demasiado grande. El tamaño máximo es de 2MB.');
-        event.target.value = '';
-        return;
-    }
-
-    // Mostrar la previsualización de la imagen
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        const imageElement = document.querySelector('.w-64 img');
-        if (imageElement) {
-            imageElement.src = e.target.result; // Cambiar la imagen por la previsualización
-        } else {
-            console.error('No se encontró la imagen para previsualizar.');
+        // Verificar que sea una imagen válida (jpg, jpeg, png)
+        const validImageTypes = ['image/jpeg', 'image/png'];
+        if (!validImageTypes.includes(file.type)) {
+            alert('Por favor, seleccione un archivo de imagen válido (JPG, JPEG, PNG).');
+            event.target.value = '';
+            return;
         }
-    };
-    reader.readAsDataURL(file);
-});
 
+        // Verificar el tamaño de la imagen (máximo 2MB)
+        const maxSizeMB = 2;
+        if (file.size > maxSizeMB * 1024 * 1024) {
+            alert('La imagen es demasiado grande. El tamaño máximo es de 2MB.');
+            event.target.value = '';
+            return;
+        }
 
+        // Mostrar la previsualización de la imagen
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const imageElement = document.getElementById('portada-preview');
+            if (imageElement) {
+                imageElement.src = e.target.result; // Cambiar la imagen por la previsualización
+            } else {
+                console.error('No se encontró la imagen para previsualizar.');
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Funcionalidad del botón "Quitar Portada"
+    document.getElementById('quitar-portada').addEventListener('click', () => {
+        const imageElement = document.getElementById('portada-preview');
+        const fileInput = document.getElementById('subir');
+
+        // Restablecer la imagen al placeholder original
+        imageElement.src = 'images/placeholder.png';
+
+        // Limpiar el input de archivo
+        fileInput.value = '';
+    });
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>

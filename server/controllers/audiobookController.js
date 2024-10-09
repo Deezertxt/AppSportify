@@ -1,28 +1,46 @@
-import prisma from '../config/db.js'
-//const { prisma } = require('../conf/db');
+import prisma from '../config/db.js';
+import path from 'path';
 
-// Crear un nuevo libro
+// Crear un nuevo audiolibro con portada y PDF
 export const createAudiobook = async (req, res) => {
+  console.log('entro a la consulta')
   const { title, categoryId, description, author } = req.body;
+  let coverImage = null;
+  let pdfFile = null;
+
+  // Verificar si se subieron los archivos
+  if (req.files) {
+    // Obtener la portada si fue subida
+    if (req.files['coverImage']) {
+      coverImage = `/uploads/${req.files['coverImage'][0].filename}`;  // Ruta de la portada
+    }
+
+    // Obtener el PDF si fue subido
+    if (req.files['pdfFile']) {
+      pdfFile = `/uploads/${req.files['pdfFile'][0].filename}`;  // Ruta del archivo PDF
+    }
+  }
 
   try {
     const newAudiobook = await prisma.audiobook.create({
       data: {
         title,
-        categoryId,
+        categoryId: parseInt(categoryId, 10),  // Asegúrate de que `categoryId` sea un número
         description,
         author,
+        coverImage,  // Guardar la ruta de la portada en la base de datos
+        pdfFile,     // Guardar la ruta del archivo PDF en la base de datos
       },
     });
 
     res.status(201).json(newAudiobook);
   } catch (error) {
     console.error('Error creating Audiobook:', error);
-    res.status(500).json({ error: 'Error creating book', details: error.message });
+    res.status(500).json({ error: 'Error creating audiobook', details: error.message });
   }
 };
 
-// Eliminar un libro
+// Eliminar un audiolibro
 export const deleteAudioBook = async (req, res) => {
   const { id } = req.params;
 
@@ -45,7 +63,7 @@ export const deleteAudioBook = async (req, res) => {
   }
 };
 
-// Obtener un libro por su ID
+// Obtener un audiolibro por su ID
 export const getAudioBookById = async (req, res) => {
   const { id } = req.params;
 
@@ -63,7 +81,7 @@ export const getAudioBookById = async (req, res) => {
   }
 };
 
-// Actualizar un libro
+// Actualizar un audiolibro
 export const updateAudiobook = async (req, res) => {
   const { id } = req.params;
   const { title, categoryId, description, author } = req.body;
@@ -92,10 +110,3 @@ export const updateAudiobook = async (req, res) => {
     res.status(500).json({ error: 'Error updating Audiobook', details: error.message });
   }
 };
-
-// module.exports = {
-//   createAudiobook,
-//   deleteAudioBook,
-//   getAudioBookById,
-//   updateAudiobook,
-// };

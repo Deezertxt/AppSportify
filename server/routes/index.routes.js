@@ -1,20 +1,18 @@
 import { Router } from "express";
-import { pool } from "../db.js";
-import taskRoutes from "./task.routes.js";
-import uploadRoutes from "./upload.routes.js";
+import taskRoutes from "./task.routes.js";  // Rutas relacionadas con tareas
+import uploadRoutes from "./upload.routes.js";  // Rutas para las subidas de archivos
 
 const router = Router();
 
-router.get("/ping", async (req, res) => {
-    const [rows] = await pool.query("SELECT 1 + 1 as result");
-    console.log(rows[0]);
-    res.json(rows[0]);
+// Ruta de prueba para verificar la conexión
+router.get("/ping", (req, res) => {
+    res.json({ message: "Server is running and reachable" });
 });
 
-// ruta para tareas
+// Ruta para tareas
 router.use("/tasks", taskRoutes);
 
-// ruta para las subidas de archivos
+// Ruta para las subidas de archivos (audiolibros)
 router.use("/upload", uploadRoutes);
 
 export default router;
