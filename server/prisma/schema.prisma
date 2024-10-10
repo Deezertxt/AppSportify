@@ -27,6 +27,8 @@ model Audiobook {
   category    Category  @relation(fields: [categoryId], references: [id]) // Foreign key to Category
   description String?   @db.Text                       // Optional description field (Text for long text)
   author      String    @db.VarChar(100)               // Author of the audiobook, max 100 characters
+  pdfUrl      String?   @db.Text                       // URL del archivo PDF
+  coverUrl    String?   @db.Text                       // URL del archivo PDF
   createdAt   DateTime  @default(now())                // Creation date
   updatedAt   DateTime  @updatedAt                     // Auto-updating timestamp
   library     Library[]                               // Relation to Library table (1-n)
