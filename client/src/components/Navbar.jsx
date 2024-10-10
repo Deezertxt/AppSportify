@@ -13,18 +13,19 @@ function Navbar() {
             <div>
                 <ul className="flex gap-24">
                     <li>
-                        <Link to={"/"} className="hover:text-gray-400 transition duration-250 ease-in-out">Inicio</Link>
+                        <Link to={"/"} className="hover:text-gray-400 transition duration-250 ease-in-out"></Link>
                     </li>
 
+                    <li>
+                        <Link to={"biblioteca"}
+                            className="hover:text-gray-400 transition duration-250 ease-in-out">Inicio</Link>
+                    </li>
                     <li>
                         <Link to={"publicar"}
                             className="hover:text-gray-400 transition duration-250 ease-in-out">Publicar</Link>
                     </li>
 
-                    <li>
-                        <Link to={"biblioteca"}
-                            className="hover:text-gray-400 transition duration-250 ease-in-out">Biblioteca</Link>
-                    </li>
+                    
 
                     <li>
                         <Link to={"reproductor"}
