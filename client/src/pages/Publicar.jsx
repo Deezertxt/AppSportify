@@ -170,7 +170,7 @@ function Publicar() {
             <div className="flex justify-center">
                 <form className="w-1/2" onSubmit={handleSubmit}>
                     <div className="flex justify-between gap-20 my-8">
-                        <div className="flex flex-col w-1/2 justify-between">
+                        <div className="flex flex-col w-1/2 gap-8">
                             <div className="flex flex-col">
                                 <label htmlFor="nombre" className="uppercase font-bold">Titulo*</label>
                                 <input
@@ -221,7 +221,7 @@ function Publicar() {
                             <div>
                                 <label htmlFor="documento" className="uppercase font-bold">Documento*</label>
                                 <input
-                                  accept = ".pdf"
+                                    accept=".pdf"
                                     type="file"
                                     name="documento"
                                     id="documento"
@@ -230,9 +230,6 @@ function Publicar() {
                                     required
                                 />
                             </div>
-                        </div>
-
-                        <div className="flex flex-col w-1/2 gap-14">
                             <div className="flex flex-col">
                                 <label htmlFor="descripcion" className="uppercase font-bold">Descripcion*</label>
                                 <textarea
@@ -240,15 +237,15 @@ function Publicar() {
                                     id="descripcion"
                                     value={formData.descripcion}
                                     onChange={handleChange}
-                                    cols="30"
-                                    rows="10"
                                     placeholder="Descripcion"
                                     className="p-2 resize-none border rounded-lg h-full"
                                     required
                                 />
                             </div>
+                        </div>
 
-                            <div>
+                        <div className="flex flex-col w-1/2 gap-14">
+                            <div className="flex flex-col">
                                 <label htmlFor="dropZone" className="uppercase font-bold">Portada*</label>
                                 <div
                                     id="dropZone"
@@ -292,6 +289,7 @@ function Publicar() {
                                         Elegir Archivo
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
