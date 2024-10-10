@@ -170,13 +170,6 @@ function Publicar() {
                 <div className="text-center mb-6">
                     <span className="text-4xl font-extrabold text-[#213A57]">Registro de Audiolibro</span>
                 </div>
-
-                <div className="flex flex-col sm:flex-row gap-8 justify-between">
-                    <form onSubmit={handleSubmit} className="w-full sm:w-1/2 flex flex-col gap-6">
-                        {/* Formulario de texto y selección */}
-                        <div className="flex flex-col gap-4">
-                            <div>
-                                <label htmlFor="titulo" className="text-lg font-semibold text-[#213A57]">Titulo*</label>
                                 <input
                                     type="text"
                                     id="titulo"
@@ -256,49 +249,6 @@ function Publicar() {
                                     </button>
                                 )}
                             </div>
-
-                            {/* Botones Publicar y Cancelar */}
-                            <div className="grid grid-cols-2 gap-4 mt-2">
-                                <button
-                                    type="submit"
-                                    className="w-full bg-[#0B6477] text-white py-3 rounded-lg hover:bg-[#14919B] transition-all duration-300 ease-in-out transform hover:scale-105"
-                                >
-                                    <FaPaperPlane className="inline-block mr-2" /> Publicar
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleCancel}
-                                    className="w-full bg-[#FF6F61] text-white py-3 rounded-lg hover:bg-[#FF4F3F] transition-all duration-300 ease-in-out transform hover:scale-105"
-                                >
-                                    <FaTimes className="inline-block mr-2" /> Cancelar
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-
-                    {/* Columna de Portada */}
-                    <div className="w-full sm:w-1/2 flex flex-col items-center justify-start gap-6">
-                        <div>
-                            <label htmlFor="dropZone" className="text-lg font-semibold text-[#213A57]">Portada*</label>
-                            <div
-                                id="dropZone"
-                                className="relative p-10 w-full h-96 border-2 border-[#45DFB1] border-dashed rounded-xl text-center bg-[#F0F9F9] cursor-pointer flex flex-col justify-center items-center"
-                                onDrop={handleDrop}
-                                onDragOver={handleDragOver}
-                            >
-                                <p className="text-sm text-[#213A57] mb-4">Arrastra y suelta la imagen o selecciona un archivo</p>
-                                <input
-                                    type="file"
-                                    id="portada"
-                                    name="portada"
-                                    className="hidden"
-                                    onChange={handleFileChange}
-                                />
-                                <button
-                                    type="button"
-                                    className="bg-[#14919B] text-white py-2 px-6 rounded-lg hover:bg-[#0B6477] flex items-center justify-center mb-4"
-                                    onClick={() => document.getElementById('portada').click()}
-                                >
                                     <FaImage className="mr-2" /> Elegir archivo
                                 </button>
 
@@ -306,22 +256,7 @@ function Publicar() {
                                     <div className="absolute inset-0">
                                         <img src={preview} alt="Vista previa" className="w-full h-full object-cover rounded-lg shadow-lg" />
                                     </div>
-                                )}
 
-                                {formData.portada && (
-                                    <button
-                                        type="button"
-                                        onClick={handleCancelPortada}
-                                        className="absolute bottom-2 right-2 bg-[#FF6F61] text-white rounded-full p-2 transform hover:scale-110 transition-all duration-300"
-                                    >
-                                        <FaTrashAlt />
-                                    </button>
-                                )}
-
-                                {/* Nombre de la portada junto al botón limpiar */}
-                                {coverFileName && (
-                                    <p className="absolute bottom-2 left-2 text-[#213A57]">{coverFileName}</p>
-                                )}
                             </div>
                         </div>
                     </div>

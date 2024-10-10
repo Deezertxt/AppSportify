@@ -46,6 +46,6 @@ model Library {
 
 model Category {
   id       Int         @id @default(autoincrement())  // Auto-incremental ID field
-  name     String      @db.VarChar(100)               // Category name, max 100 characters
+  name     String      @unique@db.VarChar(100)               // Category name, max 100 characters
   audiobooks Audiobook[]                              // Relation to Audiobook table (1-n)
 }
