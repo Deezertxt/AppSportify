@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { uploadFiles } = require('../controller/uploadController'); // Asegúrate de que la ruta sea correcta
+const { uploadFilesToFirebase } = require('../controller/uploadController'); // Asegúrate de que la ruta sea correcta
 
 // Ruta para subir archivos
-router.post('/upload', uploadFiles);
+router.post('/upload', uploadFilesToFirebase);
 
 module.exports = router;
