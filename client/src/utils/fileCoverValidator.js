@@ -6,7 +6,7 @@ export const isValidCover = async (file, width, height) => {
         }
         
         const fileExtension = file.name.split('.').pop().toLowerCase();
-        if (fileExtension !== 'jpg' && fileExtension !== 'jpeg' && fileExtension !== 'png') {
+        if (fileExtension !== 'jpg' && fileExtension !== 'jpeg' && fileExtension !== 'png' && fileExtension !== 'webp') {
             console.error(`Extensión de archivo no permitida: ${fileExtension}`);
             return false;
         }
