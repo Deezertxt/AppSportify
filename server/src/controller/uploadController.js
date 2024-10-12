@@ -1,35 +1,44 @@
-const {storage}= require ('../conf/firebase'); 
-const { ref, uploadBytesResumable, getDownloadURL } = require ('firebase/storage');
+// server/src/controllers/uploadController.js
+const { storage } = require('../conf/firebase'); // Firebase Storage
+const { ref, uploadBytesResumable, getDownloadURL } = require('firebase/storage');
 
-const uploadFilesToFirebase = async (pdfFile, portadaFile) => {
+const uploadFilesToFirebase = async (req, res) => {
+    console.log("req.files", req.files); // Verifica qué datos están llegando
+
     try {
-        const storageRefPdf = ref(storage, `uploads/pdf/${pdfFile.name}`);
-        const storageRefCover = ref(storage, `uploads/covers/${portadaFile.name}`);
+        // Verifica que los archivos estén presentes
+        if (!req.files || !req.files.pdfFile || !req.files.portadaFile) {
+            return res.status(400).json({ error: "Faltan archivos PDF o portada." });
+        }
 
-        // Subir el archivo PDF
-        const uploadTaskPdf = uploadBytesResumable(storageRefPdf, pdfFile);
+        const pdfFile = req.files.pdfFile[0]; // Multer devuelve los archivos como un array
+        const portadaFile = req.files.portadaFile[0];
 
-        // Subir la portada
-        const uploadTaskCover = uploadBytesResumable(storageRefCover, portadaFile);
+        const storageRefPdf = ref(storage, `uploads/pdf/${pdfFile.originalname}`);
+        const storageRefCover = ref(storage, `uploads/covers/${portadaFile.originalname}`);
 
-        // Esperar a que ambos archivos se suban
+        // Subir los archivos a Firebase Storage
+        const uploadTaskPdf = uploadBytesResumable(storageRefPdf, pdfFile.buffer);
+        const uploadTaskCover = uploadBytesResumable(storageRefCover, portadaFile.buffer);
+
+        // Esperar que ambos archivos se suban
         await Promise.all([uploadTaskPdf, uploadTaskCover]);
 
         // Obtener las URLs de los archivos subidos
         const pdfUrl = await getDownloadURL(uploadTaskPdf.snapshot.ref);
         const portadaUrl = await getDownloadURL(uploadTaskCover.snapshot.ref);
 
-        return {
-            status: 200,
-            data: {
-                pdfUrl,
-                portadaUrl
-            }
-        };
+        // Responder con las URLs de los archivos
+        res.status(200).json({
+            pdfUrl,
+            portadaUrl
+        });
     } catch (error) {
         console.error('Error subiendo archivos a Firebase:', error);
-        throw new Error('Error al subir archivos a Firebase');
+        res.status(500).json({ error: 'Error al subir archivos a Firebase' });
     }
 };
 
-module.exports={ uploadFilesToFirebase };
+module.exports = { uploadFilesToFirebase };
+
+

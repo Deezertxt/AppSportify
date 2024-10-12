@@ -1,6 +1,6 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { isValidCover } from "../utils/fileCoverValidator";
-import { createAudiobook, getCategories, uploadFilesToFirebase } from '../api/api';  // Importamos la nueva función que sube los archivos a Firebase
+import { createAudiobook, getCategories, uploadFilesToFirebase } from '../api/api'; 
 import { FaTrashAlt, FaFilePdf, FaImage, FaPaperPlane, FaTimes } from 'react-icons/fa';
 
 function Publicar() {
@@ -13,11 +13,12 @@ function Publicar() {
         author: "",
         category: "",
         description: "",
-        documento: null,  // Para el archivo PDF
-        portada: null,    // Para la portada
+        pdfFile: null,  // Para el archivo PDF
+        portadaFile: null,    // Para la portada
     });
 
     const [errorMessage, setErrorMessage] = useState(null);  // Estado para mensaje de error
+    const [successMessage, setSuccessMessage] = useState(null); // Estado para mensaje de éxito
     const [categories, setCategories] = useState([]);
 
     useEffect(() => {
@@ -38,7 +39,7 @@ function Publicar() {
         const file = e.target.files[0];
         setFormData({
             ...formData,
-            documento: file,
+            pdfFile: file,
         });
         setDocumentFileName(file ? file.name : ""); // Actualiza el nombre del archivo PDF
         setDocumentPreview(file ? URL.createObjectURL(file) : null); // Vista previa del PDF
@@ -54,7 +55,7 @@ function Publicar() {
                 setCoverFileName(file.name); // Actualiza el nombre de la portada
                 setFormData({
                     ...formData,
-                    portada: file,
+                    portadaFile: file,
                 });
                 setPreview(URL.createObjectURL(file)); // Vista previa de la imagen
             } else {
@@ -75,7 +76,7 @@ function Publicar() {
                 setCoverFileName(file.name); // Actualiza el nombre de la portada
                 setFormData({
                     ...formData,
-                    portada: file,
+                    portadaFile: file,
                 });
                 setPreview(URL.createObjectURL(file)); // Vista previa de la imagen
             } else {
@@ -88,46 +89,68 @@ function Publicar() {
     const handleCancelDocumento = () => {
         setFormData({
             ...formData,
-            documento: null
+            pdfFile: null
         });
         setDocumentFileName(""); // Limpiar el nombre del archivo PDF
         setDocumentPreview(null); // Limpiar la vista previa del PDF
-        document.getElementById("documento").value = ""; // Restablecer el input file a vacío
+        document.getElementById("pdfFile").value = ""; // Restablecer el input file a vacío
     };
 
     // Función para manejar la cancelación de la portada
     const handleCancelPortada = () => {
         setFormData({
             ...formData,
-            portada: null
+            portadaFile: null
         });
         setCoverFileName(""); // Limpiar el nombre de la portada
         setPreview(null); // Limpiar la vista previa de la portada
-        document.getElementById("portada").value = ""; // Restablecer el input file a vacío
+        document.getElementById("portadaFile").value = ""; // Restablecer el input file a vacío
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrorMessage(null);
+        setErrorMessage(null);  // Limpiar el mensaje de error
+        setSuccessMessage(null); // Limpiar el mensaje de éxito
+        
+        if (!formData.pdfFile || !formData.portadaFile) {
+            setErrorMessage("Por favor, sube un archivo PDF y una portada.");
+            return;
+        }
 
         try {
+            // Crear un objeto FormData
+            const form = new FormData();
+            form.append("pdfFile", formData.pdfFile);
+            form.append("portadaFile", formData.portadaFile);
+            form.append("title", formData.title);
+            form.append("author", formData.author);
+            form.append("category", formData.category);
+            form.append("description", formData.description);
+
             // Subir archivos a Firebase y obtener las URLs
-            const uploadResponse = await uploadFilesToFirebase(formData.documento, formData.portada);
+            const uploadResponse = await uploadFilesToFirebase(form);
             if (uploadResponse.status === 200) {
-                const { portadaUrl, pdfUrl } = uploadResponse.data;
+                const { pdfUrl, portadaUrl } = uploadResponse.data;
+                
+                if (!pdfUrl || !portadaUrl) {
+                    setErrorMessage("Error: No se recuperaron las URLs de los archivos.");
+                    return;
+                  }
 
                 const audiobookData = {
                     title: formData.title,
                     author: formData.author,
                     categoryId: formData.category,
                     description: formData.description,
-                    portada: portadaUrl,  // URL de la portada en Firebase
-                    documento: pdfUrl     // URL del PDF en Firebase
+                    pdfUrl: pdfUrl,     // URL del PDF en Firebase
+                    coverUrl: portadaUrl  // URL de la portada en Firebase
                 };
 
                 // Ahora crear el audiolibro en la base de datos
                 const response = await createAudiobook(audiobookData);
                 console.log('Publicación registrada con éxito:', response);
+
+                setSuccessMessage("Audiolibro publicado con éxito!");
 
                 // Resetear el formulario
                 setFormData({
@@ -135,13 +158,13 @@ function Publicar() {
                     author: "",
                     category: "",
                     description: "",
-                    documento: null,
-                    portada: null
+                    pdfFile: null,
+                    portadaFile: null
                 });
-                setDocumentFileName(""); 
-                setCoverFileName(""); 
-                setPreview(null); 
-                setDocumentPreview(null); 
+                setDocumentFileName("");
+                setCoverFileName("");
+                setPreview(null);
+                setDocumentPreview(null);
             }
         } catch (error) {
             console.error("Error al subir los archivos:", error);
@@ -155,13 +178,13 @@ function Publicar() {
             author: "",
             category: "",
             description: "",
-            documento: null,
-            portada: null
+            pdfFile: null,
+            portadaFile: null
         });
-        setDocumentFileName(""); 
-        setCoverFileName(""); 
-        setPreview(null); 
-        setDocumentPreview(null); 
+        setDocumentFileName("");
+        setCoverFileName("");
+        setPreview(null);
+        setDocumentPreview(null);
     };
 
     return (
@@ -241,12 +264,11 @@ function Publicar() {
                                     type="file"
                                     id="documento"
                                     name="documento"
-                                    accept=".pdf"
                                     onChange={handleDocumentoChange}
                                     className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     required
                                 />
-                                {formData.documento && (
+                                {formData.pdfFile && (
                                     <button
                                         type="button"
                                         onClick={handleCancelDocumento}
@@ -308,7 +330,7 @@ function Publicar() {
                                     </div>
                                 )}
 
-                                {formData.portada && (
+                                {formData.portadaFile && (
                                     <button
                                         type="button"
                                         onClick={handleCancelPortada}
@@ -341,10 +363,26 @@ function Publicar() {
                         </div>
                     </div>
                 )}
+
+                {/* Modal de éxito */}
+                {successMessage && (
+                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+                        <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
+                            <p className="text-xl font-semibold text-green-500">{successMessage}</p>
+                            <button
+                                className="mt-4 bg-[#0B6477] text-white py-2 px-6 rounded-full hover:bg-[#14919B]"
+                                onClick={() => setSuccessMessage(null)}
+                            >
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
 }
 
 export default Publicar;
+
 
