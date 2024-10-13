@@ -36,7 +36,7 @@ function Biblioteca() {
                                     key={audiobook.id}
                                     title={audiobook.title}
                                     author={audiobook.author}
-                                    imageUrl={audiobook.coverImage} // Suponiendo que tienes una propiedad 'coverImage' para la URL de la portada
+                                    coverUrl={audiobook.coverUrl} // Suponiendo que tienes una propiedad 'coverImage' para la URL de la portada
                                 />
                             ))}
                         </div>

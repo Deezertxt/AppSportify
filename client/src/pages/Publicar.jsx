@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { isValidCover } from "../utils/fileCoverValidator";
-import { createAudiobook, getCategories, uploadFilesToFirebase } from '../api/api'; 
+import { createAudiobook, getCategories, uploadFilesToFirebase } from '../api/api';
 import { FaTrashAlt, FaFilePdf, FaImage, FaPaperPlane, FaTimes } from 'react-icons/fa';
 
 function Publicar() {
     const [documentFileName, setDocumentFileName] = useState(""); // Nombre del archivo PDF
     const [coverFileName, setCoverFileName] = useState(""); // Nombre del archivo de portada
-    const [documentPreview, setDocumentPreview] = useState(null); // Vista previa del PDF
     const [preview, setPreview] = useState(null); // Vista previa de la portada
     const [formData, setFormData] = useState({
         title: "",
@@ -20,6 +19,7 @@ function Publicar() {
     const [errorMessage, setErrorMessage] = useState(null);  // Estado para mensaje de error
     const [successMessage, setSuccessMessage] = useState(null); // Estado para mensaje de éxito
     const [categories, setCategories] = useState([]);
+    const [descriptionWarning, setDescriptionWarning] = useState(""); // Advertencia de caracteres en descripción
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -34,15 +34,38 @@ function Publicar() {
         fetchCategories();
     }, []);
 
+    // Validar que el archivo sea un PDF y no exceda 50MB
+    const validatePDF = (file) => {
+        const isPDF = file.type === 'application/pdf';
+        const isUnderSize = file.size <= 50 * 1024 * 1024; // 50MB
+        if (!isPDF) {
+            setErrorMessage("Solo se permiten archivos PDF.");
+            return false;
+        }
+        if (!isUnderSize) {
+            setErrorMessage("El archivo PDF no puede ser mayor a 50 MB.");
+            return false;
+        }
+        return true;
+    };
+
+    // Validar caracteres especiales en los campos de texto
+    const validateTextInput = (input) => {
+        const regex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s.,!?()\-:;]*$/;
+        return regex.test(input);
+    };
+
     // Función para manejar el cambio del archivo PDF
     const handleDocumentoChange = (e) => {
         const file = e.target.files[0];
-        setFormData({
-            ...formData,
-            pdfFile: file,
-        });
-        setDocumentFileName(file ? file.name : ""); // Actualiza el nombre del archivo PDF
-        setDocumentPreview(file ? URL.createObjectURL(file) : null); // Vista previa del PDF
+        if (file && validatePDF(file)) {
+            setFormData({
+                ...formData,
+                pdfFile: file,
+            });
+            setDocumentFileName(file.name); // Actualiza el nombre del archivo PDF
+        }
+        document.getElementById("pdfFile").value = ""; // Cerrar explorador de archivos después de selección
     };
 
     // Función para manejar el cambio de la portada
@@ -83,6 +106,7 @@ function Publicar() {
                 alert("La portada no es válida.");
             }
         }
+        document.getElementById("portadaFile").value = ""; // Cerrar explorador de archivos después de selección
     };
 
     // Función para manejar la cancelación del archivo PDF
@@ -92,8 +116,7 @@ function Publicar() {
             pdfFile: null
         });
         setDocumentFileName(""); // Limpiar el nombre del archivo PDF
-        setDocumentPreview(null); // Limpiar la vista previa del PDF
-        document.getElementById("pdfFile").value = ""; // Restablecer el input file a vacío
+        document.getElementById("documento").value = ""; // Restablecer el input file a vacío
     };
 
     // Función para manejar la cancelación de la portada
@@ -107,11 +130,41 @@ function Publicar() {
         document.getElementById("portadaFile").value = ""; // Restablecer el input file a vacío
     };
 
+    // Función para manejar el cambio en la descripción
+    const handleDescriptionChange = (e) => {
+        const value = e.target.value;
+        if (value.length <= 200) {
+            setFormData({
+                ...formData,
+                description: value
+            });
+            setDescriptionWarning(""); // Limpiar el aviso si no se supera el límite
+        } else {
+            setDescriptionWarning("Has alcanzado el límite de 200 caracteres.");
+        }
+    };
+
+    // Función para manejar la cancelación general del formulario
+    const handleCancel = () => {
+        setFormData({
+            title: "",
+            author: "",
+            category: "",
+            description: "",
+            pdfFile: null,
+            portadaFile: null
+        });
+        setDocumentFileName("");
+        setCoverFileName("");
+        setPreview(null);
+        document.getElementById("documento").value = ""; // Restablecer el input file a vacío
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorMessage(null);  // Limpiar el mensaje de error
         setSuccessMessage(null); // Limpiar el mensaje de éxito
-        
+
         if (!formData.pdfFile || !formData.portadaFile) {
             setErrorMessage("Por favor, sube un archivo PDF y una portada.");
             return;
@@ -129,20 +182,23 @@ function Publicar() {
 
             // Subir archivos a Firebase y obtener las URLs
             const uploadResponse = await uploadFilesToFirebase(form);
+
+            // Verificar si la respuesta es exitosa
             if (uploadResponse.status === 200) {
                 const { pdfUrl, portadaUrl } = uploadResponse.data;
-                
+
                 if (!pdfUrl || !portadaUrl) {
                     setErrorMessage("Error: No se recuperaron las URLs de los archivos.");
                     return;
-                  }
+                }
 
+                // Preparar los datos para crear el audiolibro
                 const audiobookData = {
                     title: formData.title,
                     author: formData.author,
                     categoryId: formData.category,
                     description: formData.description,
-                    pdfUrl: pdfUrl,     // URL del PDF en Firebase
+                    pdfUrl,     // URL del PDF en Firebase
                     coverUrl: portadaUrl  // URL de la portada en Firebase
                 };
 
@@ -164,27 +220,12 @@ function Publicar() {
                 setDocumentFileName("");
                 setCoverFileName("");
                 setPreview(null);
-                setDocumentPreview(null);
+                document.getElementById("documento").value = "";
             }
         } catch (error) {
             console.error("Error al subir los archivos:", error);
             setErrorMessage("Error al registrar la publicación. Verifique los campos.");
         }
-    };
-
-    const handleCancel = () => {
-        setFormData({
-            title: "",
-            author: "",
-            category: "",
-            description: "",
-            pdfFile: null,
-            portadaFile: null
-        });
-        setDocumentFileName("");
-        setCoverFileName("");
-        setPreview(null);
-        setDocumentPreview(null);
     };
 
     return (
@@ -206,6 +247,7 @@ function Publicar() {
                                     name="titulo"
                                     value={formData.title}
                                     onChange={e => setFormData({ ...formData, title: e.target.value })}
+                                    onBlur={e => !validateTextInput(e.target.value) && setErrorMessage("Caracteres especiales no permitidos en el título.")}
                                     className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     placeholder="Titulo del audiolibro"
                                     required
@@ -220,12 +262,13 @@ function Publicar() {
                                     name="autor"
                                     value={formData.author}
                                     onChange={e => setFormData({ ...formData, author: e.target.value })}
+                                    onBlur={e => !validateTextInput(e.target.value) && setErrorMessage("Caracteres especiales no permitidos en el autor.")}
                                     className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     placeholder="Nombre del Autor"
                                     required
                                 />
                             </div>
-
+                            
                             <div>
                                 <label htmlFor="categoria" className="text-lg font-semibold text-[#213A57]">Categoria*</label>
                                 <select
@@ -244,18 +287,21 @@ function Publicar() {
                                     ))}
                                 </select>
                             </div>
-
+                            
                             <div>
                                 <label htmlFor="descripcion" className="text-lg font-semibold text-[#213A57]">Descripción*</label>
                                 <textarea
                                     id="descripcion"
                                     name="descripcion"
                                     value={formData.description}
-                                    onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                    onChange={handleDescriptionChange}
                                     className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     placeholder="Descripción del audiolibro"
                                     required
                                 ></textarea>
+                                {descriptionWarning && (
+                                    <p className="text-red-500 text-sm">{descriptionWarning}</p>
+                                )}
                             </div>
 
                             {/* Campo Documento PDF */}
@@ -265,9 +311,11 @@ function Publicar() {
                                     id="documento"
                                     name="documento"
                                     onChange={handleDocumentoChange}
+                                    accept="application/pdf"
                                     className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     required
                                 />
+                            
                                 {formData.pdfFile && (
                                     <button
                                         type="button"
@@ -285,7 +333,7 @@ function Publicar() {
                                     type="submit"
                                     className="w-full bg-[#0B6477] text-white py-3 rounded-lg hover:bg-[#14919B] transition-all duration-300 ease-in-out transform hover:scale-105"
                                 >
-                                    <FaPaperPlane className="inline-block mr-2" /> Publicar
+                                    <FaPaperPlane className="inline-block mr-2" /> Registrar
                                 </button>
                                 <button
                                     type="button"
@@ -311,15 +359,15 @@ function Publicar() {
                                 <p className="text-sm text-[#213A57] mb-4">Arrastra y suelta la imagen o selecciona un archivo</p>
                                 <input
                                     type="file"
-                                    id="portada"
-                                    name="portada"
+                                    id="portadaFile"
+                                    name="portadaFile"
                                     className="hidden"
                                     onChange={handleFileChange}
                                 />
                                 <button
                                     type="button"
                                     className="bg-[#14919B] text-white py-2 px-6 rounded-lg hover:bg-[#0B6477] flex items-center justify-center mb-4"
-                                    onClick={() => document.getElementById('portada').click()}
+                                    onClick={() => document.getElementById('portadaFile').click()}
                                 >
                                     <FaImage className="mr-2" /> Elegir archivo
                                 </button>
@@ -384,5 +432,4 @@ function Publicar() {
 }
 
 export default Publicar;
-
 
