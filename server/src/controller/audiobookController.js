@@ -2,10 +2,9 @@ const { prisma } = require('../conf/db');
 
 // Crear un nuevo libro
 const createAudiobook = async (req, res) => {
-  const { title, categoryId, description, author } = req.body;
+  const { title, categoryId, description, author, pdfUrl, coverUrl } = req.body;
 
   try {
-
     // Crear el nuevo audiolibro en la base de datos
     const newAudiobook = await prisma.audiobook.create({
       data: {
@@ -13,6 +12,8 @@ const createAudiobook = async (req, res) => {
         categoryId: parseInt(categoryId), // Asegurarse de que el valor sea un entero
         description,
         author,
+        pdfUrl,     // Agregar URL del archivo PDF
+        coverUrl,   // Agregar URL de la portada
       },
     });
 
@@ -20,10 +21,9 @@ const createAudiobook = async (req, res) => {
     res.status(201).json(newAudiobook);
   } catch (error) {
     console.error('Error creating Audiobook:', error);
-    res.status(500).json({ error: 'Error creating book', details: error.message });
+    res.status(500).json({ error: 'Error creating audiobook', details: error.message });
   }
 };
-
 
 // Eliminar un libro
 const deleteAudioBook = async (req, res) => {
@@ -58,6 +58,7 @@ const getAudiobooks = async (req, res) => {
     res.status(500).json({ error: 'Error fetching audiobooks', details: error.message });
   }
 };
+
 // Obtener un libro por su ID
 const getAudioBookById = async (req, res) => {
   const { id } = req.params;
@@ -79,7 +80,7 @@ const getAudioBookById = async (req, res) => {
 // Actualizar un libro
 const updateAudiobook = async (req, res) => {
   const { id } = req.params;
-  const { title, categoryId, description, author } = req.body;
+  const { title, categoryId, description, author, pdfUrl, coverUrl } = req.body;
 
   try {
     const audiobook = await prisma.audiobook.findUnique({
@@ -96,6 +97,8 @@ const updateAudiobook = async (req, res) => {
         categoryId,
         description,
         author,
+        pdfUrl,     // Agregar la URL del archivo PDF
+        coverUrl,   // Agregar la URL de la portada
       },
     });
 
@@ -113,3 +116,4 @@ module.exports = {
   updateAudiobook,
   getAudiobooks,
 };
+
