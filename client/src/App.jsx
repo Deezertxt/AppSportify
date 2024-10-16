@@ -1,25 +1,32 @@
-import {Route, Routes} from  'react-router-dom';
-import TaskPage from "./pages/Taskpage";
-import Reproductor from "./pages/Reproductor.jsx";
-import Biblioteca from "./pages/Biblioteca.jsx";
-import Publicar from "./pages/Publicar.jsx";
-import NotFound from "./pages/NotFound.jsx";
-import Navbar from "./components/Navbar.jsx";
-import Footer from "./components/Footer.jsx";
+import { Route, Routes } from 'react-router-dom';
+import Biblioteca from '../src/pages/Biblioteca';
+import Reproductor from '../src/pages/Reproductor';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import Publicar from './pages/Publicar';
+import DropdownMenu from './components/DropdownMenu';
+import { RouteProvider } from './context/RouteContext';
 
 function App() {
-    return(
-        <>
-            <Navbar/>
-            <Routes>
-                <Route path="/" element={<TaskPage/>}/>
-                <Route path="/reproductor" element={<Reproductor/>}/>
-                <Route path="/biblioteca" element={<Biblioteca/>}/>
-                <Route path="/publicar" element={<Publicar/>}/>
-                <Route path="*" element={<NotFound/>}/>
-            </Routes>
-            <Footer/>
-        </>
-    )
-    }
-    export default App
+    return (
+        <RouteProvider>
+            <div className="flex min-h-screen bg-[#F0F9F9]">
+                <DropdownMenu />
+                <div className="flex-1 flex flex-col">
+                    <Navbar />
+                    <div className="flex-grow p-4 bg-[#F0F9F9]">
+                        <Routes>
+                            <Route path="/" element={<Biblioteca />} />
+                            <Route path="/reproductor/:id" element={<Reproductor />} />
+                            <Route path="/publicar" element={<Publicar />} />
+                        </Routes>
+                    </div>
+                    <Footer />
+                </div>
+            </div>
+        </RouteProvider>
+    );
+}
+
+export default App;
+

@@ -27,7 +27,7 @@ export const deleteCategory = (id) => api.delete(`/api/category/delete/${id}`);
 export const getUploads = () => api.get("/api/upload/get");
 export const uploadFilesToFirebase = (data) => api.post("/api/uploads/upload", data);
 export const getAudiobooks = () => api.get("/api/audiobook/get");
-export const getAudiobook = (id) => api.get(`/api/audiobook/get/${id}`);
+export const getAudiobookById = (id) => api.get(`/api/audiobook/get/${id}`);
 export const createAudiobook = (data) => api.post("/api/audiobook/register", data);
 export const updateAudiobook = (id, data) => api.put(`/api/audiobook/update/${id}`, data);
 export const deleteAudiobook = (id) => api.delete(`/api/audiobook/delete/${id}`);
