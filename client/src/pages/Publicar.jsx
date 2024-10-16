@@ -316,27 +316,31 @@ function Publicar() {
 
                             {/* Campo Documento PDF */}
                             <div className="flex flex-col gap-1">
-                                <label htmlFor="documento" className="text-lg font-semibold text-[#213A57]">Documento PDF<span className="text-red-500">*</span></label>
-                                <input
-                                    type="file"
-                                    id="documento"
-                                    name="documento"
-                                    onChange={handleDocumentoChange}
-                                    accept="application/pdf"
-                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
-                                    required
-                                />
-
-                                {formData.pdfFile && (
-                                    <button
-                                        type="button"
-                                        onClick={handleCancelDocumento}
-                                        className="bg-[#FF6F61] text-white py-2 px-4 rounded-lg hover:bg-[#FF4F3F] transition-all duration-300"
-                                    >
-                                        <FaTrashAlt />
-                                    </button>
-                                )}
+                                <label htmlFor="documento" className="text-lg font-semibold text-[#213A57]">
+                                    Documento PDF<span className="text-red-500">*</span>
+                                </label>
+                                <div className="flex items-center">
+                                    <input
+                                        type="file"
+                                        id="documento"
+                                        name="documento"
+                                        onChange={handleDocumentoChange}
+                                        accept="application/pdf"
+                                        className="w-full p-3 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                                        required
+                                    />
+                                    {formData.pdfFile && (
+                                        <button
+                                            type="button"
+                                            onClick={handleCancelDocumento}
+                                            className="bg-[#FF6F61] text-white py-2 px-4 rounded-lg hover:bg-[#FF4F3F] transition-all duration-300 ml-2"
+                                        >
+                                            <FaTrashAlt />
+                                        </button>
+                                    )}
+                                </div>
                             </div>
+
 
                             {/* Botones Publicar y Cancelar */}
                             <div className="grid grid-cols-2 gap-4 mt-2">
