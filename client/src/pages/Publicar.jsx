@@ -1,28 +1,33 @@
-import React, { useState, useEffect } from "react";
-import select from 'react-select';
+import { useState, useEffect } from "react";
 import { isValidCover } from "../utils/fileCoverValidator";
-import { createAudiobook, getCategories, uploadFiles } from '../api/api';  // Importamos el servicio
-
+import { createAudiobook, getCategories, uploadFilesToFirebase } from '../api/api';
+import { FaTrashAlt, FaFilePdf, FaImage, FaPaperPlane, FaTimes, FaArrowLeft } from 'react-icons/fa';
+import { useNavigate } from "react-router-dom";
 
 function Publicar() {
-    const [fileName, setFileName] = useState("");
-    const [preview, setPreview] = useState(null); // Estado para la vista previa de la imagen
+    const navigate = useNavigate();
+    const [documentFileName, setDocumentFileName] = useState(""); // Nombre del archivo PDF
+    const [coverFileName, setCoverFileName] = useState(""); // Nombre del archivo de portada
+    const [preview, setPreview] = useState(null); // Vista previa de la portada
+
     const [formData, setFormData] = useState({
         title: "",
         author: "",
         category: "",
         description: "",
-        documento: null,  // Para el documento adjunto
-        portada: null,    // Para la portada
+        pdfFile: null,  // Para el archivo PDF
+        portadaFile: null,    // Para la portada
     });
 
-    const [modalMessage, setModalMessage] = useState(null);  // Estado para el mensaje del modal
-
+    const [errorMessage, setErrorMessage] = useState(null);  // Estado para mensaje de error
+    const [successMessage, setSuccessMessage] = useState(null); // Estado para mensaje de éxito
     const [categories, setCategories] = useState([]);
+    const [descriptionWarning, setDescriptionWarning] = useState(""); // Advertencia de caracteres en descripción
+
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await getCategories();
+                const response = await getCategories(); // Obtener categorías
                 setCategories(response.data);
             } catch (error) {
                 console.error("Error al obtener las categorías:", error);
@@ -32,20 +37,55 @@ function Publicar() {
         fetchCategories();
     }, []);
 
+    // Validar que el archivo sea un PDF y no exceda 50MB
+    const validatePDF = (file) => {
+        const isPDF = file.type === 'application/pdf';
+        const isUnderSize = file.size <= 50 * 1024 * 1024; // 50MB
+        if (!isPDF) {
+            setErrorMessage("Solo se permiten archivos PDF.");
+            return false;
+        }
+        if (!isUnderSize) {
+            setErrorMessage("El archivo PDF no puede ser mayor a 50 MB.");
+            return false;
+        }
+        return true;
+    };
+
+    // Validar caracteres especiales en los campos de texto
+    const validateTextInput = (input) => {
+        const regex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s.,!?()\-:;]*$/;
+        return regex.test(input);
+    };
+
+    // Función para manejar el cambio del archivo PDF
+    const handleDocumentoChange = (e) => {
+        const file = e.target.files[0];
+        if (file && validatePDF(file)) {
+            setFormData({
+                ...formData,
+                pdfFile: file,
+            });
+            setDocumentFileName(file.name); // Actualiza el nombre del archivo PDF
+        }
+        document.getElementById("pdfFile").value = ""; // Cerrar explorador de archivos después de selección
+    };
+
+    // Función para manejar el cambio de la portada
     const handleDrop = async (event) => {
         event.preventDefault();
         const file = event.dataTransfer.files[0];
         if (file) {
-            const isValid = await isValidCover(file, 200, 300); // Validar el archivo aquí
+            const isValid = await isValidCover(file, 200, 300); // Validar si es imagen válida
             if (isValid) {
-                setFileName(file.name);
+                setCoverFileName(file.name); // Actualiza el nombre de la portada
                 setFormData({
                     ...formData,
-                    portada: file,
+                    portadaFile: file,
                 });
-                setPreview(URL.createObjectURL(file)); // Crear vista previa de la imagen
+                setPreview(URL.createObjectURL(file)); // Vista previa de la imagen
             } else {
-                alert("La portada no es válida. Asegúrese de que sea una imagen jpg, jpeg o png con dimensiones adecuadas.");
+                alert("La portada no es válida.");
             }
         }
     };
@@ -59,99 +99,135 @@ function Publicar() {
         if (file) {
             const isValid = await isValidCover(file, 200, 300);
             if (isValid) {
-                setFileName(file.name);
+                setCoverFileName(file.name); // Actualiza el nombre de la portada
                 setFormData({
                     ...formData,
-                    portada: file,
+                    portadaFile: file,
                 });
-                updatePreview(file);
+                setPreview(URL.createObjectURL(file)); // Vista previa de la imagen
             } else {
-                alert("La portada no es válida. Asegúrese de que sea una imagen jpg, jpeg o png con dimensiones adecuadas.");
+                alert("La portada no es válida.");
             }
+        }
+        document.getElementById("portadaFile").value = ""; // Cerrar explorador de archivos después de selección
+    };
+
+    // Función para manejar la cancelación del archivo PDF
+    const handleCancelDocumento = () => {
+        setFormData({
+            ...formData,
+            pdfFile: null
+        });
+        setDocumentFileName(""); // Limpiar el nombre del archivo PDF
+        document.getElementById("documento").value = ""; // Restablecer el input file a vacío
+    };
+
+    // Función para manejar la cancelación de la portada
+    const handleCancelPortada = () => {
+        setFormData({
+            ...formData,
+            portadaFile: null
+        });
+        setCoverFileName(""); // Limpiar el nombre de la portada
+        setPreview(null); // Limpiar la vista previa de la portada
+        document.getElementById("portadaFile").value = ""; // Restablecer el input file a vacío
+    };
+
+    // Función para manejar el cambio en la descripción
+    const handleDescriptionChange = (e) => {
+        const value = e.target.value;
+        if (value.length <= 200) {
+            setFormData({
+                ...formData,
+                description: value
+            });
+            setDescriptionWarning(""); // Limpiar el aviso si no se supera el límite
+        } else {
+            setDescriptionWarning("Has alcanzado el límite de 200 caracteres.");
         }
     };
 
-    const updatePreview = (file) => {
-        setFileName(file.name);
+    // Función para manejar la cancelación general del formulario
+    const handleCancel = () => {
         setFormData({
-            ...formData,
-            portada: file,
+            title: "",
+            author: "",
+            category: "",
+            description: "",
+            pdfFile: null,
+            portadaFile: null
         });
-        const fileUrl = URL.createObjectURL(file); // Crear vista previa
-        setPreview(fileUrl);
-
-        // Limpiar la vista previa cuando se desmonte el componente
-        return () => URL.revokeObjectURL(fileUrl);
-    };
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
-
-    const handleDocumentoChange = (e) => {
-        const file = e.target.files[0];
-        setFormData({
-            ...formData,
-            documento: file,
-        });
+        setDocumentFileName("");
+        setCoverFileName("");
+        setPreview(null);
+        document.getElementById("documento").value = ""; // Restablecer el input file a vacío
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrorMessage(null);  // Limpiar el mensaje de error
+        setSuccessMessage(null); // Limpiar el mensaje de éxito
+
+        if (!formData.pdfFile || !formData.portadaFile) {
+            setErrorMessage("Por favor, sube un archivo PDF y una portada.");
+            return;
+        }
 
         try {
-            // Creamos un FormData para subir archivos
-            const data = new FormData();
+            // Crear un objeto FormData
+            const form = new FormData();
+            form.append("pdfFile", formData.pdfFile);
+            form.append("portadaFile", formData.portadaFile);
+            form.append("title", formData.title);
+            form.append("author", formData.author);
+            form.append("category", formData.category);
+            form.append("description", formData.description);
 
-            // Añadimos los archivos al FormData
-            if (formData.documento) {
-                data.append('pdf', formData.documento);  // Subimos el archivo PDF
-            }
-            if (formData.portada) {
-                data.append('portada', formData.portada);  // Subimos la imagen de la portada
-            }
+            // Subir archivos a Firebase y obtener las URLs
+            const uploadResponse = await uploadFilesToFirebase(form);
 
-            // Realizamos la petición de subida de archivos
-            const uploadResponse = await uploadFiles(data); // No especificamos headers aquí
-
-            // Revisamos si la subida fue exitosa
+            // Verificar si la respuesta es exitosa
             if (uploadResponse.status === 200) {
-                // Extraemos los datos de los archivos subidos
-                const { portadaPath, pdfPath } = uploadResponse.data;
+                const { pdfUrl, portadaUrl } = uploadResponse.data;
 
-                // Llamamos al servicio para registrar el audiolibro en la base de datos
+                if (!pdfUrl || !portadaUrl) {
+                    setErrorMessage("Error: No se recuperaron las URLs de los archivos.");
+                    return;
+                }
+
+                // Preparar los datos para crear el audiolibro
                 const audiobookData = {
-                    title: formData.titulo,
-                    author: formData.autor,
-                    categoryId: formData.categoria,
-                    description: formData.descripcion,
-                    portada: portadaPath, // Ruta de la portada subida
-                    documento: pdfPath // Ruta del documento subido
+                    title: formData.title,
+                    author: formData.author,
+                    categoryId: formData.category,
+                    description: formData.description,
+                    pdfUrl,     // URL del PDF en Firebase
+                    coverUrl: portadaUrl  // URL de la portada en Firebase
                 };
 
+                // Ahora crear el audiolibro en la base de datos
                 const response = await createAudiobook(audiobookData);
                 console.log('Publicación registrada con éxito:', response);
-                // Mostrar mensaje de éxito
-                setModalMessage("¡Publicación registrada con éxito!");
 
-                // Reseteamos el formulario después del éxito
+                setSuccessMessage("Audiolibro publicado con éxito!");
+
+                // Resetear el formulario
                 setFormData({
                     title: "",
                     author: "",
-                    categoryId: "",
+                    category: "",
                     description: "",
-                    documento: null,
-                    portada: null
+                    pdfFile: null,
+                    portadaFile: null
                 });
-                setFileName(""); // Limpiar nombre del archivo
+                setDocumentFileName("");
+                setCoverFileName("");
+                setPreview(null);
+                document.getElementById("documento").value = "";
             }
         } catch (error) {
-            console.error("Error al subir archivos o registrar la publicación:", error);
-            setModalMessage("Error al registrar la publicación. Intenta de nuevo.");
+            console.error("Error al subir los archivos:", error);
+            setErrorMessage("Error al registrar la publicación. Verifique los campos.");
         }
     };
 
@@ -162,160 +238,217 @@ function Publicar() {
     };
 
     return (
-        <div className="my-8">
-            <div className="flex flex-col items-center">
-                <span className="font-bold text-2xl">Publicacion de Contenido</span>
-            </div>
+        <div className="max-h-screen-xl bg-[#F0F9F9]">
+            <div className="max-w-screen-xl mx-auto p-4">
+                <div className="flex justify-between items-center mb-8">
+                    <button
+                        onClick={() => navigate('/')} // Navigate to home
+                        className="mb-4 text-[#0B6477] flex items-center"
+                    >
+                        <FaArrowLeft className="mr-2" /> Volver al inicio
+                    </button>
+                    <div className="text-center flex-grow">
+                        <span className="text-4xl font-extrabold text-[#213A57]">Registro de Audiolibro</span>
+                    </div>
+                </div>
 
-            <div className="flex justify-center">
-                <form className="w-1/2" onSubmit={handleSubmit}>
-                    <div className="flex justify-between gap-20 my-8">
-                        <div className="flex flex-col w-1/2 gap-8">
-                            <div className="flex flex-col">
-                                <label htmlFor="nombre" className="uppercase font-bold">Titulo*</label>
+                <div className="flex flex-col sm:flex-row gap-8 justify-between">
+                    <form onSubmit={handleSubmit} className="w-full sm:w-1/2 flex flex-col gap-6">
+                        {/* Formulario de texto y selección */}
+                        <div className="flex flex-col gap-4">
+                            <div>
+                                <label htmlFor="titulo" className="text-lg font-semibold text-[#213A57]">Titulo<span className="text-red-500">*</span></label>
                                 <input
                                     type="text"
                                     id="titulo"
                                     name="titulo"
-                                    value={formData.titulo}
-                                    onChange={handleChange}
-                                    className="border rounded-lg p-2 text-center"
-                                    placeholder="Nombre del Recurso"
+                                    value={formData.title}
+                                    onChange={e => setFormData({ ...formData, title: e.target.value })}
+                                    onBlur={e => !validateTextInput(e.target.value) && setErrorMessage("Caracteres especiales no permitidos en el título.")}
+                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                                    placeholder="Titulo del audiolibro"
+
                                     required
                                 />
                             </div>
+                            <div>
+                                <label htmlFor="autor" className="text-lg font-semibold text-[#213A57]">Autor<span className="text-red-500">*</span></label>
 
-                            <div className="flex flex-col">
-                                <label htmlFor="autor" className="uppercase font-bold">Autor*</label>
                                 <input
                                     type="text"
                                     id="autor"
                                     name="autor"
-                                    value={formData.autor}
-                                    onChange={handleChange}
-                                    className="block border rounded-lg p-2 text-center"
+                                    value={formData.author}
+                                    onChange={e => setFormData({ ...formData, author: e.target.value })}
+                                    onBlur={e => !validateTextInput(e.target.value) && setErrorMessage("Caracteres especiales no permitidos en el autor.")}
+                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     placeholder="Nombre del Autor"
                                     required
                                 />
                             </div>
 
-                            <div className="flex flex-col">
-                                <label htmlFor="categoria" className="uppercase font-bold">Categoria*</label>
+                            <div>
+                                <label htmlFor="categoria" className="text-lg font-semibold text-[#213A57]">Categoria<span className="text-red-500">*</span></label>
                                 <select
                                     name="categoria"
                                     id="categoria"
-                                    value={formData.categoria}
-                                    onChange={handleChange}
-                                    className="border rounded-lg p-2"
+                                    value={formData.category}
+                                    onChange={e => setFormData({ ...formData, category: e.target.value })}
+                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     required
                                 >
-                                    <option value="">Seleccione una categoría</option>
-                                    {categories.map((categoria) => (
-                                        <option key={categoria.id} value={categoria.id}>
-                                            {categoria.name}
+                                    <option value="">Selecciona una categoría</option>
+                                    {categories.map(category => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.name}
                                         </option>
                                     ))}
                                 </select>
                             </div>
 
                             <div>
-                                <label htmlFor="documento" className="uppercase font-bold">Documento*</label>
-                                <input
-                                    accept=".pdf"
-                                    type="file"
-                                    name="documento"
-                                    id="documento"
-                                    className="block w-full border rounded-lg p-2"
-                                    onChange={handleDocumentoChange}
-                                    required
-                                />
-                            </div>
-                            <div className="flex flex-col">
-                                <label htmlFor="descripcion" className="uppercase font-bold">Descripcion*</label>
+                                <label htmlFor="descripcion" className="text-lg font-semibold text-[#213A57]">Descripción<span className="text-red-500">*</span></label>
                                 <textarea
-                                    name="descripcion"
                                     id="descripcion"
-                                    value={formData.descripcion}
-                                    onChange={handleChange}
-                                    placeholder="Descripcion"
-                                    className="p-2 resize-none border rounded-lg h-full"
+                                    name="descripcion"
+                                    value={formData.description}
+                                    onChange={handleDescriptionChange}
+                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                                    placeholder="Descripción del audiolibro"
                                     required
-                                />
+                                ></textarea>
+                                {descriptionWarning && (
+                                    <p className="text-red-500 text-sm">{descriptionWarning}</p>
+                                )}
+                            </div>
+
+                            {/* Campo Documento PDF */}
+                            <div className="flex flex-col gap-1">
+                                <label htmlFor="documento" className="text-lg font-semibold text-[#213A57]">
+                                    Documento PDF<span className="text-red-500">*</span>
+                                </label>
+                                <div className="flex items-center">
+                                    <input
+                                        type="file"
+                                        id="documento"
+                                        name="documento"
+                                        onChange={handleDocumentoChange}
+                                        accept="application/pdf"
+                                        className="w-full p-3 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                                        required
+                                    />
+                                    {formData.pdfFile && (
+                                        <button
+                                            type="button"
+                                            onClick={handleCancelDocumento}
+                                            className="bg-[#FF6F61] text-white py-2 px-4 rounded-lg hover:bg-[#FF4F3F] transition-all duration-300 ml-2"
+                                        >
+                                            <FaTrashAlt />
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
-                        <div className="flex flex-col w-1/2 gap-14">
-                            <div className="flex flex-col">
-                                <label htmlFor="dropZone" className="uppercase font-bold">Portada*</label>
-                                <div
-                                    id="dropZone"
-                                    className="p-10 bg-white text-gray-500 font-semibold text-base rounded-2xl flex flex-col items-center justify-center border-2 border-gray-300 border-dashed"
-                                    onDrop={handleDrop}
-                                    onDragOver={(e) => e.preventDefault()}
+                            {/* Botones Publicar y Cancelar */}
+                            <div className="grid grid-cols-2 gap-4 mt-2">
+                                <button
+                                    type="submit"
+                                    className="w-full bg-[#0B6477] text-white py-3 rounded-lg hover:bg-[#14919B] transition-all duration-300 ease-in-out transform hover:scale-105"
                                 >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="32"
-                                        height="32"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="lucide lucide-file-text"
-                                    >
-                                        <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
-                                        <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
-                                        <path d="M10 9H8"></path>
-                                        <path d="M16 13H8"></path>
-                                        <path d="M16 17H8"></path>
-                                    </svg>
-                                    <p className="hidden lg:block">Arrastrar y Soltar</p>
-                                    <p id="fileName" className="text-xs font-medium text-gray-400 mt-1">
-                                        {fileName || "IMAGEN menor a 5MB"}
-                                    </p>
-                                    {preview && <img src={preview} alt="Vista previa" className="mt-2 w-full h-auto rounded" />} {/* Vista previa de la imagen */}
-                                    <input
-                                        type="file"
-                                        id="portada"
-                                        name="portada"
-                                        className="hidden"
-                                        onChange={handleFileChange}
-                                    />
-                                    <div
-                                        className="mt-4 flex h-9 px-6 bg-gray-300 text-gray-700 border border-gray-700 rounded-lg"
-                                        onClick={() => document.getElementById('portada').click()}>
-                                        Elegir Archivo
-                                    </div>
-                                </div>
+                                    <FaPaperPlane className="inline-block mr-2" /> Registrar
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleCancel}
+                                    className="w-full bg-[#FF6F61] text-white py-3 rounded-lg hover:bg-[#FF4F3F] transition-all duration-300 ease-in-out transform hover:scale-105"
+                                >
+                                    <FaTimes className="inline-block mr-2" /> Cancelar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
 
+                    {/* Columna de Portada */}
+                    <div className="w-full sm:w-1/2 flex flex-col items-center justify-start gap-6">
+                        <div>
+                            <label htmlFor="dropZone" className="text-lg font-semibold text-[#213A57]">Portada<span className="text-red-500">*</span></label>
+                            <div
+                                id="dropZone"
+                                className="relative p-10 w-full h-96 border-2 border-[#45DFB1] border-dashed rounded-xl text-center bg-[#F0F9F9] cursor-pointer flex flex-col justify-center items-center"
+                                onDrop={handleDrop}
+                                onDragOver={handleDragOver}
+                            >
+                                <p className="text-sm text-[#213A57] mb-4">Arrastra y suelta la imagen o selecciona un archivo</p>
+                                <input
+                                    type="file"
+                                    id="portadaFile"
+                                    name="portadaFile"
+                                    className="hidden"
+                                    onChange={handleFileChange}
+                                />
+                                <button
+                                    type="button"
+                                    className="bg-[#14919B] text-white py-2 px-6 rounded-lg hover:bg-[#0B6477] flex items-center justify-center mb-4"
+                                    onClick={() => document.getElementById('portadaFile').click()}
+                                >
+                                    <FaImage className="mr-2" /> Elegir archivo
+                                </button>
+
+                                {preview && (
+                                    <div className="absolute inset-0">
+                                        <img src={preview} alt="Vista previa" className="w-full h-full object-cover rounded-lg shadow-lg" />
+                                    </div>
+                                )}
+
+                                {formData.portadaFile && (
+                                    <button
+                                        type="button"
+                                        onClick={handleCancelPortada}
+                                        className="absolute bottom-2 right-2 bg-[#FF6F61] text-white rounded-full p-2 transform hover:scale-110 transition-all duration-300"
+                                    >
+                                        <FaTrashAlt />
+                                    </button>
+                                )}
+
+                                {/* Nombre de la portada junto al botón limpiar */}
+                                {coverFileName && (
+                                    <p className="absolute bottom-2 left-2 text-[#213A57]">{coverFileName}</p>
+                                )}
                             </div>
                         </div>
                     </div>
-                    <button
-                        type="submit"
-                        className="text-white bg-[#6177A6] p-3 rounded-lg flex gap-2 mx-auto"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-upload"
-                        >
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="17 8 12 3 7 8"></polyline>
-                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                        </svg>
-                        Publicar
-                    </button>
-                </form>
+                </div>
+
+                {/* Modal de error */}
+                {errorMessage && (
+                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+                        <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
+                            <p className="text-xl font-semibold text-red-500">{errorMessage}</p>
+                            <button
+                                className="mt-4 bg-[#FF6F61] text-white py-2 px-6 rounded-full hover:bg-[#FF4F3F]"
+                                onClick={() => setErrorMessage(null)}
+                            >
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Modal de éxito */}
+                {successMessage && (
+                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+                        <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
+                            <p className="text-xl font-semibold text-green-500">{successMessage}</p>
+                            <button
+                                className="mt-4 bg-[#0B6477] text-white py-2 px-6 rounded-full hover:bg-[#14919B]"
+                                onClick={() => setSuccessMessage(null)}
+                            >
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
             {/* Modal emergente */}
             {modalMessage && (
@@ -336,3 +469,4 @@ function Publicar() {
 }
 
 export default Publicar;
+
