@@ -6,11 +6,11 @@ const Footer = () => {
         <footer className="text-gray-400 bg-[#0B6477]  body-font">
             <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
                 <a className="flex title-font font-medium items-center md:justify-start justify-center text-white">
-                    <img className="block lg:hidden h-14 w-16" src="./logoS.svg" alt="Logo" />
-                    <img className="hidden lg:block h-14 w-auto" src="./logoS.svg" alt="Logo" />
+                    <img className="block lg:hidden h-14 w-16" src="/logoS.svg" alt="Logo" />
+                    <img className="hidden lg:block h-14 w-auto" src="/logoS.svg" alt="Logo" />
                     <span className="ml-3 text-xl">Sportify</span>
                 </a>
-                <p className="text-sm text-gray-400 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-800 sm:py-2 sm:mt-0 mt-4">© 2024 Sportify —
+                <p className="text-sm text-gray-400 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-400 sm:py-2 sm:mt-0 mt-4">© 2024 Sportify —
                     <a className="text-gray-450 ml-1" target="_blank" rel="noopener noreferrer">@yalasoft</a>
                 </p>
                 <span className="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start">

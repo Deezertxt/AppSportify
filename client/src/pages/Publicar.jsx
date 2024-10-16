@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { isValidCover } from "../utils/fileCoverValidator";
 import { createAudiobook, getCategories, uploadFilesToFirebase } from '../api/api';
-import { FaTrashAlt, FaFilePdf, FaImage, FaPaperPlane, FaTimes } from 'react-icons/fa';
+import { FaTrashAlt, FaFilePdf, FaImage, FaPaperPlane, FaTimes, FaArrowLeft } from 'react-icons/fa';
+import { useNavigate } from "react-router-dom";
 
 function Publicar() {
+    const navigate = useNavigate();
     const [documentFileName, setDocumentFileName] = useState(""); // Nombre del archivo PDF
     const [coverFileName, setCoverFileName] = useState(""); // Nombre del archivo de portada
     const [preview, setPreview] = useState(null); // Vista previa de la portada
@@ -229,10 +231,18 @@ function Publicar() {
     };
 
     return (
-        <div className="min-h-screen bg-[#F0F9F9]">
+        <div className="max-h-screen-xl bg-[#F0F9F9]">
             <div className="max-w-screen-xl mx-auto p-4">
-                <div className="text-center mb-6">
-                    <span className="text-4xl font-extrabold text-[#213A57]">Registro de Audiolibro</span>
+                <div className="flex justify-between items-center mb-8">
+                    <button
+                        onClick={() => navigate('/')} // Navigate to home
+                        className="mb-4 text-[#0B6477] flex items-center"
+                    >
+                        <FaArrowLeft className="mr-2" /> Volver al inicio
+                    </button>
+                    <div className="text-center flex-grow">
+                        <span className="text-4xl font-extrabold text-[#213A57]">Registro de Audiolibro</span>
+                    </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-8 justify-between">
@@ -240,7 +250,7 @@ function Publicar() {
                         {/* Formulario de texto y selección */}
                         <div className="flex flex-col gap-4">
                             <div>
-                                <label htmlFor="titulo" className="text-lg font-semibold text-[#213A57]">Titulo*</label>
+                                <label htmlFor="titulo" className="text-lg font-semibold text-[#213A57]">Titulo<span className="text-red-500">*</span></label>
                                 <input
                                     type="text"
                                     id="titulo"
@@ -255,7 +265,7 @@ function Publicar() {
                             </div>
 
                             <div>
-                                <label htmlFor="autor" className="text-lg font-semibold text-[#213A57]">Autor*</label>
+                                <label htmlFor="autor" className="text-lg font-semibold text-[#213A57]">Autor<span className="text-red-500">*</span></label>
                                 <input
                                     type="text"
                                     id="autor"
@@ -268,9 +278,9 @@ function Publicar() {
                                     required
                                 />
                             </div>
-                            
+
                             <div>
-                                <label htmlFor="categoria" className="text-lg font-semibold text-[#213A57]">Categoria*</label>
+                                <label htmlFor="categoria" className="text-lg font-semibold text-[#213A57]">Categoria<span className="text-red-500">*</span></label>
                                 <select
                                     name="categoria"
                                     id="categoria"
@@ -287,9 +297,9 @@ function Publicar() {
                                     ))}
                                 </select>
                             </div>
-                            
+
                             <div>
-                                <label htmlFor="descripcion" className="text-lg font-semibold text-[#213A57]">Descripción*</label>
+                                <label htmlFor="descripcion" className="text-lg font-semibold text-[#213A57]">Descripción<span className="text-red-500">*</span></label>
                                 <textarea
                                     id="descripcion"
                                     name="descripcion"
@@ -305,7 +315,8 @@ function Publicar() {
                             </div>
 
                             {/* Campo Documento PDF */}
-                            <div className="flex items-center gap-4">
+                            <div className="flex flex-col gap-1">
+                                <label htmlFor="documento" className="text-lg font-semibold text-[#213A57]">Documento PDF<span className="text-red-500">*</span></label>
                                 <input
                                     type="file"
                                     id="documento"
@@ -315,7 +326,7 @@ function Publicar() {
                                     className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     required
                                 />
-                            
+
                                 {formData.pdfFile && (
                                     <button
                                         type="button"
@@ -349,7 +360,7 @@ function Publicar() {
                     {/* Columna de Portada */}
                     <div className="w-full sm:w-1/2 flex flex-col items-center justify-start gap-6">
                         <div>
-                            <label htmlFor="dropZone" className="text-lg font-semibold text-[#213A57]">Portada*</label>
+                            <label htmlFor="dropZone" className="text-lg font-semibold text-[#213A57]">Portada<span className="text-red-500">*</span></label>
                             <div
                                 id="dropZone"
                                 className="relative p-10 w-full h-96 border-2 border-[#45DFB1] border-dashed rounded-xl text-center bg-[#F0F9F9] cursor-pointer flex flex-col justify-center items-center"
