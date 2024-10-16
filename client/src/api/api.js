@@ -6,7 +6,9 @@ const api = axios.create({
     baseURL: baseURL,
     responseType: "json",
     withCredentials: true,
+
     timeout: 100000,
+
 });
 
 export default api;
@@ -36,4 +38,3 @@ export const getAudiobooksByUser = (id) => api.get(`/api/audiobook/get/user/${id
 export const getAudiobooksByTitle = (title) => api.get(`/api/audiobook/get/title/${title}`);
 export const getAudiobooksByAuthor = (author) => api.get(`/api/audiobook/get/author/${author}`);    
 export const getAudiobooksByDescription = (description) => api.get(`/api/audiobook/get/description/${description}`);
-

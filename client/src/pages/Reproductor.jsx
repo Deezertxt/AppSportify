@@ -59,12 +59,24 @@ const Reproductor = () => {
         setProgress(prev => Math.min(prev + 10, totalDuration)); // Suma 10 segundos
     };
 
+    const handleOpenModal = () => {
+        const synth = synthRef.current;
+        synth.cancel(); // Cancel any ongoing speech synthesis
+        setIsPlaying(false);
+        setIsModalOpen(true);
+        document.body.style.overflow = 'hidden'; // Disable background scroll
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        document.body.style.overflow = 'auto'; // Re-enable background scroll
+    };
+
     return (
         <div className="flex flex-col h-screen bg-gray-100">
             <div className="flex-grow flex items-center justify-center">
                 <ChapterText text={audiobook.text} fontSize={fontSize} />
             </div>
-
             <div className="bg-first text-white p-4 flex flex-col items-center">
                 <ProgressBar progress={progress} totalDuration={totalDuration} onProgressChange={setProgress} />
 
@@ -90,10 +102,30 @@ const Reproductor = () => {
                     {/* Control de Velocidad y Volumen */}
                     <div className="flex items-center">
                     <PlayerControls speed={speed} setSpeed={setSpeed} volume={volume} setVolume={setVolume} />
-
                     </div>
                 </div>
             </div>
+
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white relative p-8 rounded-lg h-screen shadow-lg max-w-3xl w-full">
+                        <div className="absolute top-1.5 left-1.5">
+                            <button onClick={handleCloseModal}>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                                     strokeLinejoin="round" className="lucide lucide-x w-6 h-6">
+                                    <path d="M18 6 6 18"></path>
+                                    <path d="m6 6 12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <textarea className="w-full h-full resize-none border border-gray-300 shadow rounded p-3">
+                            {text}
+                        </textarea>
+
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

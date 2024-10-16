@@ -40,5 +40,3 @@ const uploadFilesToFirebase = async (req, res) => {
 };
 
 module.exports = { uploadFilesToFirebase };
-
-
