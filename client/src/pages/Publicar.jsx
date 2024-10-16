@@ -9,6 +9,7 @@ function Publicar() {
     const [documentFileName, setDocumentFileName] = useState(""); // Nombre del archivo PDF
     const [coverFileName, setCoverFileName] = useState(""); // Nombre del archivo de portada
     const [preview, setPreview] = useState(null); // Vista previa de la portada
+
     const [formData, setFormData] = useState({
         title: "",
         author: "",
@@ -230,6 +231,12 @@ function Publicar() {
         }
     };
 
+    // Función para cerrar el modal y refrescar la página
+    const closeModal = () => {
+        setModalMessage(null);
+        window.location.reload();  // Refrescar la página
+    };
+
     return (
         <div className="max-h-screen-xl bg-[#F0F9F9]">
             <div className="max-w-screen-xl mx-auto p-4">
@@ -260,12 +267,13 @@ function Publicar() {
                                     onBlur={e => !validateTextInput(e.target.value) && setErrorMessage("Caracteres especiales no permitidos en el título.")}
                                     className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     placeholder="Titulo del audiolibro"
+
                                     required
                                 />
                             </div>
-
                             <div>
                                 <label htmlFor="autor" className="text-lg font-semibold text-[#213A57]">Autor<span className="text-red-500">*</span></label>
+
                                 <input
                                     type="text"
                                     id="autor"
@@ -340,7 +348,7 @@ function Publicar() {
                                     )}
                                 </div>
                             </div>
-
+                        </div>
 
                             {/* Botones Publicar y Cancelar */}
                             <div className="grid grid-cols-2 gap-4 mt-2">
@@ -442,6 +450,20 @@ function Publicar() {
                     </div>
                 )}
             </div>
+            {/* Modal emergente */}
+            {modalMessage && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+                    <div className="bg-white p-8 rounded-lg shadow-lg">
+                        <p>{modalMessage}</p>
+                        <button
+                            className="mt-4 bg-blue-500 text-white p-2 rounded"
+                            onClick={closeModal}
+                        >
+                            Aceptar
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

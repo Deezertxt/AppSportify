@@ -8,8 +8,6 @@ function Navbar() {
             <div className="flex flex-col lg:flex-row lg:items-center mt-4 lg:mt-0 lg:justify-center w-full">
                 <Search />    
             </div>
-            
-            
         </nav>
     );
 }

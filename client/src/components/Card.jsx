@@ -16,4 +16,3 @@ function Card({ title, author,description, coverUrl, onClick }) {
 }
 
 export default Card;
-
