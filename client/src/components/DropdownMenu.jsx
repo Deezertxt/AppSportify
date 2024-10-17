@@ -15,7 +15,7 @@ import { Link } from "react-router-dom";
 
 const DropdownMenu = () => {
   return (
-    <div className="w-56 bg-indigo-50 flex-shrink-0">
+    <div className="w-56 bg-second flex-shrink-0">
       <Sidebar />
     </div>
   );
