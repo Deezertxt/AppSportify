@@ -8,6 +8,7 @@ function Publicar() {
     const navigate = useNavigate();
     const [documentFileName, setDocumentFileName] = useState(""); // Nombre del archivo PDF
     const [coverFileName, setCoverFileName] = useState(""); // Nombre del archivo de portada
+
     const [preview, setPreview] = useState(null); // Vista previa de la portada
     const [formData, setFormData] = useState({
         title: "",
@@ -18,7 +19,7 @@ function Publicar() {
         portadaFile: null,    // Para la portada
     });
 
-    const [errorMessage, setErrorMessage] = useState(null);  // Estado para mensaje de error
+    const [errors, setErrors] = useState({});  // Estado para manejar errores
     const [successMessage, setSuccessMessage] = useState(null); // Estado para mensaje de éxito
     const [categories, setCategories] = useState([]);
     const [descriptionWarning, setDescriptionWarning] = useState(""); // Advertencia de caracteres en descripción
@@ -45,7 +46,7 @@ function Publicar() {
             return false;
         }
         if (!isUnderSize) {
-            setErrorMessage("El archivo PDF no puede ser mayor a 50 MB.");
+            setErrors(prevErrors => ({ ...prevErrors, pdfFile: "El archivo no puede ser mayor a 50 MB." }));
             return false;
         }
         return true;
@@ -66,6 +67,7 @@ function Publicar() {
                 pdfFile: file,
             });
             setDocumentFileName(file.name); // Actualiza el nombre del archivo PDF
+            setErrors(prevErrors => ({ ...prevErrors, pdfFile: "" })); // Limpiar error del archivo
         }
         document.getElementById("pdfFile").value = ""; // Cerrar explorador de archivos después de selección
     };
@@ -156,6 +158,7 @@ function Publicar() {
             pdfFile: null,
             portadaFile: null
         });
+        setErrors({});
         setDocumentFileName("");
         setCoverFileName("");
         setPreview(null);
@@ -164,11 +167,32 @@ function Publicar() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrorMessage(null);  // Limpiar el mensaje de error
-        setSuccessMessage(null); // Limpiar el mensaje de éxito
+        let formErrors = {};
 
-        if (!formData.pdfFile || !formData.portadaFile) {
-            setErrorMessage("Por favor, sube un archivo PDF y una portada.");
+        // Validar título, que no sea solo espacios
+        if (!validateTextInput(formData.title) || formData.title.trim() === "") {
+            formErrors.title = "El título no puede estar vacío ni contener solo espacios.";
+        }
+
+        // Validar autor, que no sea solo espacios
+        if (!validateTextInput(formData.author) || formData.author.trim() === "") {
+            formErrors.author = "El autor no puede estar vacío ni contener solo espacios.";
+        }
+        // Validar descripción, que no sea solo espacios
+        if (formData.description.trim() === "") {
+            formErrors.description = "La descripción no puede estar vacía ni contener solo espacios.";
+        }
+
+        if (!formData.pdfFile) {
+            formErrors.pdfFile = "Por favor, sube un archivo PDF o DOCX.";
+        }
+        // Validar portada
+        if (!formData.portadaFile) {
+            formErrors.portadaFile = "Por favor, sube una portada.";
+        }
+        // Si hay errores, mostrar y no enviar el formulario
+        if (Object.keys(formErrors).length > 0) {
+            setErrors(formErrors);
             return;
         }
 
@@ -190,7 +214,7 @@ function Publicar() {
                 const { pdfUrl, portadaUrl } = uploadResponse.data;
 
                 if (!pdfUrl || !portadaUrl) {
-                    setErrorMessage("Error: No se recuperaron las URLs de los archivos.");
+                    setErrors({ general: "Error: No se recuperaron las URLs de los archivos." });
                     return;
                 }
 
@@ -208,6 +232,7 @@ function Publicar() {
                 const response = await createAudiobook(audiobookData);
                 console.log('Publicación registrada con éxito:', response);
 
+                setErrors({});
                 setSuccessMessage("Audiolibro publicado con éxito!");
 
                 // Resetear el formulario
@@ -226,7 +251,7 @@ function Publicar() {
             }
         } catch (error) {
             console.error("Error al subir los archivos:", error);
-            setErrorMessage("Error al registrar la publicación. Verifique los campos.");
+            setErrors({ general: "Error al registrar la publicación. Verifique los campos." });
         }
     };
 
@@ -250,37 +275,45 @@ function Publicar() {
                         {/* Formulario de texto y selección */}
                         <div className="flex flex-col gap-4">
                             <div>
-                                <label htmlFor="titulo" className="text-lg font-semibold text-[#213A57]">Titulo<span className="text-red-500">*</span></label>
+                                <label htmlFor="titulo" className="text-lg font-semibold text-[#213A57]">
+                                    Título<span className="text-red-500">*</span>
+                                </label>
                                 <input
                                     type="text"
                                     id="titulo"
                                     name="titulo"
                                     value={formData.title}
                                     onChange={e => setFormData({ ...formData, title: e.target.value })}
-                                    onBlur={e => !validateTextInput(e.target.value) && setErrorMessage("Caracteres especiales no permitidos en el título.")}
                                     className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
-                                    placeholder="Titulo del audiolibro"
+                                    placeholder="Título del audiolibro"
                                     required
                                 />
+                                {errors.title && (
+                                    <p className="text-red-500 text-sm">{errors.title}</p>
+                                )}
                             </div>
 
                             <div>
-                                <label htmlFor="autor" className="text-lg font-semibold text-[#213A57]">Autor<span className="text-red-500">*</span></label>
+                                <label htmlFor="autor" className="text-lg font-semibold text-[#213A57]">
+                                    Autor<span className="text-red-500">*</span>
+                                </label>
                                 <input
                                     type="text"
                                     id="autor"
                                     name="autor"
                                     value={formData.author}
                                     onChange={e => setFormData({ ...formData, author: e.target.value })}
-                                    onBlur={e => !validateTextInput(e.target.value) && setErrorMessage("Caracteres especiales no permitidos en el autor.")}
                                     className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     placeholder="Nombre del Autor"
                                     required
                                 />
+                                {errors.author && (
+                                    <p className="text-red-500 text-sm">{errors.author}</p>
+                                )}
                             </div>
 
                             <div>
-                                <label htmlFor="categoria" className="text-lg font-semibold text-[#213A57]">Categoria<span className="text-red-500">*</span></label>
+                                <label htmlFor="categoria" className="text-lg font-semibold text-[#213A57]">Categoría<span className="text-red-500">*</span></label>
                                 <select
                                     name="categoria"
                                     id="categoria"
@@ -296,6 +329,9 @@ function Publicar() {
                                         </option>
                                     ))}
                                 </select>
+                                {errors.category && (
+                                    <p className="text-red-500 text-sm">{errors.category}</p>
+                                )}
                             </div>
 
                             <div>
@@ -305,12 +341,17 @@ function Publicar() {
                                     name="descripcion"
                                     value={formData.description}
                                     onChange={handleDescriptionChange}
-                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B] h-28 resize-none"
                                     placeholder="Descripción del audiolibro"
                                     required
                                 ></textarea>
+                                {/* Mensaje de advertencia para la descripción */}
                                 {descriptionWarning && (
                                     <p className="text-red-500 text-sm">{descriptionWarning}</p>
+                                )}
+                                {/* Mostrar advertencias o errores para la descripción */}
+                                {errors.description && (
+                                    <p className="text-red-500 text-sm">{errors.description}</p>
                                 )}
                             </div>
 
@@ -409,20 +450,7 @@ function Publicar() {
                     </div>
                 </div>
 
-                {/* Modal de error */}
-                {errorMessage && (
-                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
-                        <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
-                            <p className="text-xl font-semibold text-red-500">{errorMessage}</p>
-                            <button
-                                className="mt-4 bg-[#FF6F61] text-white py-2 px-6 rounded-full hover:bg-[#FF4F3F]"
-                                onClick={() => setErrorMessage(null)}
-                            >
-                                Cerrar
-                            </button>
-                        </div>
-                    </div>
-                )}
+
 
                 {/* Modal de éxito */}
                 {successMessage && (
