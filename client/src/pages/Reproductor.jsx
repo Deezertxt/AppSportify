@@ -13,15 +13,14 @@ const Reproductor = () => {
     const { id } = useParams();
     const [audiobook, setAudiobook] = useState(null);
     const [fontSize, setFontSize] = useState('16px');
-    const [isplaying, setIsPlaying] = useState(false);
-    const [volume, setVolume] = useState(50);
+    const audioRef = useRef(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [speed, setSpeed] = useState(1.0);
+    const [volume, setVolume] = useState(100);
     const [progress, setProgress] = useState(0);
     const [totalDuration, setTotalDuration] = useState(0);
-    const [showSpeed, setShowSpeed] = useState(false);
-    const [speed, setSpeed] = useState(1);
-    const [showVolume, setShowVolume] = useState(false);
-    const [synth] = useState(window.speechSynthesis);
-    const [utterance, setUtterance] = useState(null);
+    // Agrega un valor de prueba para `audioSrc` (enlace público)
+    const audioSrc = "https://www.safewalking.es/wp-content/uploads/Prueba-de-nivel-nuevos-alumnos-listening-1.mp3"; // Audio de prueba
 
     useEffect(() => {
         const fetchAudiobook = async () => {
@@ -37,72 +36,104 @@ const Reproductor = () => {
         fetchAudiobook();
     }, [id]);
 
-    // Verifica si el audiolibro está cargado
-    if (!audiobook) {
-        return <div className="flex items-center justify-center h-screen text-xl">Loading...</div>; // Indicador de carga
-    }
-
-    const togglePlay = () => {
+    const togglePlayPause = () => {
         if (isPlaying) {
-            synth.cancel();
-            setIsPlaying(false);
+            audioRef.current.pause();
         } else {
-            synth.speak(utterance);
-            setIsPlaying(true);
+            audioRef.current.play();
+        }
+        setIsPlaying(!isPlaying);
+    };
+
+    // Manejar actualización de progreso
+    const handleProgress = () => {
+        if (audioRef.current) {
+            const currentProgress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+            setProgress(currentProgress);
+            setTotalDuration(audioRef.current.duration);
         }
     };
-    const rewind = () => {
-        setProgress(prev => Math.max(prev - 10, 0)); // Resta 10 segundos
+
+    // Manejar cambio de volumen
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.volume = volume / 100;
+        }
+    }, [volume]);
+
+    // Manejar cambio de velocidad de reproducción
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.playbackRate = speed;
+        }
+    }, [speed]);
+
+    // Manejar cambio de progreso al arrastrar el botón de progreso
+    const handleProgressChange = (newProgress) => {
+        if (audioRef.current) {
+            const newTime = (newProgress / 100) * totalDuration;
+            audioRef.current.currentTime = newTime;
+            setProgress(newProgress);
+        }
     };
 
-    const fastForward = () => {
-        setProgress(prev => Math.min(prev + 10, totalDuration)); // Suma 10 segundos
+    // Arreglar retroceso y adelanto de 10 segundos
+    const handleBackward = () => {
+        if (audioRef.current) {
+            audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 10);
+        }
     };
 
-    const handleOpenModal = () => {
-        const synth = synthRef.current;
-        synth.cancel(); // Cancel any ongoing speech synthesis
-        setIsPlaying(false);
-        setIsModalOpen(true);
-        document.body.style.overflow = 'hidden'; // Disable background scroll
+    const handleForward = () => {
+        if (audioRef.current) {
+            audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 10);
+        }
     };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        document.body.style.overflow = 'auto'; // Re-enable background scroll
-    };
-
+    if (!audiobook) {
+        return <div className="flex items-center justify-center h-screen text-xl">Loading...</div>;
+    }
     return (
-        <div className="flex flex-col h-screen bg-gray-100">
+        <div className="flex flex-col h-screen bg-econd">
             <div className="flex-grow flex items-center justify-center">
                 <ChapterText text={audiobook.text} fontSize={fontSize} />
             </div>
+
             <div className="bg-first text-white p-4 flex flex-col items-center">
-                <ProgressBar progress={progress} totalDuration={totalDuration} onProgressChange={setProgress} />
+                <ProgressBar
+                    progress={progress}
+                    totalDuration={totalDuration}
+                    onProgressChange={handleProgressChange}
+                />
 
                 <div className="flex justify-between items-center w-full mt-4"> {/* Asegúrate de que ocupe todo el ancho */}
                     {/* Detalles del Audiolibro */}
                     <div className="flex items-start mb-2">
-                        <AudiobookCover coverUrl={audiobook.coverUrl} className="w-20 h-20 object-cover" />
+                        <AudiobookCover coverUrl={audiobook.coverUrl} className="w-25 h-20 object-cover" />
                         <div className="ml-4"> {/* Agregando margen izquierdo aquí */}
                             <AudioDetails title={audiobook.title} author={audiobook.author} />
                         </div>
                     </div>
 
-                    {/* Controles de Reproducción */}
-                    <div className="flex items-center justify-center mx-4"> {/* mx-4 para margen horizontal */}
-                        <ControlButtons
-                            playing={isplaying}
-                            togglePlay={togglePlay}
-                            rewind={rewind}
-                            fastForward={fastForward}
-                        />
-                    </div>
+                    {/* Controles de Reproducción con ControlButtons */}
+                    <ControlButtons
+                        isPlaying={isPlaying}
+                        togglePlay={togglePlayPause}
+                        handleBackward={handleBackward}
+                        handleForward={handleForward}
+                    />
 
                     {/* Control de Velocidad y Volumen */}
                     <div className="flex items-center">
-                    <PlayerControls speed={speed} setSpeed={setSpeed} volume={volume} setVolume={setVolume} />
+                        <PlayerControls speed={speed} setSpeed={setSpeed} volume={volume} setVolume={setVolume} />
+
                     </div>
+                    {/* Elemento de audio oculto */}
+                    <audio
+                        ref={audioRef}
+                        src={audioSrc}
+                        onTimeUpdate={handleProgress}
+                        onLoadedMetadata={() => setTotalDuration(audioRef.current.duration)}
+                    />
                 </div>
             </div>
         </div>
