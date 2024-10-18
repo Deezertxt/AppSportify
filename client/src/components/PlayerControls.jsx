@@ -41,57 +41,107 @@ const PlaybackSpeed = ({ speed, setSpeed }) => {
 
 const VolumeControl = ({ volume, setVolume }) => {
     const [showVolume, setShowVolume] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
+    const [isDragging, setIsDragging] = useState(false); // Estado para manejar el arrastre
 
     const handleVolumeChange = (e) => {
-        const newVolume = parseFloat(e.target.value);
+        const newVolume = Math.max(0, Math.min(parseFloat(e.target.value), 100)); // Asegurar que el volumen esté en el rango
         setVolume(newVolume);
+        setIsMuted(newVolume === 0);
     };
 
     const toggleMute = () => {
-        setVolume(volume === 0 ? 100 : 0);
+        if (isMuted) {
+            setVolume(100);
+            setIsMuted(false);
+        } else {
+            setVolume(0);
+            setIsMuted(true);
+        }
+    };
+
+    // Maneja el clic en la barra de volumen para ajustar el volumen
+    const handleClick = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const clickY = e.clientY - rect.top; // Posición Y del clic
+        const height = rect.height; // Altura de la barra
+
+        // Calcular el nuevo volumen basado en la posición del clic
+        const newVolume = Math.round((1 - clickY / height) * 100); // Invertir ya que la parte inferior es 0%
+        setVolume(Math.max(0, Math.min(newVolume, 100))); // Limitar el volumen entre 0 y 100
+        setIsMuted(newVolume === 0);
+    };
+
+    const handleMouseDown = () => {
+        setIsDragging(true);
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    // Maneja el movimiento del mouse cuando se arrastra
+    const handleMouseMove = (e) => {
+        if (isDragging) {
+            handleClick(e); // Llama a la función de clic para ajustar el volumen
+        }
     };
 
     return (
-        <div className="relative ml-4">
-            {/* Icono de volumen */}
-            <FiVolume2
-                className="text-2xl cursor-pointer text-white hover:text-green-500"
-                onMouseEnter={() => setShowVolume(true)}
-                onMouseLeave={() => setShowVolume(false)}
-                onClick={toggleMute}
-            />
+        <div
+            className="relative ml-4"
+            onMouseEnter={() => setShowVolume(true)}
+            onMouseLeave={() => {
+                setShowVolume(false);
+                setIsDragging(false); // Asegúrate de que no siga arrastrando
+            }}
+        >
+            {/* Contenedor grande que incluye el icono y el control deslizante */}
+            <div className="flex items-center">
+                {/* Icono de volumen */}
+                <FiVolume2
+                    className={`text-2xl cursor-pointer text-white hover:text-green-500 ${isMuted ? "text-red-500" : ""}`}
+                    onClick={toggleMute}
+                />
 
-            {/* Contenedor del control deslizante de volumen */}
-            {showVolume && (
-                <div className="absolute bottom-12 flex flex-col items-center gap-3 bg-gray-800 p-4 rounded-lg -translate-x-1/2 left-1/2 shadow-lg">
-                    <div className="relative w-4 h-36 bg-light-grey rounded-full overflow-hidden">
-                        {/* Indicador de volumen */}
-                        <div
-                            className="absolute bottom-0 w-full bg-green-500 rounded-full"
-                            style={{ height: `${volume}%` }}
-                        />
+                {/* Control deslizante de volumen */}
+                {showVolume && (
+                    <div
+                        className="absolute bottom-0 mb-9 flex flex-col items-center gap-3 bg-gray-800 p-4 rounded-lg shadow-lg -translate-x-1/2 left-1/2"
+                        onClick={handleClick} // Manejar clic en la barra
+                        onMouseDown={handleMouseDown} // Manejar inicio de arrastre
+                        onMouseUp={handleMouseUp} // Manejar fin de arrastre
+                        onMouseMove={handleMouseMove} // Manejar movimiento del mouse
+                    >
+                        <div className="relative w-4 h-36 bg-light-grey rounded-full overflow-hidden">
+                            {/* Indicador de volumen */}
+                            <div
+                                className="absolute bottom-0 w-full bg-green-500 rounded-full"
+                                style={{ height: `${volume}%` }}
+                            />
 
-                        {/* Control deslizante (thumb) */}
-                        <div
-                            className="absolute left-1/2 transform -translate-x-1/2 bg-white rounded-full w-4 h-4 cursor-pointer"
-                            style={{ bottom: `calc(${volume}% - 8px)` }}
+                            {/* Control deslizante (thumb) */}
+                            <div
+                                className="absolute left-1/2 transform -translate-x-1/2 bg-white rounded-full w-4 h-4 cursor-pointer"
+                                style={{ bottom: `calc(${volume}% - 8px)` }}
+                            />
+                        </div>
+
+                        {/* Input range oculto para manejar la interacción */}
+                        <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={volume}
+                            onChange={handleVolumeChange}
+                            className="absolute opacity-0 h-full w-full cursor-pointer"
+                            style={{
+                                transformOrigin: 'bottom',
+                            }}
                         />
                     </div>
-
-                    {/* Input range oculto para manejar la interacción */}
-                    <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={volume}
-                        onChange={handleVolumeChange}
-                        className="absolute opacity-0 h-full w-full cursor-pointer"
-                        style={{
-                            transformOrigin: 'bottom',
-                        }}
-                    />
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 };
