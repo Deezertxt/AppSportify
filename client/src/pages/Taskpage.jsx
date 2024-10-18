@@ -1,10 +1,9 @@
-import select from 'react-select'
+import { Example } from '../components/DropdownMenu'
 function TasksPage() {
     return (
         <div>
-            <select/>
+            <Example />
         </div>
-        
     )
 }
 

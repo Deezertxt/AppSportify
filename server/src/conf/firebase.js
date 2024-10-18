@@ -1,11 +1,19 @@
 const { initializeApp } = require("firebase/app");
 const { getAnalytics } = require("firebase/analytics");
 const { getStorage } = require("firebase/storage");  // Necesitarás esta importación para Firebase Storage
+<<<<<<< HEAD
 
 // Importa las funciones necesarias de Firebase SDK
 // Configuración de Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyBwWTBxcxC3t2siJwhsn01FSfvQTAdOBAE",
+=======
+require('dotenv').config();
+// Importa las funciones necesarias de Firebase SDK
+// Configuración de Firebase
+const firebaseConfig = {
+    apiKey:process.env.FIREBASE_API_KEY ,
+>>>>>>> 1bc70db92518f7e34050d8413dc202362dc18d5b
     authDomain: "sportify-198e3.firebaseapp.com",
     projectId: "sportify-198e3",
     storageBucket: "sportify-198e3.appspot.com",
@@ -21,4 +29,8 @@ const app = initializeApp(firebaseConfig);
 // Inicializa Firebase Storage
 const storage = getStorage(app);
 
+<<<<<<< HEAD
 module.exports = { storage };
+=======
+module.exports = { storage };
+>>>>>>> 1bc70db92518f7e34050d8413dc202362dc18d5b
