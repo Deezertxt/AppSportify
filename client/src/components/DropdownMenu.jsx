@@ -44,54 +44,54 @@ const Sidebar = () => {
           open={open}
           to="/"
           />
-        <Option
+       {/*  <Option
           Icon={FiSearch}
           title="Buscar"
           selected={selected}
           setSelected={setSelected}
           open={open}
           
-        />
-        <Option
+        /> */}
+       {/*  <Option
           Icon={FiBook}
           title="Biblioteca"
           selected={selected}
           setSelected={setSelected}
           open={open}
           to="/biblioteca"
-        />
+        /> */}
         <Option
           Icon={FiFolderMinus}
-          title="Audiolibros"
+          title=" Registro Audiolibros"
           selected={selected}
           setSelected={setSelected}
           open={open}
           to="/publicar"
         />
-        <Option
+        {/* <Option
           Icon={FiTag}
           title="Categorias"
           selected={selected}
           setSelected={setSelected}
           open={open}
-        />
-        <Option
+        /> */}
+        {/* <Option
           Icon={FiBarChart}
           title="Estadisticas"
           selected={selected}
           setSelected={setSelected}
           open={open}
-        />
-        <Option
+        /> */}
+        {/* <Option
           Icon={FiUsers}
           title="Usuarios"
           selected={selected}
           setSelected={setSelected}
           open={open}
-        />
+        /> */}
       </div>
 
-      <ToggleClose open={open} setOpen={setOpen} />
+      {/* <ToggleClose open={open} setOpen={setOpen} /> */}
     </motion.nav>
   );
 };
@@ -153,7 +153,7 @@ const TitleSection = ({ open }) => {
             </motion.div>
           )}
         </div>
-        {open && <FiChevronDown className="mr-5" />}
+        {/* {open && <FiChevronDown className="mr-5" />} */}
       </div>
     </div>
   );
