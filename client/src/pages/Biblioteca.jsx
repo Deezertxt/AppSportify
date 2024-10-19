@@ -7,7 +7,7 @@ import {useNavigate} from 'react-router-dom';
 function Biblioteca() {
     const [audiobooks, setAudiobooks] = useState([]); // Estado para almacenar los audiolibros
     const navigate = useNavigate();
-
+    console.log(audiobooks.title)
     // Cargar los audiolibros cuando el componente se monta
     useEffect(() => {
         const fetchAudiobooks = async () => {
