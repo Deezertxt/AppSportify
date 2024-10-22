@@ -1,16 +1,22 @@
-export const isValidCover = async (file, width, height) => {
+export const isValidCover = async (file, minWidth = 300, minHeight = 300, maxSizeMB = 5) => {
     try {
         if (!file || !file.name) {
-            console.error('Archivo inválido o sin nombre.');
-            return false;
-        }
-        
-        const fileExtension = file.name.split('.').pop().toLowerCase();
-        if (fileExtension !== 'jpg' && fileExtension !== 'jpeg' && fileExtension !== 'png' && fileExtension !== 'webp') {
-            console.error(`Extensión de archivo no permitida: ${fileExtension}`);
-            return false;
+            return "Archivo inválido o sin nombre.";
         }
 
+        // Verificar tamaño de archivo (máximo 5 MB)
+        const fileSizeMB = file.size / (1024 * 1024); // Convertir bytes a MB
+        if (fileSizeMB > maxSizeMB) {
+            return `El tamaño del archivo (${fileSizeMB.toFixed(2)} MB) excede el máximo permitido de ${maxSizeMB} MB.`;
+        }
+
+        // Verificar extensión del archivo
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        if (fileExtension !== 'jpg' && fileExtension !== 'jpeg' && fileExtension !== 'png' && fileExtension !== 'webp') {
+            return `Extensión de archivo no permitida: ${fileExtension}. Solo se permiten jpg, jpeg, png o webp.`;
+        }
+
+        // Leer archivo y verificar dimensiones de la imagen
         const reader = new FileReader();
         const fileDataURL = await new Promise((resolve, reject) => {
             reader.onload = (event) => resolve(event.target.result);
@@ -21,22 +27,22 @@ export const isValidCover = async (file, width, height) => {
         const img = new Image();
         const isValidImage = await new Promise((resolve, reject) => {
             img.onload = () => {
-                const isWidthValid = img.width >= width;
-                const isHeightValid = img.height >= height;
+                const isWidthValid = img.width >= minWidth;
+                const isHeightValid = img.height >= minHeight;
                 if (isWidthValid && isHeightValid) {
                     resolve(true);
                 } else {
-                    console.error(`Dimensiones de la imagen: ${img.width}x${img.height}. Se esperaba al menos ${width}x${height}.`);
-                    resolve(false);
+                    resolve(`Dimensiones de la imagen inválidas: ${img.width}x${img.height}. Se requiere al menos ${minWidth}x${minHeight} píxeles.`);
                 }
             };
             img.onerror = (error) => reject(`Error al cargar la imagen: ${error}`);
             img.src = fileDataURL;
         });
 
-        return isValidImage;
+        // Si es válida, devolver true, de lo contrario devolver el mensaje de error
+        return isValidImage === true ? true : isValidImage;
+
     } catch (error) {
-        console.error('Ocurrió un error al verificar la portada:', error);
-        return false;
+        return `Ocurrió un error al verificar la portada: ${error}`;
     }
 };
