@@ -177,8 +177,10 @@ const Logo = () => {
       layout
       className="grid size-20 shrink-0 place-content-center rounded-md bg[#F0F9F9]"
     >
+      <Link to="/">{}
       <img className="block lg:hidden h-20 w-18" src="/logoS.svg" alt="Logo" />
       <img className="hidden lg:block h-20 w-auto" src="/logoS.svg" alt="Logo" />
+      </Link>
     </motion.div>
   );
 };
