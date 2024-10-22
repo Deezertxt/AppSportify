@@ -11,13 +11,17 @@ datasource db {
 
 // Definición de la tabla User para gestionar el registro de usuarios
 model User {
-  id          Int      @id @default(autoincrement())  // Campo ID autoincremental
-  name        String   @db.VarChar(100)               // Nombre del usuario, máximo 100 caracteres
-  email       String   @unique                        // Email único
-  password    String   @db.VarChar(255)               // Contraseña cifrada
-  createdAt   DateTime @default(now())                // Fecha de creación
-  updatedAt   DateTime @updatedAt                     // Fecha de actualización automática
-  library     Library[]                               //Relation to Library table (1-n)
+  id            Int      @id @default(autoincrement())  // Campo ID autoincremental
+  name          String   @db.VarChar(100)               // Nombre del usuario
+  lastName      String   @db.VarChar(100)               // Apellido del usuario
+  email         String   @unique                        // Email único
+  password      String   @db.VarChar(255)               // Contraseña cifrada
+  createdAt     DateTime @default(now())                // Fecha de creación
+  updatedAt     DateTime @updatedAt                     // Fecha de actualización automática
+  dateOfBirth   DateTime                                // Fecha de nacimiento (opcional)
+  genderId      Int
+  gender        Gender   @relation(fields: [genderId], references: [id])
+  library       Library[]                               // Relación con la tabla Library (1-n)
 }
 
 model Audiobook {
@@ -49,4 +53,9 @@ model Category {
   id       Int         @id @default(autoincrement())  // Auto-incremental ID field
   name     String      @unique@db.VarChar(100)               // Category name, max 100 characters
   audiobooks Audiobook[]                              // Relation to Audiobook table (1-n)
+}
+model Gender {
+  id         Int     @id @default(autoincrement())  // Clave primaria
+  nameGender String  @unique @db.VarChar(100)       // Nombre único del género
+  users      User[]                                 // Relación uno a muchos con User
 }
