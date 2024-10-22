@@ -27,7 +27,7 @@ function Card({ title, author, description, coverUrl, onClick }) {
                     <p className="card-description leading-relaxed mb-3">{description}</p>
                     <div className="card-footer flex justify-end mt-4">
                         <button 
-                            className="card-button bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300" // Color verde medio
+                            className="card-button bg-indigo-400 text-white py-2 px-4 rounded-lg hover:bg-indigo-500 transition duration-300" // Color más suave
                             onClick={handleListenClick} // Asocia el clic al botón
                         >
                             Escuchar Ahora
