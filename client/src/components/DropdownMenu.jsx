@@ -44,13 +44,15 @@ const Sidebar = () => {
           open={open}
           to="/"
           />
+      
         <Option
+        /*
           Icon={FiSearch}
           title="Buscar"
           selected={selected}
           setSelected={setSelected}
           open={open}
-          
+        
         />
         <Option
           Icon={FiBook}
@@ -61,6 +63,7 @@ const Sidebar = () => {
           to="/biblioteca"
         />
         <Option
+        */
           Icon={FiFolderMinus}
           title="Audiolibros"
           selected={selected}
@@ -69,6 +72,7 @@ const Sidebar = () => {
           to="/publicar"
         />
         <Option
+        
           Icon={FiTag}
           title="Categorias"
           selected={selected}
