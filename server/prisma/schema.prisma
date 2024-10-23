@@ -19,7 +19,7 @@ model User {
   createdAt     DateTime @default(now())                // Fecha de creación
   updatedAt     DateTime @updatedAt                     // Fecha de actualización automática
   dateOfBirth   DateTime                                // Fecha de nacimiento (opcional)
-  genderId      Int
+  genderId      Int                                     
   gender        Gender   @relation(fields: [genderId], references: [id])
   library       Library[]                               // Relación con la tabla Library (1-n)
 }
