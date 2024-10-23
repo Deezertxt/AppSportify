@@ -301,17 +301,17 @@ function Publicar() {
                         {/* Formulario de texto y selección */}
                         <div className="flex flex-col gap-4">
                             <div>
-                                <label htmlFor="titulo" className="text-lg font-semibold text-[#213A57]">
-                                    Título<span className="text-red-500">*</span>
+                                <label htmlFor="nombre" className="text-lg font-semibold text-[#213A57]">
+                                    Nombre<span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
-                                    id="titulo"
-                                    name="titulo"
+                                    id="nombre"
+                                    name="nombre"
                                     value={formData.title}
                                     onChange={e => setFormData({ ...formData, title: e.target.value })}
                                     className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
-                                    placeholder="Título del audiolibro"
+                                    placeholder="Nombre del usuario"
                                     required
                                 />
                                 {errors.title && (
@@ -323,17 +323,17 @@ function Publicar() {
                             </div>
 
                             <div>
-                                <label htmlFor="autor" className="text-lg font-semibold text-[#213A57]">
-                                    Autor<span className="text-red-500">*</span>
+                                <label htmlFor="apellido" className="text-lg font-semibold text-[#213A57]">
+                                    Apellido<span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
-                                    id="autor"
-                                    name="autor"
+                                    id="apellido"
+                                    name="apellido"
                                     value={formData.author}
                                     onChange={e => setFormData({ ...formData, author: e.target.value })}
                                     className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
-                                    placeholder="Nombre del Autor"
+                                    placeholder="Apellido del usuario"
                                     required
                                 />
                                 {errors.author && (
@@ -345,84 +345,93 @@ function Publicar() {
                             </div>
 
                             <div>
-                                <label htmlFor="categoria" className="text-lg font-semibold text-[#213A57]">Categoría<span className="text-red-500">*</span></label>
+                                <label htmlFor="genero" className="text-lg font-semibold text-[#213A57]">
+                                    Género<span className="text-red-500">*</span>
+                                </label>
                                 <select
-                                    name="categoria"
-                                    id="categoria"
-                                    value={formData.category}
-                                    onChange={e => setFormData({ ...formData, category: e.target.value })}
+                                    name="genero"
+                                    id="genero"
+                                    value={formData.genero}  // Cambia category a genero si es necesario
+                                    onChange={e => setFormData({ ...formData, genero: e.target.value })}  // Actualiza formData con genero
                                     className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                                    placeholder = "Seleccione su genero"
                                     required
                                 >
-                                    <option value="">Selecciona una categoría</option>
-                                    {categories.map(category => (
-                                        <option key={category.id} value={category.id}>
-                                            {category.name}
-                                        </option>
-                                    ))}
+                                    <option value="">Seleccione su género</option>
+                                    <option value="masculino">Masculino</option>
+                                    <option value="femenino">Femenino</option>
+                                    <option value="otro">Otro</option>
                                 </select>
-                                {errors.category && (
-                                    <p className="text-red-500 text-sm">{errors.category}</p>
+                                {errors.genero && (  // Cambia category a genero en la validación de errores también
+                                    <p className="text-red-500 text-sm">{errors.genero}</p>
                                 )}
                             </div>
 
                             <div>
-                                <label htmlFor="descripcion" className="text-lg font-semibold text-[#213A57]">Descripción<span className="text-red-500">*</span></label>
-                                <textarea
-                                    id="descripcion"
-                                    name="descripcion"
-                                    value={formData.description}
-                                    onChange={handleDescriptionChange}
-                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B] h-28 resize-none"
-                                    placeholder="Descripción del audiolibro"
-                                    required
-                                ></textarea>
-                                {/* Mensaje de advertencia para la descripción */}
-                                {descriptionWarning && (
-                                    <p className="text-red-500 text-sm">{descriptionWarning}</p>
-                                )}
-                                {errors.description && (
-                                    <p className="text-red-500 text-sm">{errors.description}</p>
-                                )}
-                                {errors.descriptionEmpty && (
-                                    <p className="text-red-500 text-sm">{errors.descriptionEmpty}</p>
-                                )}
-                            </div>
-
-                            {/* Campo Documento PDF */}
-                            <div className="flex flex-col gap-1">
-                                <label htmlFor="documento" className="text-lg font-semibold text-[#213A57]">
-                                    Documento PDF<span className="text-red-500">*</span>
+                                <label htmlFor="contra" className="text-lg font-semibold text-[#213A57]">
+                                    Contraseña<span className="text-red-500">*</span>
                                 </label>
-                                <div className="flex items-center">
-                                    <input
-                                        type="file"
-                                        id="documento"
-                                        name="documento"
-                                        onChange={handleDocumentoChange}
-                                        accept="application/pdf"
-                                        className="w-full p-3 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
-                                        required
-                                    />
-                                    {formData.pdfFile && (
-                                        <button
-                                            type="button"
-                                            onClick={handleCancelDocumento}
-                                            className="bg-[#FF6F61] text-white py-2 px-4 rounded-lg hover:bg-[#FF4F3F] transition-all duration-300 ml-2"
-                                        >
-                                            <FaTrashAlt />
-                                        </button>
-                                    )}
-                                </div>
-                                {/* Mensaje de error para PDF */}
-                                {errors.pdfFile && (
-                                    <p className="text-red-500 text-sm">{errors.pdfFile}</p>
+                                <input
+                                    type="text"
+                                    id="contra"
+                                    name="contra"
+                                    value={formData.author}
+                                    onChange={e => setFormData({ ...formData, author: e.target.value })}
+                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                                    placeholder="Contraseña"
+                                    required
+                                />
+                                {errors.author && (
+                                    <p className="text-red-500 text-sm">{errors.author}</p>
                                 )}
-                                {/* Texto sobre tamaño máximo de archivo */}
-                                <p className="text-gray-500 text-sm">Tamaño máximo del archivo: 50 MB</p>
+                                {errors.authorEmpty && (
+                                    <p className="text-red-500 text-sm">{errors.authorEmpty}</p>
+                                )}
                             </div>
 
+                            <div>
+                                <label htmlFor="fnac" className="text-lg font-semibold text-[#213A57]">
+                                    Fecha de nacimiento<span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    id="fnac"
+                                    name="fnac"
+                                    value={formData.author}
+                                    onChange={e => setFormData({ ...formData, author: e.target.value })}
+                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                                    placeholder="Fecha de nacimiento"
+                                    required
+                                />
+                                {errors.author && (
+                                    <p className="text-red-500 text-sm">{errors.author}</p>
+                                )}
+                                {errors.authorEmpty && (
+                                    <p className="text-red-500 text-sm">{errors.authorEmpty}</p>
+                                )}
+                            </div>
 
+                            <div>
+                                <label htmlFor="correo" className="text-lg font-semibold text-[#213A57]">
+                                    Correo electrónico<span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    id="correo"
+                                    name="correo"
+                                    value={formData.author}
+                                    onChange={e => setFormData({ ...formData, author: e.target.value })}
+                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                                    placeholder="example@dominio.com"
+                                    required
+                                />
+                                {errors.author && (
+                                    <p className="text-red-500 text-sm">{errors.author}</p>
+                                )}
+                                {errors.authorEmpty && (
+                                    <p className="text-red-500 text-sm">{errors.authorEmpty}</p>
+                                )}
+                            </div>
 
                             {/* Botones Publicar y Cancelar */}
                             <div className="grid grid-cols-2 gap-4 mt-2">
@@ -440,57 +449,10 @@ function Publicar() {
                                     <FaTimes className="inline-block mr-2" /> Cancelar
                                 </button>
                             </div>
+
+                            
                         </div>
                     </form>
-
-                    {/* Columna de Portada */}
-                    <div className="w-full sm:w-1/2 flex flex-col items-center justify-start gap-6">
-                        <div>
-                            <label htmlFor="dropZone" className="text-lg font-semibold text-[#213A57]">Portada<span className="text-red-500">*</span></label>
-                            <div
-                                id="dropZone"
-                                className="relative p-10 w-full h-96 border-2 border-[#45DFB1] border-dashed rounded-xl text-center bg-[#F0F9F9] cursor-pointer flex flex-col justify-center items-center"
-                                onDrop={handleDrop}
-                                onDragOver={handleDragOver}
-                            >
-                                <p className="text-sm text-[#213A57] mb-4">Arrastra y suelta la imagen o selecciona un archivo</p>
-                                <input
-                                    type="file"
-                                    id="portadaFile"
-                                    name="portadaFile"
-                                    className="hidden"
-                                    accept="image/jpeg, image/png, image/webp, image/jpg"
-                                    onChange={handleFileChange}
-                                />
-                                <button
-                                    type="button"
-                                    className="bg-[#14919B] text-white py-2 px-6 rounded-lg hover:bg-[#0B6477] flex items-center justify-center mb-4"
-                                    onClick={() => document.getElementById('portadaFile').click()}
-                                >
-                                    <FaImage className="mr-2" /> Elegir archivo
-                                </button>
-
-                                {preview && (
-                                    <div className="absolute inset-0">
-                                        <img src={preview} alt="Vista previa" className="w-full h-full object-cover rounded-lg shadow-lg" />
-                                    </div>
-                                )}
-
-                                {formData.portadaFile && (
-                                    <button
-                                        type="button"
-                                        onClick={handleCancelPortada}
-                                        className="absolute bottom-2 right-2 bg-[#FF6F61] text-white rounded-full p-2 transform hover:scale-110 transition-all duration-300"
-                                    >
-                                        <FaTrashAlt />
-                                    </button>
-                                )}
-                            </div>
-                            {errors.portadaFile && (
-                                <p className="text-red-500 text-sm">{errors.portadaFile}</p>
-                            )}
-                        </div>
-                    </div>
                 </div>
 
 
