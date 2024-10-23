@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import {
   FiBarChart,
   FiBook,
@@ -11,7 +11,7 @@ import {
   FiUsers,
 } from "react-icons/fi";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const DropdownMenu = () => {
   return (
@@ -23,7 +23,18 @@ const DropdownMenu = () => {
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
+  const location = useLocation(); 
   const [selected, setSelected] = useState("Inicio");
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    if (currentPath === "/") {
+      setSelected("Inicio");
+    } else if (currentPath === "/publicar") {
+      setSelected("Registro Audiolibros");
+    }
+  }, [location.pathname]); // Se ejecuta cada vez que cambia la ruta
+
 
   return (
     <motion.nav
@@ -98,10 +109,11 @@ const Sidebar = () => {
 
 const Option = ({ Icon, title, selected, setSelected, open, notifs, to }) => {
   return (
-    <Link to={to} className="w-full">
+    <Link to={to} className="w-full" onClick={() => setSelected(title)}>
+    
     <motion.button
       layout
-      onClick={() => setSelected(title)}
+      /*onClick={() => setSelected(title)}*/
       className={`relative flex h-10 w-full items-center rounded-md transition-colors ${selected === title ? "bg-white text-gray-600" : "text-gray-50 hover:bg-gray-800"}`}
     >
       <motion.div
@@ -165,8 +177,10 @@ const Logo = () => {
       layout
       className="grid size-20 shrink-0 place-content-center rounded-md bg[#F0F9F9]"
     >
+      <Link to="/">{}
       <img className="block lg:hidden h-20 w-18" src="/logoS.svg" alt="Logo" />
       <img className="hidden lg:block h-20 w-auto" src="/logoS.svg" alt="Logo" />
+      </Link>
     </motion.div>
   );
 };
