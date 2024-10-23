@@ -3,12 +3,12 @@ import { isValidCover } from "../utils/fileCoverValidator";
 import { createAudiobook, getCategories, uploadFilesToFirebase } from '../api/api';
 import { FaTrashAlt, FaFilePdf, FaImage, FaPaperPlane, FaTimes, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
+import BarLoaderWrapper from "../components/BarLoader";
 
 function Publicar() {
     const navigate = useNavigate();
     const [documentFileName, setDocumentFileName] = useState(""); // Nombre del archivo PDF
     const [coverFileName, setCoverFileName] = useState(""); // Nombre del archivo de portada
-
     const [preview, setPreview] = useState(null); // Vista previa de la portada
     const [formData, setFormData] = useState({
         title: "",
@@ -19,10 +19,19 @@ function Publicar() {
         portadaFile: null,    // Para la portada
     });
 
+
     const [errors, setErrors] = useState({});  // Estado para manejar errores
     const [successMessage, setSuccessMessage] = useState(null); // Estado para mensaje de éxito
     const [categories, setCategories] = useState([]);
     const [descriptionWarning, setDescriptionWarning] = useState(""); // Advertencia de caracteres en descripción
+    const [isLoading, setIsLoading] = useState(false); // Estado para controlar la carga
+
+    const [isModalOpen, setIsModalOpen] = useState(false); //Estado para el modal
+    const handleNavigateHome = () => {
+    setIsModalOpen(false); 
+    navigate('/'); 
+   };
+
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -72,24 +81,25 @@ function Publicar() {
         document.getElementById("pdfFile").value = ""; // Cerrar explorador de archivos después de selección
     };
 
-    // Función para manejar el cambio de la portada
     const handleDrop = async (event) => {
         event.preventDefault();
         const file = event.dataTransfer.files[0];
         if (file) {
-            const isValid = await isValidCover(file, 200, 300); // Validar si es imagen válida
-            if (isValid) {
+            const validationResult = await isValidCover(file);
+            if (validationResult === true) {
                 setCoverFileName(file.name); // Actualiza el nombre de la portada
                 setFormData({
                     ...formData,
                     portadaFile: file,
                 });
                 setPreview(URL.createObjectURL(file)); // Vista previa de la imagen
+                setErrors({ ...errors, portadaFile: "" }); // Limpiar el error si es válido
             } else {
-                alert("La portada no es válida.");
+                setErrors({ ...errors, portadaFile: validationResult }); // Mostrar el error de validación
             }
         }
     };
+
 
     const handleDragOver = (event) => {
         event.preventDefault();
@@ -98,20 +108,21 @@ function Publicar() {
     const handleFileChange = async (event) => {
         const file = event.target.files[0];
         if (file) {
-            const isValid = await isValidCover(file, 200, 300);
-            if (isValid) {
+            const validationResult = await isValidCover(file);
+            if (validationResult === true) {
                 setCoverFileName(file.name); // Actualiza el nombre de la portada
                 setFormData({
                     ...formData,
                     portadaFile: file,
                 });
                 setPreview(URL.createObjectURL(file)); // Vista previa de la imagen
+                setErrors({ ...errors, portadaFile: "" }); // Limpiar el error si es válido
             } else {
-                alert("La portada no es válida.");
+                setErrors({ ...errors, portadaFile: validationResult }); // Mostrar el error de validación
             }
         }
-        document.getElementById("portadaFile").value = ""; // Cerrar explorador de archivos después de selección
     };
+
 
     // Función para manejar la cancelación del archivo PDF
     const handleCancelDocumento = () => {
@@ -168,24 +179,33 @@ function Publicar() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         let formErrors = {};
+        setIsLoading(true);
 
-        // Validar título, que no sea solo espacios
-        if (!validateTextInput(formData.title) || formData.title.trim() === "") {
-            formErrors.title = "El título no puede estar vacío ni contener solo espacios.";
+        // Validar título, caracteres especiales y espacios
+        if (!validateTextInput(formData.title)) {
+            formErrors.title = "El título contiene caracteres no permitidos.";
+        } else if (formData.title.trim() === "") {
+            formErrors.titleEmpty = "El título no puede estar vacío ni contener solo espacios.";
         }
 
-        // Validar autor, que no sea solo espacios
-        if (!validateTextInput(formData.author) || formData.author.trim() === "") {
-            formErrors.author = "El autor no puede estar vacío ni contener solo espacios.";
+        // Validar autor, caracteres especiales y espacios
+        if (!validateTextInput(formData.author)) {
+            formErrors.author = "El autor contiene caracteres no permitidos.";
+        } else if (formData.author.trim() === "") {
+            formErrors.authorEmpty = "El autor no puede estar vacío ni contener solo espacios.";
         }
-        // Validar descripción, que no sea solo espacios
-        if (formData.description.trim() === "") {
-            formErrors.description = "La descripción no puede estar vacía ni contener solo espacios.";
+
+        // Validar descripción, espacios
+        if (!validateTextInput(formData.description)) {
+            formErrors.description = "La descripción contiene caracteres no permitidos.";
+        } else if (formData.description.trim() === "") {
+            formErrors.descriptionEmpty = "La descripción no puede estar vacía ni contener solo espacios.";
         }
 
         if (!formData.pdfFile) {
             formErrors.pdfFile = "Por favor, sube un archivo PDF o DOCX.";
         }
+
         // Validar portada
         if (!formData.portadaFile) {
             formErrors.portadaFile = "Por favor, sube una portada.";
@@ -193,6 +213,7 @@ function Publicar() {
         // Si hay errores, mostrar y no enviar el formulario
         if (Object.keys(formErrors).length > 0) {
             setErrors(formErrors);
+            setIsLoading(false);
             return;
         }
 
@@ -215,6 +236,7 @@ function Publicar() {
 
                 if (!pdfUrl || !portadaUrl) {
                     setErrors({ general: "Error: No se recuperaron las URLs de los archivos." });
+                    setIsLoading(false);
                     return;
                 }
 
@@ -252,18 +274,22 @@ function Publicar() {
         } catch (error) {
             console.error("Error al subir los archivos:", error);
             setErrors({ general: "Error al registrar la publicación. Verifique los campos." });
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
         <div className="max-h-screen-xl bg-[#F0F9F9]">
+            <BarLoaderWrapper isLoading={isLoading} />
             <div className="max-w-screen-xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-8">
                     <button
-                        onClick={() => navigate('/')} // Navigate to home
-                        className="mb-4 text-[#0B6477] flex items-center"
-                    >
-                        <FaArrowLeft className="mr-2" /> Volver al inicio
+                       
+                       onClick={() => setIsModalOpen(true)} // Abre el modal
+                       className="mb-4 text-[#0B6477] flex items-center"
+                   >
+                       <FaArrowLeft className="mr-2" /> Volver al inicio
                     </button>
                     <div className="text-center flex-grow">
                         <span className="text-4xl font-extrabold text-[#213A57]">Registro de Audiolibro</span>
@@ -271,7 +297,7 @@ function Publicar() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-8 justify-between">
-                    <form onSubmit={handleSubmit} className="w-full sm:w-1/2 flex flex-col gap-6">
+                    <form onSubmit={handleSubmit} className="w-full sm:w-1/2 flex flex-col gap-6${isLoading ? 'pointer-events-none opacity-50' : ''}">
                         {/* Formulario de texto y selección */}
                         <div className="flex flex-col gap-4">
                             <div>
@@ -291,6 +317,9 @@ function Publicar() {
                                 {errors.title && (
                                     <p className="text-red-500 text-sm">{errors.title}</p>
                                 )}
+                                {errors.titleEmpty && (
+                                    <p className="text-red-500 text-sm">{errors.titleEmpty}</p>
+                                )}
                             </div>
 
                             <div>
@@ -309,6 +338,9 @@ function Publicar() {
                                 />
                                 {errors.author && (
                                     <p className="text-red-500 text-sm">{errors.author}</p>
+                                )}
+                                {errors.authorEmpty && (
+                                    <p className="text-red-500 text-sm">{errors.authorEmpty}</p>
                                 )}
                             </div>
 
@@ -349,9 +381,11 @@ function Publicar() {
                                 {descriptionWarning && (
                                     <p className="text-red-500 text-sm">{descriptionWarning}</p>
                                 )}
-                                {/* Mostrar advertencias o errores para la descripción */}
                                 {errors.description && (
                                     <p className="text-red-500 text-sm">{errors.description}</p>
+                                )}
+                                {errors.descriptionEmpty && (
+                                    <p className="text-red-500 text-sm">{errors.descriptionEmpty}</p>
                                 )}
                             </div>
 
@@ -380,7 +414,14 @@ function Publicar() {
                                         </button>
                                     )}
                                 </div>
+                                {/* Mensaje de error para PDF */}
+                                {errors.pdfFile && (
+                                    <p className="text-red-500 text-sm">{errors.pdfFile}</p>
+                                )}
+                                {/* Texto sobre tamaño máximo de archivo */}
+                                <p className="text-gray-500 text-sm">Tamaño máximo del archivo: 50 MB</p>
                             </div>
+
 
 
                             {/* Botones Publicar y Cancelar */}
@@ -418,6 +459,7 @@ function Publicar() {
                                     id="portadaFile"
                                     name="portadaFile"
                                     className="hidden"
+                                    accept="image/jpeg, image/png, image/webp, image/jpg"
                                     onChange={handleFileChange}
                                 />
                                 <button
@@ -443,9 +485,10 @@ function Publicar() {
                                         <FaTrashAlt />
                                     </button>
                                 )}
-
-
                             </div>
+                            {errors.portadaFile && (
+                                <p className="text-red-500 text-sm">{errors.portadaFile}</p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -466,6 +509,35 @@ function Publicar() {
                         </div>
                     </div>
                 )}
+
+         {/* Modal de Confirmación */}
+          {isModalOpen && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
+             <p className="text-lg font-semibold text-[#213A57]">¿Está seguro de salir?</p>
+             <div className="mt-4">
+                <button
+                    onClick={handleNavigateHome}
+                    className="bg-[#0B6477] text-white py-2 px-4 rounded-lg hover:bg-[#14919B] mr-2"
+                >
+                    Confirmar
+                </button>
+                <button
+                    onClick={() => setIsModalOpen(false)}
+                    className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-400"
+                >
+                    Cancelar
+                </button>
+            </div>
+            <button
+                onClick={() => setIsModalOpen(false)} 
+                className="absolute top-2 right-2 text-gray-500"
+            >
+                <FaTimes />
+            </button>
+        </div>
+      </div>
+    )}
             </div>
         </div>
     );
