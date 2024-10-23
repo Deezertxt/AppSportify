@@ -32,8 +32,12 @@ const Sidebar = () => {
       setSelected("Inicio");
     } else if (currentPath === "/publicar") {
       setSelected("Registro Audiolibros");
+    } else if (currentPath === "/registrarusuario") {
+      setSelected("Registro de Usuarios");
     }
-  }, [location.pathname]); // Se ejecuta cada vez que cambia la ruta
+  }, [location.pathname]);
+
+  
 
 
   return (
@@ -54,23 +58,7 @@ const Sidebar = () => {
           setSelected={setSelected}
           open={open}
           to="/"
-          />
-       {/*  <Option
-          Icon={FiSearch}
-          title="Buscar"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          
-        /> */}
-       {/*  <Option
-          Icon={FiBook}
-          title="Biblioteca"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          to="/biblioteca"
-        /> */}
+        />
         <Option
           Icon={FiFolderMinus}
           title=" Registro Audiolibros"
@@ -79,30 +67,16 @@ const Sidebar = () => {
           open={open}
           to="/publicar"
         />
-        {/* <Option
-          Icon={FiTag}
-          title="Categorias"
+        {/* Nueva opción de Registro de Usuarios */}
+        <Option
+          Icon={FiUsers} // Ícono de usuarios
+          title="Registro de Usuarios" // Título del nuevo campo
           selected={selected}
           setSelected={setSelected}
           open={open}
-        /> */}
-        {/* <Option
-          Icon={FiBarChart}
-          title="Estadisticas"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-        /> */}
-        {/* <Option
-          Icon={FiUsers}
-          title="Usuarios"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-        /> */}
+          to="/registrarusuario" // Ruta para registrar usuario
+        />
       </div>
-
-      {/* <ToggleClose open={open} setOpen={setOpen} /> */}
     </motion.nav>
   );
 };
@@ -212,6 +186,9 @@ const ToggleClose = ({ open, setOpen }) => {
     </motion.button>
   );
 };
+
+
+
 
 // Exporta directamente el componente
 export default DropdownMenu;
