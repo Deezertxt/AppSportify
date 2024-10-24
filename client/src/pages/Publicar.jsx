@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { isValidCover } from "../utils/fileCoverValidator";
+import { isValidPdf } from "../utils/fileValidator";
 import { createAudiobook, getCategories, uploadFilesToFirebase } from '../api/api';
 import { FaTrashAlt, FaFilePdf, FaImage, FaPaperPlane, FaTimes, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
@@ -19,7 +20,6 @@ function Publicar() {
         portadaFile: null,    // Para la portada
     });
 
-
     const [errors, setErrors] = useState({});  // Estado para manejar errores
     const [successMessage, setSuccessMessage] = useState(null); // Estado para mensaje de éxito
     const [categories, setCategories] = useState([]);
@@ -28,9 +28,9 @@ function Publicar() {
 
     const [isModalOpen, setIsModalOpen] = useState(false); //Estado para el modal
     const handleNavigateHome = () => {
-    setIsModalOpen(false); 
-    navigate('/'); 
-   };
+        setIsModalOpen(false);
+        navigate('/');
+    };
 
 
     useEffect(() => {
@@ -46,41 +46,40 @@ function Publicar() {
         fetchCategories();
     }, []);
 
-    // Validar que el archivo sea un PDF y no exceda 50MB
-    const validatePDF = (file) => {
-        const isPDF = file.type === 'application/pdf';
-        const isUnderSize = file.size <= 50 * 1024 * 1024; // 50MB
-        if (!isPDF) {
-            setErrorMessage("Solo se permiten archivos PDF.");
-            return false;
-        }
-        if (!isUnderSize) {
-            setErrors(prevErrors => ({ ...prevErrors, pdfFile: "El archivo no puede ser mayor a 50 MB." }));
-            return false;
-        }
-        return true;
-    };
-
     // Validar caracteres especiales en los campos de texto
     const validateTextInput = (input) => {
         const regex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s.,!?()\-:;]*$/;
         return regex.test(input);
     };
 
-    // Función para manejar el cambio del archivo PDF
-    const handleDocumentoChange = (e) => {
-        const file = e.target.files[0];
-        if (file && validatePDF(file)) {
-            setFormData({
-                ...formData,
-                pdfFile: file,
-            });
-            setDocumentFileName(file.name); // Actualiza el nombre del archivo PDF
-            setErrors(prevErrors => ({ ...prevErrors, pdfFile: "" })); // Limpiar error del archivo
-        }
-        document.getElementById("pdfFile").value = ""; // Cerrar explorador de archivos después de selección
-    };
+    const handleDocumentoChange = async (event) => {
+        const newFile = event.target.files[0];
 
+        // Validate if no file is selected
+        if (!newFile) {
+            return; // Do nothing if no new file
+        }
+
+        // Validate the PDF file using isValidPdf
+        const validationResult = await isValidPdf(newFile);
+        if (!validationResult.isValid) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                pdfFile: validationResult.error,
+            }));
+            event.target.value = ""; // Reset the file input
+            return;
+        }
+
+        // If the file is valid, update the state
+        setErrors((prevErrors) => ({ ...prevErrors, pdfFile: null })); // Clear previous errors
+        setFormData({
+            ...formData,
+            pdfFile: newFile,
+        });
+        setDocumentFileName(newFile.name); // Update the file name
+    };
+    
     const handleDrop = async (event) => {
         event.preventDefault();
         const file = event.dataTransfer.files[0];
@@ -285,11 +284,11 @@ function Publicar() {
             <div className="max-w-screen-xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-8">
                     <button
-                       
-                       onClick={() => setIsModalOpen(true)} // Abre el modal
-                       className="mb-4 text-[#0B6477] flex items-center"
-                   >
-                       <FaArrowLeft className="mr-2" /> Volver al inicio
+
+                        onClick={() => setIsModalOpen(true)} // Abre el modal
+                        className="mb-4 text-[#0B6477] flex items-center"
+                    >
+                        <FaArrowLeft className="mr-2" /> Volver al inicio
                     </button>
                     <div className="text-center flex-grow">
                         <span className="text-4xl font-extrabold text-[#213A57]">Registro de Audiolibro</span>
@@ -510,34 +509,34 @@ function Publicar() {
                     </div>
                 )}
 
-         {/* Modal de Confirmación */}
-          {isModalOpen && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
-             <p className="text-lg font-semibold text-[#213A57]">¿Está seguro de salir?</p>
-             <div className="mt-4">
-                <button
-                    onClick={handleNavigateHome}
-                    className="bg-[#0B6477] text-white py-2 px-4 rounded-lg hover:bg-[#14919B] mr-2"
-                >
-                    Confirmar
-                </button>
-                <button
-                    onClick={() => setIsModalOpen(false)}
-                    className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-400"
-                >
-                    Cancelar
-                </button>
-            </div>
-            <button
-                onClick={() => setIsModalOpen(false)} 
-                className="absolute top-2 right-2 text-gray-500"
-            >
-                <FaTimes />
-            </button>
-        </div>
-      </div>
-    )}
+                {/* Modal de Confirmación */}
+                {isModalOpen && (
+                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+                        <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
+                            <p className="text-lg font-semibold text-[#213A57]">¿Está seguro de salir?</p>
+                            <div className="mt-4">
+                                <button
+                                    onClick={handleNavigateHome}
+                                    className="bg-[#0B6477] text-white py-2 px-4 rounded-lg hover:bg-[#14919B] mr-2"
+                                >
+                                    Confirmar
+                                </button>
+                                <button
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-400"
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="absolute top-2 right-2 text-gray-500"
+                            >
+                                <FaTimes />
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
