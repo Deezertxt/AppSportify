@@ -538,7 +538,7 @@ function Publicar() {
         </div>
       </div>
     )}
-            </div>
+      </div>
         </div>
     );
 }
