@@ -34,7 +34,7 @@ function PanelAdmin() {
             <CardAdmin />
             <CardAdmin />
 
-            {/* Botón para abrir el modal */}
+        
             
             {/* Modal de Registro */}
             <FormModal isOpen={isModalOpen} closeModal={closeModal} />
