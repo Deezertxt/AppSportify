@@ -19,11 +19,19 @@ function Publicar() {
         portadaFile: null,    // Para la portada
     });
 
+
     const [errors, setErrors] = useState({});  // Estado para manejar errores
     const [successMessage, setSuccessMessage] = useState(null); // Estado para mensaje de éxito
     const [categories, setCategories] = useState([]);
     const [descriptionWarning, setDescriptionWarning] = useState(""); // Advertencia de caracteres en descripción
     const [isLoading, setIsLoading] = useState(false); // Estado para controlar la carga
+
+    const [isModalOpen, setIsModalOpen] = useState(false); //Estado para el modal
+    const handleNavigateHome = () => {
+    setIsModalOpen(false); 
+    navigate('/'); 
+   };
+
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -277,10 +285,11 @@ function Publicar() {
             <div className="max-w-screen-xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-8">
                     <button
-                        onClick={() => navigate('/')} // Navigate to home
-                        className="mb-4 text-[#0B6477] flex items-center"
-                    >
-                        <FaArrowLeft className="mr-2" /> Volver al inicio
+                       
+                       onClick={() => setIsModalOpen(true)} // Abre el modal
+                       className="mb-4 text-[#0B6477] flex items-center"
+                   >
+                       <FaArrowLeft className="mr-2" /> Volver al inicio
                     </button>
                     <div className="text-center flex-grow">
                         <span className="text-4xl font-extrabold text-[#213A57]">Registro de Audiolibro</span>
@@ -500,11 +509,39 @@ function Publicar() {
                         </div>
                     </div>
                 )}
+
+         {/* Modal de Confirmación */}
+          {isModalOpen && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
+             <p className="text-lg font-semibold text-[#213A57]">¿Está seguro de salir?</p>
+             <div className="mt-4">
+                <button
+                    onClick={handleNavigateHome}
+                    className="bg-[#0B6477] text-white py-2 px-4 rounded-lg hover:bg-[#14919B] mr-2"
+                >
+                    Confirmar
+                </button>
+                <button
+                    onClick={() => setIsModalOpen(false)}
+                    className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-400"
+                >
+                    Cancelar
+                </button>
             </div>
+            <button
+                onClick={() => setIsModalOpen(false)} 
+                className="absolute top-2 right-2 text-gray-500"
+            >
+                <FaTimes />
+            </button>
+        </div>
+      </div>
+    )}
+      </div>
         </div>
     );
 }
 
 export default Publicar;
-
 

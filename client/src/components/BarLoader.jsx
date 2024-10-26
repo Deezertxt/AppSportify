@@ -49,3 +49,4 @@ const BarLoaderWrapper = ({ isLoading }) => {
 };
 
 export default BarLoaderWrapper;
+
