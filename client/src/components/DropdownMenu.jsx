@@ -83,6 +83,15 @@ const Sidebar = () => {
           open={open}
           to="/PanelAdmin"
         />
+
+<Option
+          Icon={FiBarChart} // Icono de administración
+          title="BOTONCITO REGISTRO"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+          to="/"
+        />
       </div>
     </motion.nav>
   );
