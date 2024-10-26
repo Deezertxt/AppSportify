@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FiBarChart,
   FiBook,
@@ -24,7 +24,7 @@ const DropdownMenu = () => {
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
   const location = useLocation(); 
-  const [selected, setSelected] = useState("Inicio");
+  const [selected, setSelected] = useState("Panel de Administración");
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -37,9 +37,6 @@ const Sidebar = () => {
     }
   }, [location.pathname]);
 
-  
-
-
   return (
     <motion.nav
       layout
@@ -51,6 +48,8 @@ const Sidebar = () => {
       <TitleSection open={open} />
 
       <div className="space-y-1">
+        {/* Panel de Administración */}
+        
         <Option
           Icon={FiHome}
           title="Inicio"
@@ -61,20 +60,28 @@ const Sidebar = () => {
         />
         <Option
           Icon={FiFolderMinus}
-          title=" Registro Audiolibros"
+          title="Registro Audiolibros"
           selected={selected}
           setSelected={setSelected}
           open={open}
           to="/publicar"
         />
-        {/* Nueva opción de Registro de Usuarios */}
         <Option
-          Icon={FiUsers} // Ícono de usuarios
-          title="Registro de Usuarios" // Título del nuevo campo
+          Icon={FiUsers}
+          title="Registro de Usuarios"
           selected={selected}
           setSelected={setSelected}
           open={open}
-          to="/registrarusuario" // Ruta para registrar usuario
+          to="/registrarusuario"
+        />
+
+        <Option
+          Icon={FiBarChart} // Icono de administración
+          title="Panel de Administración"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+          to="/PanelAdmin"
         />
       </div>
     </motion.nav>
@@ -84,38 +91,36 @@ const Sidebar = () => {
 const Option = ({ Icon, title, selected, setSelected, open, notifs, to }) => {
   return (
     <Link to={to} className="w-full" onClick={() => setSelected(title)}>
-    
-    <motion.button
-      layout
-      /*onClick={() => setSelected(title)}*/
-      className={`relative flex h-10 w-full items-center rounded-md transition-colors ${selected === title ? "bg-white text-gray-600" : "text-gray-50 hover:bg-gray-800"}`}
-    >
-      <motion.div
+      <motion.button
         layout
-        className="grid h-full w-10 place-content-center text-xl"
+        className={`relative flex h-10 w-full items-center rounded-md transition-colors ${selected === title ? "bg-white text-gray-600" : "text-gray-50 hover:bg-gray-800"}`}
       >
-        <Icon />
-      </motion.div>
-      {open && (
-        <motion.span
+        <motion.div
           layout
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.125 }}
-          className="text-x font-medium"
+          className="grid h-full w-10 place-content-center text-xl"
         >
-          {title}
-        </motion.span>
-      )}
-      {notifs && open && (
-        <motion.span
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          style={{ y: "-50%" }}
-          transition={{ delay: 0.5 }}
-          className="absolute right-2 top-1/2 size-4 rounded bg-sky-500 text-xs text-white"
-        >
-          {notifs}
+          <Icon />
+        </motion.div>
+        {open && (
+          <motion.span
+            layout
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.125 }}
+            className="text-x font-medium"
+          >
+            {title}
+          </motion.span>
+        )}
+        {notifs && open && (
+          <motion.span
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            style={{ y: "-50%" }}
+            transition={{ delay: 0.5 }}
+            className="absolute right-2 top-1/2 size-4 rounded bg-sky-500 text-xs text-white"
+          >
+            {notifs}
           </motion.span>
         )}
       </motion.button>
@@ -135,11 +140,9 @@ const TitleSection = ({ open }) => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.125 }}
-            > 
-            </motion.div>
+            />
           )}
         </div>
-        {/* {open && <FiChevronDown className="mr-5" />} */}
       </div>
     </div>
   );
@@ -149,10 +152,12 @@ const Logo = () => {
   return (
     <motion.div
       layout
-      className="grid size-20 shrink-0 place-content-center rounded-md bg[#F0F9F9]"
+      className="grid size-20 shrink-0 place-content-center rounded-md bg-[#F0F9F9]"
     >
-      <img className="block lg:hidden h-20 w-18" src="/logoS.svg" alt="Logo" />
-      <img className="hidden lg:block h-20 w-auto" src="/logoS.svg" alt="Logo" />
+      <Link to="/">
+        <img className="block lg:hidden h-20 w-18" src="/logoS.svg" alt="Logo" />
+        <img className="hidden lg:block h-20 w-auto" src="/logoS.svg" alt="Logo" />
+      </Link>
     </motion.div>
   );
 };
@@ -167,7 +172,7 @@ const ToggleClose = ({ open, setOpen }) => {
       <div className="flex items-center p-2 text-gray-400">
         <motion.div
           layout
-          className="grid size-10 place-content-center text-lg "
+          className="grid size-10 place-content-center text-lg"
         >
           <FiChevronsRight className={`transition-transform ${open && "rotate-180"}`} />
         </motion.div>
@@ -187,8 +192,4 @@ const ToggleClose = ({ open, setOpen }) => {
   );
 };
 
-
-
-
-// Exporta directamente el componente
 export default DropdownMenu;
