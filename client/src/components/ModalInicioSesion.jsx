@@ -1,7 +1,15 @@
 import React from 'react';
+import { Input } from "@nextui-org/react";
+import { EyeSlashFilledIcon } from "./EyeSlashFilledIcon";
+import { EyeFilledIcon } from "./EyeFilledIcon";
 
-const ModalInicioSesion = ({ isOpen, onClose }) => {
+
+const ModalInicioSesion = ({ isOpen, onClose, placeholder="Ingresar" }) => {
   if (!isOpen) return null;
+
+  const [isVisible, setIsVisible] = React.useState(false);
+
+  const toggleVisibility = () => setIsVisible(!isVisible);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -12,7 +20,7 @@ const ModalInicioSesion = ({ isOpen, onClose }) => {
           <img src='/AppSportify/client/public/logo.png' alt="Logo" className="w-36 h-auto mb-2" />
 
           <div className="text-3xl font-semibold text-blue-700">Sportify</div>
-          <div className='font-semibold w-72'>Login</div>
+          <div className='font-semibold w-72'>Iniciar Sesión</div>
 
           <form action="" class="mt-10 space-y-8 dark:text-white">
             
@@ -24,17 +32,33 @@ const ModalInicioSesion = ({ isOpen, onClose }) => {
 
             <div class="flex flex-col items-end">
               <div class="w-full relative before:absolute before:bottom-0 before:h-0.5 before:left-0 before:origin-right focus-within:before:origin-left before:right-0 before:scale-x-0 before:m-auto before:bg-sky-400 dark:before:bg-sky-800 focus-within:before:!scale-x-100 focus-within:invalid:before:bg-red-400 before:transition before:duration-300">
-                <input id="" type="password" placeholder="Password" class="w-full bg-transparent pb-3  border-b border-black dark:placeholder-gray-300 dark:border-gray-600 outline-none  invalid:border-red-400 transition"/>
+                <Input 
+                id="" 
+                variant=" "
+                placeholder={placeholder} 
+                endContent={
+                  <button className=" " type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
+                    {isVisible ? (
+                      <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none text-white " />
+                    ) : (
+                      <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none text-white" />
+                    )}
+                  </button>
+                }
+                type={isVisible ? "text" : "password"}
+                class="w-full bg-transparent pb-3  border-b border-black dark:placeholder-gray-300 dark:border-gray-600 outline-none  invalid:border-red-400 transition"
+                
+                />
               </div>
             </div>
 
             <div>
               <button
               class="w-full rounded-lg bg-[#003465] dark:bg-sky-400 h-11 flex items-center justify-center px-6 py-3 transition hover:bg-sky-600 focus:bg-sky-600 active:bg-sky-800">
-                <span class="text-base font-semibold text-white dark:text-gray-900">Login</span>
+                <span class="text-base font-semibold text-white dark:text-gray-900">Iniciar Sesion</span>
               </button>
               <button href="#" type="reset" class="-ml-3 w-max p-3">
-              <p class="text-sm tracking-wide text-white dark:text-sky-400">Don't have an account yet? <span className='font-bold'>Register for free</span></p>
+              <p class="text-sm tracking-wide text-white dark:text-sky-400">Aun no estás en Sportify <span className='font-bold'>Registrate</span></p>
               </button>
             </div>
           </form>
