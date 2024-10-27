@@ -1,9 +1,10 @@
+//navbar//
 import React, { useState } from 'react';
+import LoginModal from './ModalInicioSesion'; 
 
-
-const Navbar = ({ openLoginModal }) => {
+const Navbar = () => {
     const [isMenuOpen, setMenuOpen] = useState(false);
-    const [isLoginModalOpen, setLoginModalOpen] = useState(false); // Nuevo estado para el modal
+    const [isLoginModalOpen, setLoginModalOpen] = useState(false); 
 
     const toggleMenu = () => {
         setMenuOpen(!isMenuOpen);
@@ -11,7 +12,7 @@ const Navbar = ({ openLoginModal }) => {
 
     const openModal = () => {
         setLoginModalOpen(true);
-        setMenuOpen(false);
+        setMenuOpen(false); 
     };
 
     const closeModal = () => {
@@ -20,7 +21,7 @@ const Navbar = ({ openLoginModal }) => {
 
     return (
         <>
-           
+          
             <nav className="hidden md:flex justify-between items-center p-6 bg-[#F1FAEE] shadow-md">
                 <div className="flex items-center space-x-2">
                     <img src="https://cdn.blinkist.com/logo.svg" alt="Logo" className="w-8 h-8" />
@@ -31,7 +32,7 @@ const Navbar = ({ openLoginModal }) => {
                     <a href="#" className="hover:text-[#E63946]">Sobre nosotros</a>
                     <a href="#" className="hover:text-[#E63946]">Coaching</a>
                     <button
-                        onClick={openModal} 
+                        onClick={openModal} // Cambiar a openModal
                         className="bg-[#A8DADC] text-white px-4 py-2 rounded hover:bg-[#457B9D]"
                     >
                         Iniciar sesión
@@ -39,7 +40,7 @@ const Navbar = ({ openLoginModal }) => {
                 </div>
             </nav>
 
-            {/* Botón de menú para móviles */}
+
             <div className="md:hidden flex justify-between items-center p-6 bg-[#F1FAEE]">
                 <div className="flex items-center space-x-0">
                     <button onClick={toggleMenu} className="text-[#457B9D] mr-2">
@@ -50,7 +51,7 @@ const Navbar = ({ openLoginModal }) => {
                 </div>
             </div>
 
-            {/* Menú lateral */}
+            
             {isMenuOpen && (
                 <div className="fixed inset-0 bg-[#1D3557] bg-opacity-50 z-40" onClick={toggleMenu}>
                     <div className="fixed left-0 top-0 w-64 h-full bg-[#F1FAEE] shadow-lg z-50 p-6">
@@ -74,8 +75,8 @@ const Navbar = ({ openLoginModal }) => {
                 </div>
             )}
 
-            {/* Modal de inicio de sesión */}
-            {isLoginModalOpen && <LoginModal closeModal={closeModal} />} {/* Renderiza el modal */}
+           
+            {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={closeModal} />} 
         </>
     );
 };
