@@ -125,7 +125,7 @@ const RegistrationForm = ({ onSubmit }) => {
         {/* Botón de Google */}
         <button className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
           <img
-            src="google-icon.png" // Reemplazar con el ícono de Google.
+            src="google.svg" // Reemplazar con el ícono de Google.
             alt="Google icon"
             className="w-5 h-5 mr-2"
           />
