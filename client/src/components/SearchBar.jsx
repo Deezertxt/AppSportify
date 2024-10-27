@@ -5,18 +5,10 @@ import {
     getAudiobooksByCategory,
     getAudiobooksByTitle,
 } from "../api/api";
+import { SearchOptions } from "./SearchOptions";
 
 function Search({ setResults }) {
     const [input, setInput] = useState("");
-    const [botonColores, setBotonColores] = useState([false, false, false, false]);
-    const nombresBotones = ["Todos", "Titulo", "Autor", "Categoria"];
-
-    //colores botones
-    const handleButtonClick = (i) => {
-        const nuevoColor = [...botonColores];
-        nuevoColor[i] = !nuevoColor[i];
-        setBotonColores(nuevoColor);
-    };
 
     const fetchData = (value) => {
         fetch("https://jsonplaceholder.typicode.com/users")
@@ -41,7 +33,7 @@ function Search({ setResults }) {
 
     return (
         <div className="mb-3 xl:w-96">
-            <div className="relative mb-4 flex w-full flex-wrap items-stretch">
+            <div className="relative mb-4 flex w-[1000px] flex-wrap items-stretch">
                 <input
                     type="search"
                     className="relative m-0 block flex-auto rounded-l border border-solid border-gray-300 bg-white px-3 py-2 text-base font-normal text-gray-700 placeholder-gray-400 transition duration-200 ease-in-out focus:z-[3] focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
@@ -70,21 +62,12 @@ function Search({ setResults }) {
                         />
                     </svg>
                 </span>
-            </div>
-
-            <div className="py-1">Filtrar por:</div>
-            <div className="flex space-x-4">
-                {botonColores.map((isAlternateColor, indice) => (
-                    <button
-                        key={indice}
-                        onClick={() => handleButtonClick(indice)}
-                        className={`px-4 py-2 font-semibold text-white rounded ${
-                            isAlternateColor ? "bg-green-500" : "bg-[#0B6477]"
-                        }`}
-                    >
-                        {nombresBotones[indice]}
-                    </button>
-                ))}
+                {/* <div className="py-1 relative">
+                    Filtrar por:
+                    <div>
+                        <SearchOptions />
+                    </div>
+                </div> */}
             </div>
         </div>
     );

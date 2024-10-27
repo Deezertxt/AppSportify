@@ -6,6 +6,7 @@ import {useNavigate} from 'react-router-dom';
 
 import SearchBar from '../components/SearchBar'
 import { SearchResultsList } from "../components/SearchResultsList";
+import { SearchOptions } from "../components/SearchOptions";
 
 function Biblioteca() {
     const [audiobooks, setAudiobooks] = useState([]); // Estado para almacenar los audiolibros
@@ -43,8 +44,12 @@ function Biblioteca() {
                 <div className="px-20">
                     <SearchBar setResults={setResults}/>
                 </div>
-                <div> 
+                <div className="px-20"> 
                     <SearchResultsList results={results}/>
+                </div>
+                <div className="px-20">
+                    Filtar por:
+                    <SearchOptions/>
                 </div>
                 <div className="max-w-5xl mx-auto mt-8">
                     {Array.isArray(audiobooks) && audiobooks.length > 0 ? (
