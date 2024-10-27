@@ -1,83 +1,168 @@
-import React from 'react';
-import { Input } from "@nextui-org/react";
-import { EyeSlashFilledIcon } from "./EyeSlashFilledIcon";
-import { EyeFilledIcon } from "./EyeFilledIcon";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import Eye from "./eye";
 
 
-const ModalInicioSesion = ({ isOpen, onClose, placeholder="Ingresar" }) => {
+const Modal = ({ isOpen, closeModal, children}) => {
   if (!isOpen) return null;
 
-  const [isVisible, setIsVisible] = React.useState(false);
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      onClick={closeModal}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="bg-first p-6 rounded-lg shadow-lg w-[450px] h-[690px]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </motion.div>
+    </motion.div>
+  );
+}
 
-  const toggleVisibility = () => setIsVisible(!isVisible);
+const RegistrationForm = ({ onSubmit }) => {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Lógica para enviar el formulario
+    onSubmit(formData);
+  };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-blue-200 rounded-lg p-6 w-96 shadow-lg relative">
-        <button onClick={onClose} className="absolute top-2 right-2 text-gray-500">X</button>
-        <div className="flex flex-col items-center space-y-4">
-          
-          <img src='/AppSportify/client/public/logo.png' alt="Logo" className="w-36 h-auto mb-2" />
-
-          <div className="text-3xl font-semibold text-blue-700">Sportify</div>
-          <div className='font-semibold w-72'>Iniciar Sesión</div>
-
-          <form action="" class="mt-10 space-y-8 dark:text-white">
-            
-            <div class="flex flex-col items-end">
-              <div class="relative before:absolute before:bottom-0 before:h-0.5 before:left-0 before:origin-right focus-within:before:origin-left before:right-0 before:scale-x-0 before:m-auto before:bg-sky-400 dark:before:bg-sky-800 focus-within:before:!scale-x-100 focus-within:invalid:before:bg-red-400 before:transition before:duration-300">
-                <input 
-                id="" 
-                type="email" 
-                placeholder="Email" 
-                class="w-72 bg-transparent pb-3  border-b border-black dark:placeholder-gray-300 dark:border-gray-600 outline-none  invalid:border-red-400 transition"/>
-              </div>
-            </div>
-
-            <div class="flex flex-col items-end">
-              <div class="border-b border-black relative before:absolute before:bottom-0 before:h-0.5 before:left-0 before:origin-right focus-within:before:origin-left before:right-0 before:scale-x-0 before:m-auto before:bg-sky-400 dark:before:bg-sky-800 focus-within:before:!scale-x-100 focus-within:invalid:before:bg-red-400 before:transition before:duration-300">
-                <Input 
-                id="" 
-                placeholder={placeholder} 
-                endContent={
-                  <button className="" type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
-                    {isVisible ? (
-                      <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none text-white " />
-                    ) : (
-                      <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none text-white" />
-                    )}
-                  </button>
-                }
-                type={isVisible ? "text" : "password"}
-                class="bg-transparent focus:outline-none pb-3"
-                
-                />
-              </div>
-            </div>
-
-            <div>
-              <button
-              class="w-full rounded-lg bg-[#003465] dark:bg-sky-400 h-11 flex items-center justify-center px-6 py-3 transition hover:bg-sky-600 focus:bg-sky-600 active:bg-sky-800">
-                <span class="text-base font-semibold text-white dark:text-gray-900">Iniciar Sesion</span>
-              </button>
-              <button href="#" type="reset" class="-ml-3 w-max p-3">
-              <p class="text-sm tracking-wide text-white dark:text-sky-400">Aun no estás en Sportify <span className='font-bold'>Registrate</span></p>
-              </button>
-            </div>
-          </form>
-
-          <div className="flex items-center w-64">
-            <hr className="w-full border-black" />
-            <span className="mx-2 text-gray-500">Or</span>
-            <hr className="w-full border-black" />
-          </div>
-          <button className="w-72 flex items-center justify-center bg-[#003465] text-white p-3 h-11 rounded-lg">
-            <span className="mr-2">G</span> Login with Google
-          </button>
+    <div >
+      <form onSubmit={handleSubmit}>
+        {/* Logo */}
+        <div className="flex flex-col items-center">
+          <img
+            src="logoS.svg" // Reemplazar con la ruta del logo.
+            alt="Sportify logo"
+            className="w-37  mb-4"
+          />
         </div>
-      </div>
+
+        {/* Título */}
+        <h2 className="text-2xl font-bold text-white text-center mb-6">Regístrate</h2>
+
+        {/* Formulario */}
+        <div className="mb-4">
+          <label className="block text-white mb-1">Nombre de usuario</label>
+          <input
+            type="text"
+            name="username"
+            placeholder="Nombre de usuario"
+            value={formData.username}
+            onChange={handleChange}
+            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-white mb-1">Correo electrónico</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="Correo electrónico"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            required
+          />
+        </div>
+        <div className="mb-4  ">
+          <Eye placeholder="Ingresar contraseña">
+          </Eye>
+        </div>
+        <div className="mb-6  ">
+          <Eye placeholder="Confirmar contraseña">
+
+          </Eye>
+        </div>
+
+        {/* Botón de registro */}
+        <button
+          type="submit"
+          className="w-full bg-gray-800 text-white p-3 rounded-md mb-4"
+        >
+          Registrarse
+        </button>
+
+        {/* Enlace de inicio de sesión */}
+        <p className="text-white text-center mb-4">
+          ¿Ya tienes una cuenta?{" "}
+          <a href="#" className="underline">
+            Inicia sesión
+          </a>
+        </p>
+
+        {/* Separador */}
+        <div className="flex items-center mb-4">
+          <hr className="w-full border-white" />
+          <span className="px-3 text-white">O</span>
+          <hr className="w-full border-white" />
+        </div>
+
+        {/* Botón de Google */}
+        <button className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
+          <img
+            src="google.svg" // Reemplazar con el ícono de Google.
+            alt="Google icon"
+            className="w-5 h-5 mr-2"
+          />
+          Iniciar sesión con Google
+        </button>
+      </form>
     </div>
   );
 };
 
-export default ModalInicioSesion;
+const RegistrationModal = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openModal = () => setIsOpen(true);
+  const closeModal = () => setIsOpen(false);
+
+  const handleRegistration = (formData) => {
+    console.log("Datos del formulario:", formData);
+    // Lógica de envío de formulario
+    closeModal();
+  };
+
+  return (
+    <div className="flex justify-center items-center min-h-screen">
+      <button
+        onClick={openModal}
+        className="bg-[#45DFB1] text-white p-3 rounded-md"
+      >
+        Abrir Registro
+      </button>
+
+      <Modal isOpen={isOpen} closeModal={closeModal}>
+        <RegistrationForm onSubmit={handleRegistration} />
+      </Modal>
+    </div>
+  );
+};
+
+export default RegistrationModal;
