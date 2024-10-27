@@ -20,7 +20,7 @@ const Reproductor = () => {
     const [progress, setProgress] = useState(0);
     const [totalDuration, setTotalDuration] = useState(0);
     // Agrega un valor de prueba para `audioSrc` (enlace público)
-    const audioSrc = "https://www.safewalking.es/wp-content/uploads/Prueba-de-nivel-nuevos-alumnos-listening-1.mp3"; // Audio de prueba
+    const audioSrc = "https://storage.googleapis.com/sportify-1/uploads/audio/michael%20-audio.mp3"; // Audio de prueba
 
     useEffect(() => {
         const fetchAudiobook = async () => {
@@ -95,7 +95,7 @@ const Reproductor = () => {
     return (
         <div className="flex flex-col h-screen bg-econd">
             <div className="flex-grow flex items-center justify-center">
-                <ChapterText text={audiobook.text} fontSize={fontSize} />
+                <ChapterText text={audiobook.jsonUrl} fontSize={fontSize} />
             </div>
 
             <div className="bg-first text-white p-4 flex flex-col items-center">
