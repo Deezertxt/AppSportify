@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { register } from "../api/api";
-import Eye from "./eye"; // Asegúrate de que el componente Eye tenga una lógica para mostrar/ocultar contraseña.
+import Eye from "./eye"; 
 
 const Modal = ({ isOpen, closeModal, children }) => {
   if (!isOpen) return null;
@@ -112,7 +112,7 @@ const RegistrationForm = ({ onSubmit }) => {
         {/* Logo */}
         <div className="flex flex-col items-center">
           <img
-            src="logoS.svg" // Reemplazar con la ruta del logo.
+            src="logoS.svg" 
             alt="Sportify logo"
             className="w-37  mb-4"
           />
@@ -140,6 +140,8 @@ const RegistrationForm = ({ onSubmit }) => {
             type="email"
             name="email"
             placeholder="Correo electrónico"
+            isInvalid={true}
+            errorMessage="Please enter a valid email"
             value={formData.email}
             onChange={handleChange}
             className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
@@ -182,7 +184,7 @@ const RegistrationForm = ({ onSubmit }) => {
         {/* Botón de Google */}
         <button className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
           <img
-            src="google-icon.png" // Reemplazar con el ícono de Google.
+            src="google-icon.png" 
             alt="Google icon"
             className="w-5 h-5 mr-2"
           />
