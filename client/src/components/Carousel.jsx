@@ -36,7 +36,7 @@ const Carousel = ({ images }) => {
         {"<"}
       </button>
 
-      {/* Contenedor de las imágenes del carrusel */}
+      
       <div className="carousel flex justify-center items-center overflow-hidden w-full">
         {images.map((image, index) => (
           <div
