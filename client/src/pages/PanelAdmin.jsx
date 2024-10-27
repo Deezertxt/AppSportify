@@ -1,37 +1,53 @@
 import React, { useState, useEffect } from "react";  
 import CardAdmin from "../components/CardAdmin";  
 import { getAudiobooks } from "../api/api";
+import { getCategories } from "../api/api";
 import FormModal from "../components/FormModal";
-import { deleteAudiobook } from "../api/api";
+ 
 
 function PanelAdmin() {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [audiobooks, setAudiobooks] = useState([]); // Declarar estado para audiolibros
+    const [audiobooks, setAudiobooks] = useState([]); 
+    const [categories, setCategories] = useState([]);
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
 
     useEffect(() => {
-        const fetchAudiobooks = async () => {
+        const fetchData = async () => {
             try {
-                const response = await getAudiobooks();  
-                if (Array.isArray(response.data)) {
-                    setAudiobooks(response.data);  
+                const [audiobookResponse, categoryResponse] = await Promise.all([
+                    getAudiobooks(),
+                    getCategories(),
+                ]);
+
+                // Verificamos y establecemos los audiolibros
+                if (Array.isArray(audiobookResponse.data)) {
+                    setAudiobooks(audiobookResponse.data);
                 } else {
-                    console.error("La respuesta no es un array:", response.data);
+                    console.error("La respuesta de audiolibros no es un array:", audiobookResponse.data);
+                }
+
+                // Verificamos y establecemos las categorías
+                if (Array.isArray(categoryResponse.data)) {
+                    setCategories(categoryResponse.data);
+                } else {
+                    console.error("La respuesta de categorías no es un array:", categoryResponse.data);
                 }
             } catch (error) {
-                console.error("Error fetching audiobooks:", error);
+                console.error("Error fetching data:", error);
             }
         };
 
-        fetchAudiobooks();
+        fetchData();
     }, []);
 
     const handleDelete = (id) => {
         console.log("Eliminar audiolibro con id:", id);
-        // aun no puse lo de eliminar xd
     };
+
+    // Mapeo de categorías por ID para facilitar la búsqueda
+    const categoriesMap = Object.fromEntries(categories.map(category => [category.id, category.name]));
 
     return (
         <div>
@@ -44,12 +60,12 @@ function PanelAdmin() {
 
             <div className="card-row grid grid-cols-6 items-center border-b border-gray-300 py-4 ">
                 {/* Encabezados de las columnas */}
-                <div className="title text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-10">Portada</div>
-                <div className="title text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ">Título</div>
-                <div className="description text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-1 ">Autor</div>
-                <div className="author text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-8 ">Descripción</div>
-                <div className="category text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-14 ">Categoría</div>
-                <div className="category text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-20">Acción</div>
+                <div className="title text-gray-900 font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-10">Portada</div>
+                <div className="title text-gray-900 font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ">Título</div>
+                <div className="description text-gray-900 font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-1 ">Autor</div>
+                <div className="author text-gray-900 font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-8 ">Descripción</div>
+                <div className="category text-gray-900 font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-14 ">Categoría</div>
+                <div className="category text-gray-900 font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-20">Acción</div>
             </div>
 
             
@@ -60,7 +76,7 @@ function PanelAdmin() {
                     author={audiobook.author}
                     description={audiobook.description}
                     coverUrl={audiobook.coverUrl}
-                    category={audiobook.category}
+                    category={categoriesMap[audiobook.categoryId]}
                     onDelete={() => handleDelete(audiobook.id)}  
                 />
             ))}

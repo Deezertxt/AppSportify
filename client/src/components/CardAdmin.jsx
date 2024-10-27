@@ -15,25 +15,25 @@ function CardRow({ title, author, description, coverUrl, category, onDelete }) {
 
             {/* Título */}
             <div className="title text-gray-900 font-semibold text-sm max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap ml-24">
-                <h1 className="text-xs font-bold mb-1">Título</h1>
+       
                 {title}
             </div>
 
             {/* Autor */}
             <div className="author text-gray-600 text-sm max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap ml-13">
-                <h1 className="text-xs font-bold mb-1">Autor</h1>
+              
                 {author}
             </div>
 
             {/* Descripción */}
             <div className="description text-gray-600 text-sm max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap ml-7">
-                <h1 className="text-xs font-bold mb-1">Descripción</h1>
+               
                 {description}
             </div>
 
             {/* Categoría */}
             <div className="category text-gray-600 text-sm max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap ml-14">
-                <h1 className="text-xs font-bold mb-1">Categoría</h1>
+                
                 {category}
             </div>
 
