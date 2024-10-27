@@ -134,8 +134,8 @@ const Option = ({ Icon, title, selected, setSelected, open, notifs, to }) => {
 const TitleSection = ({ open }) => {
   return (
     <div className="mb-3 border-b border-slate-300 pb-3">
-      <div className="flex cursor-pointer items-center justify-between rounded-md transition-colors hover:bg-gray-800">
-        <div className="flex items-center gap-2">
+      <div className="flex cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-gray-800">
+        <div className="flex items-center  ">
           <Logo />
           {open && (
             <motion.div
@@ -155,7 +155,7 @@ const Logo = () => {
   return (
     <motion.div
       layout
-      className="grid size-20 shrink-0 place-content-center rounded-md bg-[#F0F9F9]"
+      className="grid size-20 shrink-0 place-content-center rounded-md  "
     >
       <Link to="/">
         <img className="block lg:hidden h-20 w-18" src="/logoS.svg" alt="Logo" />

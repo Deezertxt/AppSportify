@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";  
 import CardAdmin from "../components/CardAdmin";  
-import { getAudiobooks, deleteAudiobook } from "../api/api";
+import { getAudiobooks, getCategories, deleteAudiobook } from "../api/api";
 import FormModal from "../components/FormModal";
 import { FaTimes } from "react-icons/fa"; 
 import { useParams } from "react-router-dom";
 
-function PanelAdmin() {
+function PanelAdmin(){ 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [audiobooks, setAudiobooks] = useState([]); 
+    const [categories, setCategories] = useState([]);
     const [audiobookToDelete, setAudiobookToDelete] = useState(null); 
 
     const openModal = (id) => {
@@ -21,22 +22,35 @@ function PanelAdmin() {
     };
 
     useEffect(() => {
-        const fetchAudiobooks = async () => {
+        const fetchData = async () => {
             try {
-                const response = await getAudiobooks();  
-                if (Array.isArray(response.data)) {
-                    setAudiobooks(response.data);  
+                const [audiobookResponse, categoryResponse] = await Promise.all([
+                    getAudiobooks(),
+                    getCategories(),
+                ]);
+
+                // Verificamos y establecemos los audiolibros
+                if (Array.isArray(audiobookResponse.data)) {
+                    setAudiobooks(audiobookResponse.data);
                 } else {
-                    console.error("La respuesta no es un array:", response.data);
+                    console.error("La respuesta de audiolibros no es un array:", audiobookResponse.data);
+                }
+
+                // Verificamos y establecemos las categorías
+                if (Array.isArray(categoryResponse.data)) {
+                    setCategories(categoryResponse.data);
+                } else {
+                    console.error("La respuesta de categorías no es un array:", categoryResponse.data);
                 }
             } catch (error) {
-                console.error("Error fetching audiobooks:", error);
+                console.error("Error fetching data:", error);
             }
         };
 
-        fetchAudiobooks();
+        fetchData();
     }, []);
 
+    // Esta es la función para eliminar el audiolibro
     const handleDelete = async () => {
         try {
             await deleteAudiobook(audiobookToDelete); 
@@ -46,6 +60,9 @@ function PanelAdmin() {
             console.error("Error deleting audiobook:", error);
         }
     };
+
+    // Mapeo de categorías por ID para facilitar la búsqueda
+    const categoriesMap = Object.fromEntries(categories.map(category => [category.id, category.name]));
 
     return (
         <div>
@@ -58,12 +75,12 @@ function PanelAdmin() {
 
             <div className="card-row grid grid-cols-6 items-center border-b border-gray-300 py-4 ">
                 {/* Encabezados de las columnas */}
-                <div className="title text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-16">Portada</div>
-                <div className="title text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-1">Título</div>
-                <div className="description text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-1">Descripción</div>
-                <div className="author text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-2">Autor</div>
-                <div className="category text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ">Categoría</div>
-                <div className="category text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-6">Acción</div>
+                <div className="title text-gray-900 font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-10">Portada</div>
+                <div className="title text-gray-900 font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ">Título</div>
+                <div className="description text-gray-900 font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-1 ">Autor</div>
+                <div className="author text-gray-900 font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-8 ">Descripción</div>
+                <div className="category text-gray-900 font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-14 ">Categoría</div>
+                <div className="category text-gray-900 font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-20">Acción</div>
             </div>
 
             {audiobooks.map((audiobook) => (
@@ -74,8 +91,8 @@ function PanelAdmin() {
                     author={audiobook.author}
                     description={audiobook.description}
                     coverUrl={audiobook.coverUrl}
-                    category={audiobook.category}
-                    onDelete={() => openModal(audiobook.id)}  
+                    category={categoriesMap[audiobook.categoryId]} // Asegúrate de que categoryId sea el correcto
+                    onDelete={() => openModal(audiobook.id)}  // Abre el modal con el ID del audiolibro
                 />
             ))}
 
