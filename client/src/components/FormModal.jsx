@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import Eye from "./eye";
+import { register } from "../api/api";
+import Eye from "./eye"; // Asegúrate de que el componente Eye tenga una lógica para mostrar/ocultar contraseña.
 
 const Modal = ({ isOpen, closeModal, children }) => {
   if (!isOpen) return null;
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -34,6 +34,9 @@ const RegistrationForm = ({ onSubmit }) => {
     password: "",
     confirmPassword: "",
   });
+  const [formErrors, setFormErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,18 +46,72 @@ const RegistrationForm = ({ onSubmit }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Lógica para enviar el formulario
-    onSubmit(formData);
+  const validateTextInput = (input) => {
+    const regex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s.,!?()\-:;]*$/;
+    return regex.test(input);
   };
 
+  const validatePassword = (password, confirmPassword) => {
+    return password === confirmPassword;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setFormErrors({});
+    setSuccessMessage("");
+
+    const errors = {};
+
+    if (!validatePassword(formData.password, formData.confirmPassword)) {
+      errors.password = "Las contraseñas no coinciden.";
+    }
+
+    if (!validateTextInput(formData.username)) {
+      errors.username = "El nombre de usuario contiene caracteres no permitidos.";
+    } else if (formData.username.trim() === "") {
+      errors.usernameEmpty = "El nombre de usuario no puede estar vacío o solo contener espacios.";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const userData = {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+      };
+
+      const response = await register(userData);
+      console.log("Registro exitoso", response);
+
+      setSuccessMessage("Registro exitoso!");
+
+      setFormData({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+
+    } catch (error) {
+      console.error("Error al registrar:", error);
+      setFormErrors({ general: "Error al registrar. Verifique los campos." });
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <form onSubmit={handleSubmit}>
       {/* Logo */}
       <div className="flex flex-col items-center mb-6">
         <img
-          src="logo.png" // Reemplazar con la ruta del logo.
+          src="logoS.svg" // Reemplazar con la ruta del logo.
           alt="Sportify logo"
           className="w-16 mb-4"
         />
@@ -71,6 +128,8 @@ const RegistrationForm = ({ onSubmit }) => {
           type="text"
           name="username"
           placeholder="Nombre de usuario"
+          maxLength={"10"}
+          //pattern="[A-Za-z0-9]"
           value={formData.username}
           onChange={handleChange}
           className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
@@ -91,8 +150,8 @@ const RegistrationForm = ({ onSubmit }) => {
       </div>
       <div className="mb-4">
       <Eye>
-       
-       </Eye>
+      
+      </Eye>
       </div>
       <div className="mb-6">
         <label className="block text-white mb-1">Confirmar contraseña</label>
