@@ -17,7 +17,7 @@ const Modal = ({ isOpen, closeModal, children }) => {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className="bg-blue-500 p-6 rounded-lg shadow-lg w-96"
+        className="bg-[#1f56b] p-6 rounded-lg shadow-lg w-96"
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -165,7 +165,7 @@ const RegistrationModal = () => {
     <div className="flex justify-center items-center min-h-screen">
       <button
         onClick={openModal}
-        className="bg-blue-500 text-white p-3 rounded-md"
+        className="bg-[#45DFB1] text-white p-3 rounded-md"
       >
         Abrir Registro
       </button>
