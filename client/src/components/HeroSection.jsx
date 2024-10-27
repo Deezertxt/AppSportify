@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from './navb'; 
-
+// inicio
 function HeroSection() {
     const [isLoginModalOpen, setLoginModalOpen] = useState(false);
 
