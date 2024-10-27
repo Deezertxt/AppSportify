@@ -7,6 +7,7 @@ import Publicar from './pages/Publicar';
 import DropdownMenu from './components/DropdownMenu';
 import { RouteProvider } from './context/RouteContext';
 import PanelAdmin from "./pages/PanelAdmin";
+import Actualizar from "./pages/Actualizar";
 
 function App() {
     return (
@@ -21,6 +22,7 @@ function App() {
                             <Route path="/reproductor/:id" element={<Reproductor />} />
                             <Route path="/publicar" element={<Publicar />} />
                             <Route path="/PanelAdmin" element={<PanelAdmin />} />
+                            <Route path="/actualizar" element={<Actualizar />} />
                         </Routes>
                     </div>
                     <Footer />

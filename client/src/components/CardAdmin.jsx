@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from 'react-router-dom';
 
 function CardRow({ title, author, description, coverUrl, category, onDelete }) {
     return (
@@ -38,10 +39,12 @@ function CardRow({ title, author, description, coverUrl, category, onDelete }) {
 
 
             <div className="flex items-center space-x-4 mb-4 pl-5">
-                <div className=" mb-7 justify-center">
-                    <button onClick={onDelete} className="text-red-500 hover:text-red-700 absolute text-white ">
-                        ✏️
-                    </button>
+                <div className="mb-1 justify-center">
+                    <Link to="/actualizar">
+                        <button className="text-red-500 hover:text-red-700 text-white">
+                            ✏️
+                        </button>
+                    </Link>
                 </div>
                 
                 
