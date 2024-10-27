@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Eye from "./eye";
 
 const Modal = ({ isOpen, closeModal, children }) => {
   if (!isOpen) return null;
@@ -89,16 +90,9 @@ const RegistrationForm = ({ onSubmit }) => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-white mb-1">Contraseña</label>
-        <input
-          type="password"
-          name="password"
-          placeholder="Contraseña"
-          value={formData.password}
-          onChange={handleChange}
-          className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
-          required
-        />
+      <Eye>
+       
+       </Eye>
       </div>
       <div className="mb-6">
         <label className="block text-white mb-1">Confirmar contraseña</label>
