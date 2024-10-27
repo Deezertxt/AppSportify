@@ -20,13 +20,13 @@ function PanelAdmin() {
                 Lista de audiolibros 
             </div>
 
-            <div className="card-row grid grid-cols-6 items-center border-b border-gray-300 py-4 pl-15 ml-3">
+            <div className="card-row grid grid-cols-6 items-center border-b border-gray-300 py-4 ">
                 {/* Encabezados de las columnas */}
-                <div className="title text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-10">Portada</div>
-                <div className="title text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-3">Titulo</div>
-                <div className="description text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis">Descripcion</div>
-                <div className="author text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-7">Autor</div>
-                <div className="category text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-4">Categoria</div>
+                <div className="title text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-16">Portada</div>
+                <div className="title text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-1">Titulo</div>
+                <div className="description text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-1]">Descripcion</div>
+                <div className="author text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-2">Autor</div>
+                <div className="category text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ">Categoria</div>
                 <div className="category text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-6">Accion</div>
             </div>
 
