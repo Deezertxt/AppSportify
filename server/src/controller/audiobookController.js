@@ -10,7 +10,7 @@ const ttsClient = new textToSpeech.TextToSpeechClient();
 const storage = new Storage();
 
 // Configuración de credenciales y bucket de GCS
-const credentialsPath = path.join(__dirname, './google-key.json');
+const credentialsPath = path.join(__dirname, '.../src/google-key.json');
 process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
 const bucketName = 'sportify-1';
 const audioFolder = 'uploads/audio';

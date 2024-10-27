@@ -2,7 +2,7 @@ const { Storage } = require('@google-cloud/storage');
 const path = require('path');
 
 // Configura las credenciales de Google Cloud
-const credentialsPath = path.join(__dirname, './google-key.json');
+const credentialsPath = path.join(__dirname, '.../src/google-key.json');
 process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
 
 const gcsClient = new Storage(); // Inicializa el cliente de GCS
