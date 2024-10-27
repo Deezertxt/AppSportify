@@ -22,7 +22,8 @@ function App() {
                             <Route path="/reproductor/:id" element={<Reproductor />} />
                             <Route path="/publicar" element={<Publicar />} />
                             <Route path="/PanelAdmin" element={<PanelAdmin />} />
-                            <Route path="/actualizar" element={<Actualizar />} />
+                            <Route path="/Actualizar/:id" element={<Actualizar />} />
+
                         </Routes>
                     </div>
                     <Footer />

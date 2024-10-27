@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 
-function CardRow({ title, author, description, coverUrl, category, onDelete }) {
+function CardRow({ id, title, author, description, coverUrl, category, onDelete }) {
     return (
         <div className="card-row grid grid-cols-[auto,auto,auto,auto,auto,auto] items-center border-b border-gray-300 py-4  hover:bg-gray-100">
             {/* Portada */}
@@ -37,29 +38,21 @@ function CardRow({ title, author, description, coverUrl, category, onDelete }) {
                 {category}
             </div>
 
-
             <div className="flex items-center space-x-4 mb-4 pl-5">
                 <div className="mb-1 justify-center">
-                    <Link to="/actualizar">
+                <Link to={`/Actualizar/${id}`}>
                         <button className="text-red-500 hover:text-red-700 text-white">
                             ✏️
                         </button>
                     </Link>
                 </div>
-                
-                
-                <div className=" mb-7 pl-6 justify-center">
-                    <button onClick={onDelete} className="text-red-500 hover:text-red-700 absolute  ">
+
+                <div className="mb-7 pl-6 justify-center">
+                    <button onClick={onDelete} className="text-red-500 hover:text-red-700 absolute">
                         ✖
                     </button>
                 </div>
-
-                
             </div>
-            {/* Eliminar */}
-            
-
-            
         </div>
     );
 }

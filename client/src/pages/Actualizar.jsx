@@ -4,13 +4,17 @@ import { createAudiobook, getCategories, uploadFilesToFirebase } from '../api/ap
 import { FaTrashAlt, FaFilePdf, FaImage, FaPaperPlane, FaTimes, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 import BarLoaderWrapper from "../components/BarLoader";
-import { getAudiobooks } from "../api/api";
+import { getAudiobookById } from "../api/api";
+import { useParams } from "react-router-dom";
 
 function Actualizar() {
+    const { id } = useParams(); 
     const navigate = useNavigate();
     const [documentFileName, setDocumentFileName] = useState(""); // Nombre del archivo PDF
     const [coverFileName, setCoverFileName] = useState(""); // Nombre del archivo de portada
-    const [preview, setPreview] = useState(null); // Vista previa de la portada
+    const [preview, setPreview] = useState(null);
+    
+
     const [formData, setFormData] = useState({
         title: "",
         author: "",
@@ -31,21 +35,42 @@ function Actualizar() {
     const handleNavigateHome = () => {
     setIsModalOpen(false); 
     navigate('/PanelAdmin'); 
-   };
-
+    };
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const response = await getCategories(); // Obtener categorías
-                setCategories(response.data);
-            } catch (error) {
-                console.error("Error al obtener las categorías:", error);
-            }
-        };
+    const fetchCategories = async () => {
+        try {
+            const response = await getCategories(); // Obtener categorías
+            setCategories(response.data);
+        } catch (error) {
+            console.error("Error al obtener las categorías:", error);
+        }
+    };
 
-        fetchCategories();
-    }, []);
+    fetchCategories();
+}, []);
+
+    useEffect(() => {
+    const fetchAudiobook = async () => {
+        try {
+            const response = await getAudiobookById(id); 
+            setFormData({
+                title: response.data.title,
+                author: response.data.author,
+                category: response.data.category,
+                description: response.data.description,
+                coverUrl: response.data.coverUrl,
+                pdfFile: null,
+                portadaFile: null
+            });
+        } catch (error) {
+            console.error("Error al obtener el audiolibro:", error);
+        }
+    };
+
+    fetchAudiobook();
+}, [id]);
+
 
     // Validar que el archivo sea un PDF y no exceda 50MB
     const validatePDF = (file) => {
@@ -252,8 +277,8 @@ function Actualizar() {
                 };
 
                 // Ahora crear el audiolibro en la base de datos
-                const response = await createAudiobook(audiobookData);
-                console.log('Publicación registrada con éxito:', response);
+                const response = await updateAudiobook(audiobookData);
+                console.log('Publicación Editada con éxito:', response);
 
                 setErrors({});
                 setSuccessMessage("Audiolibro publicado con éxito!");

@@ -3,6 +3,7 @@ import CardAdmin from "../components/CardAdmin";
 import { getAudiobooks, deleteAudiobook } from "../api/api";
 import FormModal from "../components/FormModal";
 import { FaTimes } from "react-icons/fa"; 
+import { useParams } from "react-router-dom";
 
 function PanelAdmin() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -67,13 +68,14 @@ function PanelAdmin() {
 
             {audiobooks.map((audiobook) => (
                 <CardAdmin
-                    key={audiobook.id}  
+                    key={audiobook.id} 
+                    id={audiobook.id}
                     title={audiobook.title}
                     author={audiobook.author}
                     description={audiobook.description}
                     coverUrl={audiobook.coverUrl}
                     category={audiobook.category}
-                    onDelete={() => openModal(audiobook.id)}  // Abre el modal con el ID del audiolibro
+                    onDelete={() => openModal(audiobook.id)}  
                 />
             ))}
 
@@ -86,7 +88,7 @@ function PanelAdmin() {
                         <p className="text-lg font-semibold text-[#213A57]">¿Está seguro de que quiere eliminar este audiolibro?</p>
                         <div className="mt-4">
                             <button
-                                onClick={handleDelete} // Elimina el audiolibro al confirmar
+                                onClick={handleDelete}
                                 className="bg-[#0B6477] text-white py-2 px-4 rounded-lg hover:bg-[#14919B] mr-2"
                             >
                                 Confirmar
