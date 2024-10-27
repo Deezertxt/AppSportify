@@ -6,7 +6,6 @@ import Footer from './components/Footer';
 import Publicar from './pages/Publicar';
 import DropdownMenu from './components/DropdownMenu';
 import { RouteProvider } from './context/RouteContext';
-
 import PanelAdmin from "./pages/PanelAdmin";
 
 function App() {
@@ -21,7 +20,6 @@ function App() {
                             <Route path="/" element={<Biblioteca />} />
                             <Route path="/reproductor/:id" element={<Reproductor />} />
                             <Route path="/publicar" element={<Publicar />} />
-                           
                             <Route path="/PanelAdmin" element={<PanelAdmin />} />
                         </Routes>
                     </div>

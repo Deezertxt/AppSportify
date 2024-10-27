@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+
+
 import {
   FiBarChart,
   FiBook,
@@ -40,7 +42,7 @@ const Sidebar = () => {
   return (
     <motion.nav
       layout
-      className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-[#0B6477] p-2"
+      className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-[#ff5724] p-2"
       style={{
         width: open ? "225px" : "fit-content",
       }}
@@ -83,6 +85,7 @@ const Sidebar = () => {
           open={open}
           to="/PanelAdmin"
         />
+
       </div>
     </motion.nav>
   );
