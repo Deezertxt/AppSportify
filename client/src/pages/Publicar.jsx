@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { isValidCover } from "../utils/fileCoverValidator";
 import { isValidPdf } from "../utils/fileValidator";
-import { createAudiobook, getCategories, uploadFilesToFirebase } from '../api/api';
+import { createAudiobook, getCategories, uploadFilesToGCS} from '../api/api';
 import { FaTrashAlt, FaFilePdf, FaImage, FaPaperPlane, FaTimes, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 import BarLoaderWrapper from "../components/BarLoader";
@@ -79,7 +79,7 @@ function Publicar() {
         });
         setDocumentFileName(newFile.name); // Update the file name
     };
-    
+
     const handleDrop = async (event) => {
         event.preventDefault();
         const file = event.dataTransfer.files[0];
@@ -223,11 +223,11 @@ function Publicar() {
             form.append("portadaFile", formData.portadaFile);
             form.append("title", formData.title);
             form.append("author", formData.author);
-            form.append("category", formData.category);
+            form.append("categoryId", formData.category); // Asegúrate de que coincida con el backend
             form.append("description", formData.description);
 
             // Subir archivos a Firebase y obtener las URLs
-            const uploadResponse = await uploadFilesToFirebase(form);
+            const uploadResponse = await uploadFilesToGCS(form);
 
             // Verificar si la respuesta es exitosa
             if (uploadResponse.status === 200) {
@@ -269,6 +269,8 @@ function Publicar() {
                 setCoverFileName("");
                 setPreview(null);
                 document.getElementById("documento").value = "";
+            } else {
+                setErrors({ general: "Error al registrar la publicación." });
             }
         } catch (error) {
             console.error("Error al subir los archivos:", error);
@@ -276,8 +278,8 @@ function Publicar() {
         } finally {
             setIsLoading(false);
         }
-    };
 
+    }
     return (
         <div className="max-h-screen-xl bg-[#F0F9F9]">
             <BarLoaderWrapper isLoading={isLoading} />
