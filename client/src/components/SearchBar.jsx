@@ -8,8 +8,8 @@ import {
 
 function Search({ setResults }) {
     const [input, setInput] = useState("");
-    const [botonColores, setBotonColores] = useState([false, false, false]);
-    const nombresBotones = ["Titulo", "Autor", "Categoria"];
+    const [botonColores, setBotonColores] = useState([false, false, false, false]);
+    const nombresBotones = ["Todos", "Titulo", "Autor", "Categoria"];
 
     //colores botones
     const handleButtonClick = (i) => {
