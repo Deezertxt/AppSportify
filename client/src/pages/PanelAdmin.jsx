@@ -1,15 +1,37 @@
-import React, { useState } from "react";
-import CardAdmin from "../components/CardAdmin";
-
+import React, { useState, useEffect } from "react";  
+import CardAdmin from "../components/CardAdmin";  
+import { getAudiobooks } from "../api/api";
 import FormModal from "../components/FormModal";
+import { deleteAudiobook } from "../api/api";
 
 function PanelAdmin() {
-    // Estado para controlar la visibilidad del modal
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [audiobooks, setAudiobooks] = useState([]); // Declarar estado para audiolibros
 
-    // Funciones para abrir y cerrar el modal
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
+
+    useEffect(() => {
+        const fetchAudiobooks = async () => {
+            try {
+                const response = await getAudiobooks();  
+                if (Array.isArray(response.data)) {
+                    setAudiobooks(response.data);  
+                } else {
+                    console.error("La respuesta no es un array:", response.data);
+                }
+            } catch (error) {
+                console.error("Error fetching audiobooks:", error);
+            }
+        };
+
+        fetchAudiobooks();
+    }, []);
+
+    const handleDelete = (id) => {
+        console.log("Eliminar audiolibro con id:", id);
+        // aun no puse lo de eliminar xd
+    };
 
     return (
         <div>
@@ -23,20 +45,26 @@ function PanelAdmin() {
             <div className="card-row grid grid-cols-6 items-center border-b border-gray-300 py-4 ">
                 {/* Encabezados de las columnas */}
                 <div className="title text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-16">Portada</div>
-                <div className="title text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-1">Titulo</div>
-                <div className="description text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-1]">Descripcion</div>
+                <div className="title text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-1">Título</div>
+                <div className="description text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-1">Descripción</div>
                 <div className="author text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-2">Autor</div>
-                <div className="category text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ">Categoria</div>
-                <div className="category text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-6">Accion</div>
+                <div className="category text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ">Categoría</div>
+                <div className="category text-gray-900 font-semibold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-6">Acción</div>
             </div>
 
-           
-            <CardAdmin />
-            <CardAdmin />
-
-        
             
-            {/* Modal de Registro */}
+            {audiobooks.map((audiobook) => (
+                <CardAdmin
+                    key={audiobook.id}  
+                    title={audiobook.title}
+                    author={audiobook.author}
+                    description={audiobook.description}
+                    coverUrl={audiobook.coverUrl}
+                    category={audiobook.category}
+                    onDelete={() => handleDelete(audiobook.id)}  
+                />
+            ))}
+ 
             <FormModal isOpen={isModalOpen} closeModal={closeModal} />
         </div>
     );
