@@ -18,7 +18,7 @@ const Modal = ({ isOpen, closeModal, children }) => {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className="bg-first p-6 rounded-lg shadow-lg w-[450px] h-[690px]"
+        className="bg-[#e0dffd] p-6 rounded-lg shadow-lg w-[450px] h-[690px]"
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -184,11 +184,7 @@ const RegistrationForm = ({ onSubmit }) => {
         {/* Botón de Google */}
         <button className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
           <img
-<<<<<<< HEAD
-            src="google-icon.png" 
-=======
             src="google.svg" // Reemplazar con el ícono de Google.
->>>>>>> d57ce4f2869b947d6b95f1084bd398be2f610f67
             alt="Google icon"
             className="w-5 h-5 mr-2"
           />
@@ -216,7 +212,7 @@ const RegistrationModal = () => {
     <div className="flex justify-center items-center min-h-screen">
       <button
         onClick={openModal}
-        className="bg-[#45DFB1] text-white p-3 rounded-md"
+        className="bg-[#4b478a] text-white p-3 rounded-md"
       >
         Abrir Registro
       </button>
