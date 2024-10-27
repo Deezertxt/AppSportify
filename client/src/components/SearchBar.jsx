@@ -5,7 +5,9 @@ import {getAudiobooksByAuthor, getAudiobooksByCategory, getAudiobooksByTitle } f
 function Search() {
 
   const [busqueda, setBusqueda] = useState("");
-  
+  const [botonColores, setBotonColores] = useState([false, false, false]);
+  const nombresBotones = ['Titulo', 'Autor', 'Categoria'];
+
   const handleChange = e =>{
     setBusqueda(e.target.value);
     filtrar(e.target.value);
@@ -15,6 +17,15 @@ function Search() {
     var resultadosBusqueda = getAudiobooksByTitle(terminoBusqueda);
     console.log(resultadosBusqueda);
   }
+
+  const handleButtonClick = (i) => {
+    // Crear una nueva copia del estado actual de los botones
+    const nuevoColor = [...botonColores];
+    // Cambiar el color del botón en el índice dado
+    nuevoColor[i] = !nuevoColor[i];
+    // Actualizar el estado
+    setBotonColores(nuevoColor);
+  };
   
   return (
     <div className="mb-3 xl:w-96">
@@ -49,12 +60,22 @@ function Search() {
         </span>
         
       </div>
-      <div className='flex'>
-        <h1>Filtrar por:</h1>
-        <div className='px-2'><button className='px-4 py-2 rounded bg-blue-400 text-white'>Autor</button></div>
-        <div className='px-2'><button className='px-4 py-2 rounded bg-blue-400 text-white'>Titulo</button></div>
-        <div className='px-2'><button className='px-4 py-2 rounded bg-blue-400 text-white'>Categoria</button></div>
-      </div>
+
+      <div className='py-1'>Filtrar por:</div>
+      <div className="flex space-x-4">
+      {botonColores.map((isAlternateColor, indice) => (
+        <button
+          key={indice}
+          onClick={() => handleButtonClick(indice)}
+          className={`px-4 py-2 font-semibold text-white rounded ${
+            isAlternateColor ? 'bg-green-500' : 'bg-[#0B6477]'
+          }`}
+        >
+          {nombresBotones[indice]}
+        </button>
+      ))}
+    </div>
+
     </div>
   );
 }

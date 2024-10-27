@@ -37,7 +37,7 @@ function Biblioteca() {
     return (
         <>
             <div className="py-10">
-                <div className="">
+                <div className="px-20">
                     <SearchBar/>
                 </div>
                 <div className="max-w-5xl mx-auto mt-8">
