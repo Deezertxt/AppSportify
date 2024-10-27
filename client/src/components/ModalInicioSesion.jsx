@@ -24,20 +24,23 @@ const ModalInicioSesion = ({ isOpen, onClose, placeholder="Ingresar" }) => {
 
           <form action="" class="mt-10 space-y-8 dark:text-white">
             
-            <div>
+            <div class="flex flex-col items-end">
               <div class="relative before:absolute before:bottom-0 before:h-0.5 before:left-0 before:origin-right focus-within:before:origin-left before:right-0 before:scale-x-0 before:m-auto before:bg-sky-400 dark:before:bg-sky-800 focus-within:before:!scale-x-100 focus-within:invalid:before:bg-red-400 before:transition before:duration-300">
-                <input id="" type="email" placeholder="Email" class="w-72 bg-transparent pb-3  border-b border-black dark:placeholder-gray-300 dark:border-gray-600 outline-none  invalid:border-red-400 transition"/>
+                <input 
+                id="" 
+                type="email" 
+                placeholder="Email" 
+                class="w-72 bg-transparent pb-3  border-b border-black dark:placeholder-gray-300 dark:border-gray-600 outline-none  invalid:border-red-400 transition"/>
               </div>
             </div>
 
             <div class="flex flex-col items-end">
-              <div class="w-full relative before:absolute before:bottom-0 before:h-0.5 before:left-0 before:origin-right focus-within:before:origin-left before:right-0 before:scale-x-0 before:m-auto before:bg-sky-400 dark:before:bg-sky-800 focus-within:before:!scale-x-100 focus-within:invalid:before:bg-red-400 before:transition before:duration-300">
+              <div class="border-b border-black relative before:absolute before:bottom-0 before:h-0.5 before:left-0 before:origin-right focus-within:before:origin-left before:right-0 before:scale-x-0 before:m-auto before:bg-sky-400 dark:before:bg-sky-800 focus-within:before:!scale-x-100 focus-within:invalid:before:bg-red-400 before:transition before:duration-300">
                 <Input 
                 id="" 
-                variant=" "
                 placeholder={placeholder} 
                 endContent={
-                  <button className=" " type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
+                  <button className="" type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
                     {isVisible ? (
                       <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none text-white " />
                     ) : (
@@ -46,7 +49,7 @@ const ModalInicioSesion = ({ isOpen, onClose, placeholder="Ingresar" }) => {
                   </button>
                 }
                 type={isVisible ? "text" : "password"}
-                class="w-full bg-transparent pb-3  border-b border-black dark:placeholder-gray-300 dark:border-gray-600 outline-none  invalid:border-red-400 transition"
+                class="bg-transparent focus:outline-none pb-3"
                 
                 />
               </div>
