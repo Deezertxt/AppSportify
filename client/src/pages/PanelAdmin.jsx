@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from "react";  
 import CardAdmin from "../components/CardAdmin";  
-import { getAudiobooks } from "../api/api";
-import { getCategories } from "../api/api";
-import { getAudiobooks, deleteAudiobook } from "../api/api";
+import { getAudiobooks, getCategories, deleteAudiobook } from "../api/api";
 import FormModal from "../components/FormModal";
- 
 import { FaTimes } from "react-icons/fa"; 
 
-function PanelAdmin() {
+function PanelAdmin(){ 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [audiobooks, setAudiobooks] = useState([]); 
     const [categories, setCategories] = useState([]);
-    const [audiobooks, setAudiobooks] = useState([]); 
     const [audiobookToDelete, setAudiobookToDelete] = useState(null); 
 
     const openModal = (id) => {
@@ -53,8 +49,7 @@ function PanelAdmin() {
         fetchData();
     }, []);
 
-    const handleDelete = (id) => {
-        console.log("Eliminar audiolibro con id:", id);
+    // Esta es la función para eliminar el audiolibro
     const handleDelete = async () => {
         try {
             await deleteAudiobook(audiobookToDelete); 
@@ -94,9 +89,7 @@ function PanelAdmin() {
                     author={audiobook.author}
                     description={audiobook.description}
                     coverUrl={audiobook.coverUrl}
-                    category={categoriesMap[audiobook.categoryId]}
-                    onDelete={() => handleDelete(audiobook.id)}  
-                    category={audiobook.category}
+                    category={categoriesMap[audiobook.categoryId]} // Asegúrate de que categoryId sea el correcto
                     onDelete={() => openModal(audiobook.id)}  // Abre el modal con el ID del audiolibro
                 />
             ))}
