@@ -5,10 +5,13 @@ import Card from "../components/Card"; // Importar el componente Card
 import {useNavigate} from 'react-router-dom';
 
 import SearchBar from '../components/SearchBar'
+import { SearchResultsList } from "../components/SearchResultsList";
 
 function Biblioteca() {
     const [audiobooks, setAudiobooks] = useState([]); // Estado para almacenar los audiolibros
     const navigate = useNavigate();
+    const [results, setResults] = useState([]);
+    
     console.log(audiobooks.title)
     // Cargar los audiolibros cuando el componente se monta
     useEffect(() => {
@@ -38,7 +41,10 @@ function Biblioteca() {
         <>
             <div className="py-10">
                 <div className="px-20">
-                    <SearchBar/>
+                    <SearchBar setResults={setResults}/>
+                </div>
+                <div> 
+                    <SearchResultsList results={results}/>
                 </div>
                 <div className="max-w-5xl mx-auto mt-8">
                     {Array.isArray(audiobooks) && audiobooks.length > 0 ? (
