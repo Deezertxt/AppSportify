@@ -285,11 +285,11 @@ function Publicar() {
             <div className="max-w-screen-xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-8">
                     <button
-                       
+                    
                        onClick={() => setIsModalOpen(true)} // Abre el modal
-                       className="mb-4 text-[#0B6477] flex items-center"
-                   >
-                       <FaArrowLeft className="mr-2" /> Volver al inicio
+                        className="mb-4 text-[#0B6477] flex items-center"
+                    >
+                    <FaArrowLeft className="mr-2" /> Volver al inicio
                     </button>
                     <div className="text-center flex-grow">
                         <span className="text-4xl font-extrabold text-[#213A57]">Registro de Audiolibro</span>

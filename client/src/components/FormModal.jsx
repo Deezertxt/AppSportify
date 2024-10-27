@@ -212,7 +212,7 @@ const RegistrationModal = () => {
     <div className="flex justify-center items-center min-h-screen">
       <button
         onClick={openModal}
-        className="bg-[#45DFB1] text-white p-3 rounded-md"
+        className="bg-[#4b478a] text-white p-3 rounded-md"
       >
         Abrir Registro
       </button>

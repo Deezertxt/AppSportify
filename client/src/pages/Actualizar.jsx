@@ -4,6 +4,7 @@ import { createAudiobook, getCategories, uploadFilesToFirebase } from '../api/ap
 import { FaTrashAlt, FaFilePdf, FaImage, FaPaperPlane, FaTimes, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 import BarLoaderWrapper from "../components/BarLoader";
+import { getAudiobooks } from "../api/api";
 
 function Actualizar() {
     const navigate = useNavigate();
@@ -29,7 +30,7 @@ function Actualizar() {
     const [isModalOpen, setIsModalOpen] = useState(false); //Estado para el modal
     const handleNavigateHome = () => {
     setIsModalOpen(false); 
-    navigate('/'); 
+    navigate('/PanelAdmin'); 
    };
 
 
@@ -285,14 +286,14 @@ function Actualizar() {
             <div className="max-w-screen-xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-8">
                     <button
-                       
-                       onClick={() => setIsModalOpen(true)} // Abre el modal
-                       className="mb-4 text-[#0B6477] flex items-center"
-                   >
-                       <FaArrowLeft className="mr-2" /> Volver al inicio
+                    
+                    onClick={() => setIsModalOpen(true)} // Abre el modal
+                    className="mb-4 text-[#0B6477] flex items-center"
+                    >
+                    <FaArrowLeft className="mr-2" /> Volver al panel de Administración
                     </button>
                     <div className="text-center flex-grow">
-                        <span className="text-4xl font-extrabold text-[#213A57]">Actualizar Audiolibro</span>
+                        <span className="text-4xl font-extrabold text-[#213A57]">Editar Audiolibro</span>
                     </div>
                 </div>
 
@@ -508,7 +509,7 @@ function Actualizar() {
              <p className="text-lg font-semibold text-[#213A57]">¿Está seguro de salir?</p>
              <div className="mt-4">
                 <button
-                    onClick={handleNavigateHome}
+                onClick={handleNavigateHome}
                     className="bg-[#0B6477] text-white py-2 px-4 rounded-lg hover:bg-[#14919B] mr-2"
                 >
                     Confirmar
