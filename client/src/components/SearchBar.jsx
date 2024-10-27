@@ -1,15 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
+
+import {getAudiobooksByAuthor, getAudiobooksByCategory, getAudiobooksByTitle } from "../api/api";
 
 function Search() {
+
+  const [busqueda, setBusqueda] = useState("");
+  
+  const handleChange = e =>{
+    setBusqueda(e.target.value);
+    filtrar(e.target.value);
+  } 
+
+  const filtrar = (terminoBusqueda) => {
+    var resultadosBusqueda = getAudiobooksByTitle(terminoBusqueda);
+    console.log(resultadosBusqueda);
+  }
+  
   return (
     <div className="mb-3 xl:w-96">
       <div className="relative mb-4 flex w-full flex-wrap items-stretch">
         <input
           type="search"
           className="relative m-0 block flex-auto rounded-l border border-solid border-gray-300 bg-white px-3 py-2 text-base font-normal text-gray-700 placeholder-gray-400 transition duration-200 ease-in-out focus:z-[3] focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-          placeholder="Buscar"
-          aria-label="Buscar"
+          placeholder="Buscar por titulo, autor o palabra clave"
+          aria-label="Buscar por titulo, autor o palabra clave"
           aria-describedby="button-addon2"
+          value={busqueda}
+          onChange={handleChange}
         />
         
         {/* Icono de búsqueda dentro de un contenedor redondeado */}
@@ -30,6 +47,13 @@ function Search() {
             />
           </svg>
         </span>
+        
+      </div>
+      <div className='flex'>
+        <h1>Filtrar por:</h1>
+        <div className='px-2'><button className='px-4 py-2 rounded bg-blue-400 text-white'>Autor</button></div>
+        <div className='px-2'><button className='px-4 py-2 rounded bg-blue-400 text-white'>Titulo</button></div>
+        <div className='px-2'><button className='px-4 py-2 rounded bg-blue-400 text-white'>Categoria</button></div>
       </div>
     </div>
   );
