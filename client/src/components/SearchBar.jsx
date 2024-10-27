@@ -7,7 +7,7 @@ import {
 } from "../api/api";
 import { SearchOptions } from "./SearchOptions";
 
-function Search({ setResults }) {
+function SearchBar({ setResults }) {
     const [input, setInput] = useState("");
 
     const fetchData = (value) => {
@@ -73,4 +73,4 @@ function Search({ setResults }) {
     );
 }
 
-export default Search;
+export default SearchBar;
