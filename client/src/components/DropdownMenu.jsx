@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+
+
 import {
   FiBarChart,
   FiBook,
@@ -84,14 +86,6 @@ const Sidebar = () => {
           to="/PanelAdmin"
         />
 
-<Option
-          Icon={FiBarChart} // Icono de administración
-          title="BOTONCITO REGISTRO"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          to="/"
-        />
       </div>
     </motion.nav>
   );
