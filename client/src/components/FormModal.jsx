@@ -110,7 +110,6 @@ const RegistrationForm = ({ onSubmit }) => {
   return (
     <div >
       <form onSubmit={handleSubmit}>
-        {/* Logo */}
         <div className="flex flex-col items-center">
           <img
             src="logoS.svg" 
@@ -119,10 +118,8 @@ const RegistrationForm = ({ onSubmit }) => {
           />
         </div>
 
-        {/* Título */}
         <h2 className="text-2xl font-bold text-white text-center mb-6">Regístrate</h2>
 
-        {/* Formulario */}
         <div className="mb-4">
           <label className="block text-white mb-1">Nombre de usuario</label>
           <input
@@ -142,8 +139,6 @@ const RegistrationForm = ({ onSubmit }) => {
             type="email"
             name="email"
             placeholder="Correo electrónico"
-            isInvalid={true}
-            errorMessage="Please enter a valid email"
             value={formData.email}
             onChange={handleChange}
             className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
@@ -151,16 +146,32 @@ const RegistrationForm = ({ onSubmit }) => {
           />
         </div>
         <div className="mb-4  ">
-          <Eye placeholder="Ingresar contraseña">
-          </Eye>
+        <label className="block text-white mb-1">Contraseña</label>
+          <input
+            type="password"
+            name="password"
+            maxLength={10}
+            placeholder="Contraseña"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            required
+          />
         </div>
         <div className="mb-6  ">
-          <Eye placeholder="Confirmar contraseña">
-
-          </Eye>
+        <label className="block text-white mb-1">Confirmar contraseña</label>
+          <input
+            type="password"
+            name="confirmPassword"
+            maxLength={10}
+            placeholder="Confirmar contraseña"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            required
+          />
         </div>
 
-        {/* Botón de registro */}
         <button
           type="submit"
           className="w-full bg-gray-800 text-white p-3 rounded-md mb-4"
@@ -168,7 +179,6 @@ const RegistrationForm = ({ onSubmit }) => {
           Registrarse
         </button>
 
-        {/* Enlace de inicio de sesión */}
         <p className="text-white text-center mb-4">
           ¿Ya tienes una cuenta?{" "}
           <a href="#" className="underline">
@@ -176,14 +186,12 @@ const RegistrationForm = ({ onSubmit }) => {
           </a>
         </p>
 
-        {/* Separador */}
         <div className="flex items-center mb-4">
           <hr className="w-full border-white" />
           <span className="px-3 text-white">O</span>
           <hr className="w-full border-white" />
         </div>
 
-        {/* Botón de Google */}
         <button className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
           <img
             src="google.svg" 
@@ -194,7 +202,6 @@ const RegistrationForm = ({ onSubmit }) => {
         </button>
       </form>
     </div>
-    
   );
 };
 
@@ -206,7 +213,6 @@ const RegistrationModal = () => {
 
   const handleRegistration = (formData) => {
     console.log("Datos del formulario:", formData);
-    // Lógica de envío de formulario
     closeModal();
   };
 

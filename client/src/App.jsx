@@ -8,6 +8,7 @@ import DropdownMenu from './components/DropdownMenu';
 import { RouteProvider } from './context/RouteContext';
 import PanelAdmin from "./pages/PanelAdmin";
 import Actualizar from "./pages/Actualizar";
+import Pruebita from "./pages/pruebita";
 
 function App() {
     return (
@@ -23,6 +24,7 @@ function App() {
                             <Route path="/publicar" element={<Publicar />} />
                             <Route path="/PanelAdmin" element={<PanelAdmin />} />
                             <Route path="/Actualizar/:id" element={<Actualizar />} />
+                            <Route path="/pruebita" element={<Pruebita />} />
 
                         </Routes>
                     </div>
