@@ -1,5 +1,3 @@
-Modal
-
 import { motion } from "framer-motion";
 
 const BarLoader = () => {
