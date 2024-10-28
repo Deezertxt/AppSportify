@@ -9,8 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
-  "dependencies": {
+  "dependencies": 
     "@material-tailwind/react": "^2.1.10",
+    "@nextui-org/react": "^2.4.8",
     "axios": "^1.7.7",
     "chunks": "^0.2.6",
     "client": "file:",
