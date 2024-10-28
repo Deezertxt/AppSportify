@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import ModalInicioSesion from "../components/modalInicioSesion";
+import ModalInicioSesion from "../components/ModalInicioSesion";
 
 function InicioSesion(){
     const [isModalOpen, setIsModalOpen] = useState(false);   

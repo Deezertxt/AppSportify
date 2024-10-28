@@ -11,13 +11,8 @@ export default function Eye({ placeholder = "Ingresar contraseña" }) {  // Agre
   const [isVisible, setIsVisible] = React.useState(false);
 
   const toggleVisibility = () => setIsVisible(!isVisible);
-
-
-  
   return (
     <Input
-      
-      variant=" "
       placeholder={placeholder}
       endContent={
         <button className=" " type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
@@ -29,7 +24,7 @@ export default function Eye({ placeholder = "Ingresar contraseña" }) {  // Agre
         </button>
       }
       type={isVisible ? "text" : "password"}
-      className=" w-full text-white"
+      className=" w-full text-white focus:outline-none border-b-2 "
     />
   );
 }
