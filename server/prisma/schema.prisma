@@ -52,4 +52,3 @@ model Category {
   name       String     @unique @db.VarChar(100)       // Nombre de la categoría, máximo 100 caracteres
   audiobooks Audiobook[]                              // Relación con la tabla Audiobook (1-n)
 }
-
