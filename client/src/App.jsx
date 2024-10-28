@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import Publicar from './pages/Publicar';
 import DropdownMenu from './components/DropdownMenu';
 import { RouteProvider } from './context/RouteContext';
+import TasksPage from './pages/Taskpage';
 
 function App() {
     return (
@@ -19,6 +20,7 @@ function App() {
                             <Route path="/" element={<Biblioteca />} />
                             <Route path="/reproductor/:id" element={<Reproductor />} />
                             <Route path="/publicar" element={<Publicar />} />
+                            <Route path="/taskpage" element={<TasksPage/>} />
                         </Routes>
                     </div>
                     <Footer />
