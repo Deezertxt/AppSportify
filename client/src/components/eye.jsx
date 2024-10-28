@@ -12,13 +12,26 @@ export default function Eye({ placeholder = "Ingresar contraseña" }) {  // Agre
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
-
+  const handlePassChange = (e) => {
+    const value = e.target.value;
+      if (value.length <= 10) {
+          setFormData({
+              ...formData,
+              description: value
+          });
+          setDescriptionWarning("");  
+      } else {
+          setDescriptionWarning("Has alcanzado el límite de 10 caracteres.");
+      }
+  };
   
   return (
     <Input
       
       variant=" "
       placeholder={placeholder}
+      maxLength={15}
+      onChange={handlePassChange}
       endContent={
         <button className=" " type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
           {isVisible ? (

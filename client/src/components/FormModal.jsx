@@ -18,7 +18,7 @@ const Modal = ({ isOpen, closeModal, children }) => {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className="bg-[#00000] p-6 rounded-lg shadow-lg w-[450px] h-[690px]"
+        className="bg-first p-6 rounded-lg shadow-lg w-[450px] h-[690px]"
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -106,6 +106,7 @@ const RegistrationForm = ({ onSubmit }) => {
       setIsLoading(false);
     }
   };
+  
   return (
     <div >
       <form onSubmit={handleSubmit}>
@@ -127,6 +128,7 @@ const RegistrationForm = ({ onSubmit }) => {
           <input
             type="text"
             name="username"
+            maxLength={10}
             placeholder="Nombre de usuario"
             value={formData.username}
             onChange={handleChange}

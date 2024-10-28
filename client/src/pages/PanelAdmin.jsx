@@ -91,8 +91,8 @@ function PanelAdmin(){
                     author={audiobook.author}
                     description={audiobook.description}
                     coverUrl={audiobook.coverUrl}
-                    category={categoriesMap[audiobook.categoryId]} // Asegúrate de que categoryId sea el correcto
-                    onDelete={() => openModal(audiobook.id)}  // Abre el modal con el ID del audiolibro
+                    category={categoriesMap[audiobook.categoryId]}  
+                    onDelete={() => openModal(audiobook.id)}   
                 />
             ))}
 
