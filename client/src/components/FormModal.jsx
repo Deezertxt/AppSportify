@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { register } from "../api/api";
-import Eye from "./eye"; 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const Modal = ({ isOpen, closeModal, children }) => {
   if (!isOpen) return null;
@@ -27,7 +28,19 @@ const Modal = ({ isOpen, closeModal, children }) => {
   );
 };
 
-const RegistrationForm = ({ onSubmit }) => {
+const RegistrationForm = ({ onSubmit, closeModal }) => {
+  
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -136,28 +149,66 @@ const RegistrationForm = ({ onSubmit }) => {
             required
           />
         </div>
+
         <div className="mb-4">
           <label className="block text-white mb-1">Correo electrónico</label>
           <input
             type="email"
             name="email"
             placeholder="Correo electrónico"
-            isInvalid={true}
-            errorMessage="Please enter a valid email"
             value={formData.email}
             onChange={handleChange}
             className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
             required
           />
         </div>
-        <div className="mb-4  ">
-          <Eye placeholder="Ingresar contraseña">
-          </Eye>
-        </div>
-        <div className="mb-6  ">
-          <Eye placeholder="Confirmar contraseña">
 
-          </Eye>
+        <div className="mb-4 relative">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            name="password"
+            placeholder="Contraseña"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full text-white focus:outline-none border-b-2 bg-transparent p-2"
+          />
+          <button 
+            className="absolute right-6 p-2" 
+            onClick={(e) => {
+              e.preventDefault();
+              togglePasswordVisibility();
+            }}
+          >
+            {showPassword ? (
+              <FontAwesomeIcon icon={faEye} className="text-white" />    
+            ) : (
+              <FontAwesomeIcon icon={faEyeSlash} className="text-white" />          
+            )}
+          </button>
+        </div>
+
+        <div className="mb-6 relative">
+          <input
+            type={showConfirmPassword ? 'text' : 'password'}
+            name="confirmPassword"
+            placeholder="Confirmar contraseña"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            className="w-full text-white focus:outline-none border-b-2 bg-transparent p-2"
+          />
+          <button 
+            className="absolute right-6 p-2" 
+            onClick={(e) => {
+              e.preventDefault();
+              toggleConfirmPasswordVisibility();
+            }}
+          >
+            {showConfirmPassword ? (
+              <FontAwesomeIcon icon={faEye} className="text-white" />    
+            ) : (
+              <FontAwesomeIcon icon={faEyeSlash} className="text-white" />          
+            )}
+          </button>
         </div>
 
         {/* Botón de registro */}
@@ -194,7 +245,6 @@ const RegistrationForm = ({ onSubmit }) => {
         </button>
       </form>
     </div>
-    
   );
 };
 
@@ -206,7 +256,6 @@ const RegistrationModal = () => {
 
   const handleRegistration = (formData) => {
     console.log("Datos del formulario:", formData);
-    // Lógica de envío de formulario
     closeModal();
   };
 
