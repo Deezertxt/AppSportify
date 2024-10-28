@@ -41,7 +41,6 @@ const Reproductor = () => {
         }
         setIsPlaying(!isPlaying);
     };
-
     const handleProgress = () => {
         if (audioRef.current) {
             const currentProgress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
@@ -62,7 +61,6 @@ const Reproductor = () => {
             setProgress(newProgress);
         }
     };
-
     const handleBackward = () => {
         if (audioRef.current) {
             audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 10);
@@ -74,7 +72,6 @@ const Reproductor = () => {
             audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 10);
         }
     };
-
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.volume = volume / 100;
@@ -111,7 +108,6 @@ const Reproductor = () => {
                             <AudioDetails title={audiobook.title} author={audiobook.author} />
                         </div>
                     </div>
-
                     <ControlButtons
                         isPlaying={isPlaying}
                         togglePlay={togglePlayPause}

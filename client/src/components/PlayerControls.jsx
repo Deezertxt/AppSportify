@@ -137,3 +137,4 @@ const PlayerControls = ({ speed, setSpeed, volume, setVolume }) => {
 
 export default PlayerControls;
 
+
