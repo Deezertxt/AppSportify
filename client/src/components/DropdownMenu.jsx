@@ -69,7 +69,7 @@ const Sidebar = () => {
           selected={selected}
           setSelected={setSelected}
           open={open}
-          to="/biblioteca"
+          to="/taskpage"
         /> 
         <Option
           Icon={FiFolderMinus}

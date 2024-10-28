@@ -1,11 +1,10 @@
 import React, { useState} from 'react';
-import { FiVolume2} from 'react-icons/fi';
+import { FiVolume2, FiVolumeX } from 'react-icons/fi';
 
 const PlaybackSpeed = ({ speed, setSpeed }) => {
     const [showSpeed, setShowSpeed] = useState(false);
 
-    const speeds = [
-        2.0, 1.5, 1.0, 0.5];
+    const speeds = [2.0, 1.5, 1.0, 0.5];
 
     return (
         <div
@@ -13,14 +12,12 @@ const PlaybackSpeed = ({ speed, setSpeed }) => {
             onMouseEnter={() => setShowSpeed(true)}
             onMouseLeave={() => setShowSpeed(false)}
         >
-            {/* Botón de velocidad actual */}
             <button className="text-xl text-white rounded-full px-4 py-2 hover:text-green-500">
                 {speed}x
             </button>
 
-            {/* Opciones de velocidad de reproducción */}
             {showSpeed && (
-                <div className="absolute bottom-8 m:bottom-8 flex flex-col items-start bg-gray-700 px-2 py-2 rounded-lg -translate-x-1/2 left-1/2 shadow-lg">
+                <div className="absolute bottom-8 flex flex-col items-start bg-gray-700 px-2 py-2 rounded-lg -translate-x-1/2 left-1/2 shadow-lg">
                     {speeds.map((sp) => (
                         <button
                             key={sp}
@@ -39,59 +36,92 @@ const PlaybackSpeed = ({ speed, setSpeed }) => {
 };
 
 
+
 const VolumeControl = ({ volume, setVolume }) => {
-    const [showVolume, setShowVolume] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
 
     const handleVolumeChange = (e) => {
         const newVolume = parseFloat(e.target.value);
         setVolume(newVolume);
+        setIsMuted(newVolume === 0); // Actualiza el estado de mute
     };
 
     const toggleMute = () => {
-        setVolume(volume === 0 ? 100 : 0);
+        if (isMuted) {
+            setVolume(100); // Restaura el volumen al máximo si estaba en silencio
+        } else {
+            setVolume(0); // Silencia el audio
+        }
+        setIsMuted(!isMuted); // Cambia el estado de silencio
     };
 
     return (
-        <div className="relative ml-4">
-            {/* Icono de volumen */}
-            <FiVolume2
-                className="text-2xl cursor-pointer text-white hover:text-green-500"
-                onMouseEnter={() => setShowVolume(true)}
-                onMouseLeave={() => setShowVolume(false)}
-                onClick={toggleMute}
-            />
-
-            {/* Contenedor del control deslizante de volumen */}
-            {showVolume && (
-                <div className="absolute bottom-12 flex flex-col items-center gap-3 bg-gray-800 p-4 rounded-lg -translate-x-1/2 left-1/2 shadow-lg">
-                    <div className="relative w-4 h-36 bg-light-grey rounded-full overflow-hidden">
-                        {/* Indicador de volumen */}
-                        <div
-                            className="absolute bottom-0 w-full bg-green-500 rounded-full"
-                            style={{ height: `${volume}%` }}
-                        />
-
-                        {/* Control deslizante (thumb) */}
-                        <div
-                            className="absolute left-1/2 transform -translate-x-1/2 bg-white rounded-full w-4 h-4 cursor-pointer"
-                            style={{ bottom: `calc(${volume}% - 8px)` }}
-                        />
-                    </div>
-
-                    {/* Input range oculto para manejar la interacción */}
-                    <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={volume}
-                        onChange={handleVolumeChange}
-                        className="absolute opacity-0 h-full w-full cursor-pointer"
-                        style={{
-                            transformOrigin: 'bottom',
-                        }}
-                    />
-                </div>
+        <div className="flex items-center ml-4">
+            {/* Ícono de volumen con mute */}
+            {isMuted ? (
+                <FiVolumeX
+                    className="text-2xl cursor-pointer text-white hover:text-green-500"
+                    onClick={toggleMute}
+                />
+            ) : (
+                <FiVolume2
+                    className="text-2xl cursor-pointer text-white hover:text-green-500"
+                    onClick={toggleMute}
+                />
             )}
+            
+            {/* Control deslizante de volumen */}
+            <div className="relative w-32 mx-2">
+                <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={volume}
+                    onChange={handleVolumeChange}
+                    className="w-full h-2 cursor-pointer bg-gray-600 rounded-lg appearance-none"
+                    style={{
+                        WebkitAppearance: 'none',
+                        appearance: 'none',
+                    }}
+                />
+                {/* Barra de volumen que se llena */}
+                <div
+                    className="absolute top-0 h-2 bg-green-500 rounded-lg"
+                    style={{ width: `${volume}%` }} // Ajuste la altura y el color de la barra
+                />
+                {/* Estilos del thumb */}
+                <style jsx>{`
+                    input[type='range']::-webkit-slider-thumb {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 20px;
+                        height: 20px;
+                        background: white; /* Color del thumb cambiado a blanco */
+                        border-radius: 50%;
+                        cursor: pointer;
+                        border: 2px solid #333; /* Borde del thumb */
+                    }
+
+                    input[type='range']::-moz-range-thumb {
+                        width: 20px;
+                        height: 20px;
+                        background: white; /* Color del thumb cambiado a blanco */
+                        border-radius: 50%;
+                        cursor: pointer;
+                        border: 2px solid #333; /* Borde del thumb */
+                    }
+
+                    input[type='range']::-webkit-slider-runnable-track {
+                        background: transparent; /* Transparente para mostrar la barra de volumen */
+                        border-radius: 5px;
+                    }
+
+                    input[type='range']::-moz-range-track {
+                        background: transparent; /* Transparente para mostrar la barra de volumen */
+                        border-radius: 5px;
+                    }
+                `}</style>
+            </div>
         </div>
     );
 };
@@ -106,3 +136,4 @@ const PlayerControls = ({ speed, setSpeed, volume, setVolume }) => {
 };
 
 export default PlayerControls;
+
