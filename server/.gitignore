@@ -130,4 +130,5 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-/server/models/audiolibros.js
+google-key.json
+
