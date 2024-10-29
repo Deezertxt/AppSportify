@@ -1,56 +1,157 @@
-import React from 'react';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import Eye from "./Eye";
+import {Button} from "@nextui-org/react"; 
 
-const ModalInicioSesion = ({ isOpen, onClose }) => {
+const Modal = ({ isOpen, closeModal, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-[#A8DADC] rounded-lg p-6 w-96 shadow-lg relative">
-        <button onClick={onClose} className="absolute top-2 right-2 text-gray-500">X</button>
-        <div className="flex flex-col items-center space-y-4">
-          
-          <img src='/AppSportify/client/public/logo.png' alt="Logo" className="w-36 h-auto mb-2" />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="bg-first p-6 rounded-lg shadow-lg w-96 relative"
+        onClick={(e) => e.stopPropagation()} // Evita que el clic en el modal cierre el modal
+      >
+        {children}
+      </motion.div>
+    </motion.div>
+  );
+};
 
-          <div className="text-3xl font-semibold text-blue-700">Sportify</div>
-          <div className='font-semibold w-72'>Iniciar Sesión</div>
+const RegistrationForm = ({ onSubmit, closeModal }) => {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-          <form action="" class="mt-10 space-y-8 dark:text-white">
-            
-            <div>
-              <div class="relative before:absolute before:bottom-0 before:h-0.5 before:left-0 before:origin-right focus-within:before:origin-left before:right-0 before:scale-x-0 before:m-auto before:bg-sky-400 dark:before:bg-sky-800 focus-within:before:!scale-x-100 focus-within:invalid:before:bg-red-400 before:transition before:duration-300">
-                <input id="" type="email" placeholder="Email" class="w-72 bg-transparent pb-3  border-b border-black dark:placeholder-gray-300 dark:border-gray-600 outline-none  invalid:border-red-400 transition"/>
-              </div>
-            </div>
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-            <div class="flex flex-col items-end">
-              <div class="w-full relative before:absolute before:bottom-0 before:h-0.5 before:left-0 before:origin-right focus-within:before:origin-left before:right-0 before:scale-x-0 before:m-auto before:bg-sky-400 dark:before:bg-sky-800 focus-within:before:!scale-x-100 focus-within:invalid:before:bg-red-400 before:transition before:duration-300">
-                <input id="" type="password" placeholder="Password" class="w-full bg-transparent pb-3  border-b border-black dark:placeholder-gray-300 dark:border-gray-600 outline-none  invalid:border-red-400 transition"/>
-              </div>
-            </div>
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
 
-            <div>
-              <button
-              class="w-full rounded-lg bg-[#003465] dark:bg-sky-400 h-11 flex items-center justify-center px-6 py-3 transition hover:bg-sky-600 focus:bg-sky-600 active:bg-sky-800">
-                <span class="text-base font-semibold text-white dark:text-gray-900">Iniciar Sesion</span>
-              </button>
-              <button href="#" type="reset" class="-ml-3 w-max p-3">
-              <p class="text-sm tracking-wide text-white dark:text-sky-400">Aun no estás en Sportify <span className='font-bold'>Registrate</span></p>
-              </button>
-            </div>
-          </form>
-
-          <div className="flex items-center w-64">
-            <hr className="w-full border-black" />
-            <span className="mx-2 text-gray-500">Or</span>
-            <hr className="w-full border-black" />
-          </div>
-          <button className="w-72 flex items-center justify-center bg-[#003465] text-white p-3 h-11 rounded-lg">
-            <span className="mr-2">G</span> Login with Google
-          </button>
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        {/* Botón de cierre */}
+        <div className="flex flex-wrap gap-4 items-end">
+        <Button
+          type="button"
+          onClick={closeModal} // Cierra el modal al hacer clic en "X"
+          variant="ghost"
+        >
+          X
+        </Button>
         </div>
-      </div>
+        <div className="flex flex-col items-center">
+          <img
+            src="logoS.svg" // Reemplazar con la ruta del logo.
+            alt="Sportify logo"
+            className="w-37 mb-4"
+          />
+        </div>
+
+        {/* Título */}
+        <h2 className="text-2xl font-bold text-white text-left mb-6">Inicio Sesión</h2>
+
+        {/* Formulario */}
+        <div className="mb-4">
+          <label className="text-white">Correo electrónico</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="Correo electrónico"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            required
+          />
+        </div>
+        <div className="mb-4">
+        <label className="text-white">Ingresar contraseña</label>
+          <Eye placeholder="Ingresar contraseña" className="focus:outline-none" />
+        </div>
+
+        {/* Botón de inicio de sesión */}
+        <button
+          type="submit"
+          className="w-full bg-gray-800 text-white p-3 rounded-md mb-4"
+        >
+          Iniciar Sesión
+        </button>
+
+        {/* Enlace de registro */}
+        <p className="text-white text-center mb-4">
+          ¿Aun no estas en Sportify?{" "}
+          <button className="font-bold bg-transparent">Registrate</button>
+        </p>
+
+        {/* Separador */}
+        <div className="flex items-center mb-4">
+          <hr className="w-full border-white" />
+          <span className="px-3 text-white">O</span>
+          <hr className="w-full border-white" />
+        </div>
+
+        {/* Botón de Google */}
+        <button className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" className="w-5 h-5 mr-2" viewBox="0 0 48 48">
+            <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
+            <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
+            <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
+            <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+          </svg>
+          Iniciar sesión con Google
+        </button>
+      </form>
     </div>
   );
 };
 
-export default ModalInicioSesion;
+const RegistrationModal = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openModal = () => setIsOpen(true);
+  const closeModal = () => setIsOpen(false);
+
+  const handleRegistration = (formData) => {
+    console.log("Datos del formulario:", formData);
+    closeModal();
+  };
+
+  return (
+    <div className="flex justify-center items-center min-h-screen">
+      <button
+        onClick={openModal}
+        className="bg-blue-600 text-white p-3 rounded-md"
+      >
+        Iniciar Sesión
+      </button>
+
+      <Modal isOpen={isOpen} closeModal={closeModal}>
+        <RegistrationForm onSubmit={handleRegistration} closeModal={closeModal} />
+      </Modal>
+
+    </div>
+  );
+};
+
+export default RegistrationModal;

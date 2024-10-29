@@ -6,6 +6,7 @@ import {
   FiChevronsRight,
   FiFolderMinus,
   FiHome,
+  FiLogIn,
   FiSearch,
   FiTag,
   FiUsers,
@@ -32,6 +33,8 @@ const Sidebar = () => {
       setSelected("Inicio");
     } else if (currentPath === "/publicar") {
       setSelected("Registro Audiolibros");
+    }else if (currentPath === "/login"){
+      setSelected("Inicio sesion")
     } else if(currentPath === "/Preview"){
       setSelected("Preview");
     }
@@ -82,7 +85,18 @@ const Sidebar = () => {
           open={open}
           to="/publicar"
         />
-         <Option
+
+        <Option
+          Icon={FiLogIn}
+          title=" Inicio sesion"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+          to="/login"
+        />
+
+        {/* <Option
+
           Icon={FiTag}
           title="Categorias"
           selected={selected}
