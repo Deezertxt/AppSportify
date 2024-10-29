@@ -58,5 +58,3 @@ const uploadFilesToGCS = async (req, res) => {
 };
 
 module.exports = { uploadFilesToGCS };
-
-

@@ -33,10 +33,3 @@ const ProgressBar = ({ progress, totalDuration, onProgressChange }) => {
 };
 
 export default ProgressBar;
-
-
-
-
-
-
-

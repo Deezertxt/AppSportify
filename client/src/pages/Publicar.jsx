@@ -19,7 +19,6 @@ function Publicar() {
         pdfFile: null,  // Para el archivo PDF
         portadaFile: null,    // Para la portada
     });
-
     const [errors, setErrors] = useState({});  // Estado para manejar errores
     const [successMessage, setSuccessMessage] = useState(null); // Estado para mensaje de éxito
     const [categories, setCategories] = useState([]);
@@ -31,7 +30,6 @@ function Publicar() {
         setIsModalOpen(false);
         navigate('/');
     };
-
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -45,13 +43,11 @@ function Publicar() {
 
         fetchCategories();
     }, []);
-
     // Validar caracteres especiales en los campos de texto
     const validateTextInput = (input) => {
         const regex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s.,!?()\-:;]*$/;
         return regex.test(input);
     };
-
     const handleDocumentoChange = async (event) => {
         const newFile = event.target.files[0];
 
@@ -278,7 +274,6 @@ function Publicar() {
         } finally {
             setIsLoading(false);
         }
-
     }
     return (
         <div className="max-h-screen-xl bg-[#F0F9F9]">
@@ -286,7 +281,6 @@ function Publicar() {
             <div className="max-w-screen-xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-8">
                     <button
-
                         onClick={() => setIsModalOpen(true)} // Abre el modal
                         className="mb-4 text-[#0B6477] flex items-center"
                     >
@@ -510,7 +504,6 @@ function Publicar() {
                         </div>
                     </div>
                 )}
-
                 {/* Modal de Confirmación */}
                 {isModalOpen && (
                     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
