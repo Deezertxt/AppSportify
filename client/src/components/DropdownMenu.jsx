@@ -48,129 +48,96 @@ const Sidebar = () => {
 
   return (
     <motion.nav
-      layout
-      className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-[#5758a6] p-2"
-      style={{
-        width: open ? "225px" : "fit-content",
-      }}
-    >
-      <TitleSection open={open} />
+    layout
+    className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-[#5758a6] p-2"
+    style={{
+      width: open ? "225px" : "fit-content",
+    }}
+  >
+    <TitleSection open={open} />
 
-      <div className="space-y-1">
-        {/* Panel de Administración */}
-        
-        <Option
-          Icon={FiHome}
-          title="Inicio"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          to="/"
+    <div className="space-y-1">
+      <Option
+        Icon={FiHome}
+        title="Inicio"
+        selected={selected}
+        setSelected={setSelected}
+        open={open}
+        to="/"
+      />
+      <Option
+        Icon={FiSearch}
+        title="Buscar"
+        selected={selected}
+        setSelected={setSelected}
+        open={open}
+        to="/buscar" // Asegúrate de tener esta ruta
+      />
+      <Option
+        Icon={FiBook}
+        title="Biblioteca"
+        selected={selected}
+        setSelected={setSelected}
+        open={open}
+        to="/taskpage"
+      /> 
+      <Option
+        Icon={FiFolderMinus}
+        title="Registro Audiolibros"
+        selected={selected}
+        setSelected={setSelected}
+        open={open}
+        to="/publicar"
+      />
+      <Option
+        Icon={FiUsers}
+        title="Registro de Usuarios"
+        selected={selected}
+        setSelected={setSelected}
+        open={open}
+        to="/registrarusuario"
+      />
+      <Option
+        Icon={FiBarChart}
+        title="Panel de Administración"
+        selected={selected}
+        setSelected={setSelected}
+        open={open}
+        to="/PanelAdmin"
+      />
+      <Option
+        Icon={FiLogIn}
+        title="Inicio sesión"
+        selected={selected}
+        setSelected={setSelected}
+        open={open}
+        to="/login"
+      />
+      <Option
+        Icon={FiBook}
+        title="Preview"
+        selected={selected}
+        setSelected={setSelected}
+        open={open}
+        to="/Preview"
+      />
+    </div>
 
-          />
-        <Option
-          Icon={FiSearch}
-          title="Buscar"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-        /> 
-        <Option
-          Icon={FiBook}
-          title="Biblioteca"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          to="/taskpage"
-        /> 
-        <Option
-          Icon={FiFolderMinus}
-          title="Registro Audiolibros"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          to="/publicar"
-        />
-        <Option
-          Icon={FiUsers}
-          title="Registro de Usuarios"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          to="/registrarusuario"
-        />
-
-        <Option
-          Icon={FiBarChart} // Icono de administración
-          title="Panel de Administración"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          to="/PanelAdmin"
-        />
-
-      </div>
-
-
-        <Option
-          Icon={FiLogIn}
-          title=" Inicio sesion"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          to="/login"
-        />
-
-        {/* <Option
-
-          Icon={FiTag}
-          title="Categorias"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-        /> 
-        {/* <Option
-          Icon={FiBarChart}
-          title="Estadisticas"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-        /> */}
-        <Option
-          Icon={FiUsers}
-          title="Usuarios"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-        /> */}
-        <Option
-          Icon={FiBook}
-          title="Preview"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          to="/Preview"
-        />
-      </div>
-
-      <ToggleClose open={open} setOpen={setOpen} /> 
-    </motion.nav>
-  );
+    <ToggleClose open={open} setOpen={setOpen} /> 
+  </motion.nav>
+);
 };
 
 const Option = ({ Icon, title, selected, setSelected, open, notifs, to }) => {
   return (
     <Link to={to} className="w-full" onClick={() => setSelected(title)}>
       <motion.button
-    <motion.button
+  
       layout
       onClick={() => setSelected(title)}
       className={`relative flex h-10 w-full items-center rounded-md transition-colors ${selected === title ? "bg-white text-gray-600" : "text-gray-50 hover:bg-gray-800"}`}
     >
-      <motion.div
-        layout
-        className={`relative flex h-10 w-full items-center rounded-md transition-colors ${selected === title ? "bg-white text-gray-600" : "text-gray-50 hover:bg-gray-800"}`}
-      >
+
         <motion.div
           layout
           className="grid h-full w-10 place-content-center text-xl"
@@ -231,9 +198,7 @@ const Logo = () => {
       layout
       className="grid size-20 shrink-0 place-content-center rounded-md  "
     >
-      <Link to="/">
-        <img className="block lg:hidden h-20 w-18" src="/logoS.svg" alt="Logo" />
-        <img className="hidden lg:block h-20 w-auto" src="/logoS.svg" alt="Logo" />
+      
       <Link to="/">{}
       <img className="block lg:hidden h-20 w-18" src="/logoS.svg" alt="Logo" />
       <img className="hidden lg:block h-20 w-auto" src="/logoS.svg" alt="Logo" />

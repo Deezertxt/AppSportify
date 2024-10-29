@@ -285,10 +285,7 @@ function Publicar() {
                        onClick={() => setIsModalOpen(true)} // Abre el modal
                         className="mb-4 text-[#0B6477] flex items-center"
                     >
-                    <FaArrowLeft className="mr-2" /> Volver al inicio
-                        onClick={() => setIsModalOpen(true)} // Abre el modal
-                        className="mb-4 text-[#0B6477] flex items-center"
-                    >
+        
                         <FaArrowLeft className="mr-2" /> Volver al inicio
                     </button>
                     <div className="text-center flex-grow">

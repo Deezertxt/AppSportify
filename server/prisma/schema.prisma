@@ -5,8 +5,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"  // Usando PostgreSQL como base de datos
-  url      = env("DATABASE_URL")  // La URL de conexión estará en el archivo .env
+  provider = "mysql" // Asegúrate de que esto sea 'mysql'
+  url      = env("DATABASE_URL") // Esto debe apuntar a tu base de datos MySQL
 }
 
 // Definición de la tabla User para gestionar el registro de usuarios
