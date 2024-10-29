@@ -1,3 +1,5 @@
+Modal
+
 import { motion } from "framer-motion";
 
 const BarLoader = () => {
@@ -45,4 +47,3 @@ const FormWithLoader = ({ isLoading }) => {
 };
 
 export default FormWithLoader;
-

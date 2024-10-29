@@ -8,6 +8,7 @@ import {
   FiChevronsRight,
   FiFolderMinus,
   FiHome,
+  FiLogIn,
   FiSearch,
   FiTag,
   FiUsers,
@@ -36,6 +37,12 @@ const Sidebar = () => {
       setSelected("Registro Audiolibros");
     } else if (currentPath === "/registrarusuario") {
       setSelected("Registro de Usuarios");
+
+    }else if (currentPath === "/login"){
+      setSelected("Inicio sesion")
+    } else if(currentPath === "/Preview"){
+      setSelected("Preview");
+
     }
   }, [location.pathname]);
 
@@ -59,7 +66,23 @@ const Sidebar = () => {
           setSelected={setSelected}
           open={open}
           to="/"
-        />
+
+          />
+        <Option
+          Icon={FiSearch}
+          title="Buscar"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+        /> 
+        <Option
+          Icon={FiBook}
+          title="Biblioteca"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+          to="/taskpage"
+        /> 
         <Option
           Icon={FiFolderMinus}
           title="Registro Audiolibros"
@@ -87,6 +110,50 @@ const Sidebar = () => {
         />
 
       </div>
+
+
+        <Option
+          Icon={FiLogIn}
+          title=" Inicio sesion"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+          to="/login"
+        />
+
+        {/* <Option
+
+          Icon={FiTag}
+          title="Categorias"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+        /> 
+        {/* <Option
+          Icon={FiBarChart}
+          title="Estadisticas"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+        /> */}
+        <Option
+          Icon={FiUsers}
+          title="Usuarios"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+        /> */}
+        <Option
+          Icon={FiBook}
+          title="Preview"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+          to="/Preview"
+        />
+      </div>
+
+      <ToggleClose open={open} setOpen={setOpen} /> 
     </motion.nav>
   );
 };
@@ -95,6 +162,12 @@ const Option = ({ Icon, title, selected, setSelected, open, notifs, to }) => {
   return (
     <Link to={to} className="w-full" onClick={() => setSelected(title)}>
       <motion.button
+    <motion.button
+      layout
+      onClick={() => setSelected(title)}
+      className={`relative flex h-10 w-full items-center rounded-md transition-colors ${selected === title ? "bg-white text-gray-600" : "text-gray-50 hover:bg-gray-800"}`}
+    >
+      <motion.div
         layout
         className={`relative flex h-10 w-full items-center rounded-md transition-colors ${selected === title ? "bg-white text-gray-600" : "text-gray-50 hover:bg-gray-800"}`}
       >
@@ -146,6 +219,7 @@ const TitleSection = ({ open }) => {
             />
           )}
         </div>
+        {open && <FiChevronDown className="mr-5" />} 
       </div>
     </div>
   );
@@ -160,6 +234,9 @@ const Logo = () => {
       <Link to="/">
         <img className="block lg:hidden h-20 w-18" src="/logoS.svg" alt="Logo" />
         <img className="hidden lg:block h-20 w-auto" src="/logoS.svg" alt="Logo" />
+      <Link to="/">{}
+      <img className="block lg:hidden h-20 w-18" src="/logoS.svg" alt="Logo" />
+      <img className="hidden lg:block h-20 w-auto" src="/logoS.svg" alt="Logo" />
       </Link>
     </motion.div>
   );

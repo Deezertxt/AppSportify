@@ -9,6 +9,9 @@ import { RouteProvider } from './context/RouteContext';
 import PanelAdmin from "./pages/PanelAdmin";
 import Actualizar from "./pages/Actualizar";
 import Pruebita from "./pages/pruebita";
+import InicioSesion from './pages/InicioSesion';
+import TasksPage from './pages/Taskpage';
+
 
 function App() {
     return (
@@ -25,13 +28,16 @@ function App() {
                             <Route path="/PanelAdmin" element={<PanelAdmin />} />
                             <Route path="/Actualizar/:id" element={<Actualizar />} />
                             <Route path="/pruebita" element={<Pruebita />} />
+                            <Route path="/login" element={<InicioSesion />} />
+                            <Route path="/taskpage" element={<TasksPage/>} />
 
                         </Routes>
                     </div>
                     <Footer />
-                </div>
             </div>
-        </RouteProvider>
+        </div>
+    </RouteProvider>
+
     );
 }
 
