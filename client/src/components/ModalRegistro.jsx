@@ -1,34 +1,9 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { register } from "../api/api";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
-const Modal = ({ isOpen, closeModal, children }) => {
-  if (!isOpen) return null;
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      onClick={closeModal}
-    >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className="bg-first p-6 rounded-lg shadow-lg w-[450px] h-[690px]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {children}
-      </motion.div>
-    </motion.div>
-  );
-};
-
-const RegistrationForm = ({ onSubmit, closeModal }) => {
+const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
   
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -70,6 +45,7 @@ const RegistrationForm = ({ onSubmit, closeModal }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setFormErrors({});
     setSuccessMessage("");
 
@@ -111,8 +87,6 @@ const RegistrationForm = ({ onSubmit, closeModal }) => {
         confirmPassword: "",
       });
 
-      if (onSubmit) onSubmit(userData); // Llamar a la función onSubmit con los datos del usuario registrado
-
     } catch (error) {
       console.error("Error al registrar:", error);
       setFormErrors({ general: "Error al registrar. Verifique los campos." });
@@ -122,23 +96,30 @@ const RegistrationForm = ({ onSubmit, closeModal }) => {
   };
   
   return (
-    <div>
+    <div >
       <form onSubmit={handleSubmit}>
+      <button
+          type="button"
+          onClick={closeModal}
+          className="absolute top-2 right-2 text-gray-500 "
+        >
+          X
+        </button>
         {/* Logo */}
         <div className="flex flex-col items-center">
           <img
             src="logoS.svg" 
             alt="Sportify logo"
-            className="w-37 mb-4"
+            className="w-37  mb-4"
           />
         </div>
 
         {/* Título */}
-        <h2 className="text-2xl font-bold text-white text-center mb-6">Regístrate</h2>
+        <h2 className="text-2xl font-bold text-white text-left mb-6">Regístrate</h2>
 
         {/* Formulario */}
         <div className="mb-4">
-          <label className="block text-white mb-1">Nombre de usuario</label>
+          <label className="block font-semibold text-white mb-1">Nombre de usuario</label>
           <input
             type="text"
             name="username"
@@ -149,13 +130,10 @@ const RegistrationForm = ({ onSubmit, closeModal }) => {
             className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
             required
           />
-          {formErrors.username && (
-            <p className="text-red-500 text-sm">{formErrors.username}</p>
-          )}
         </div>
 
         <div className="mb-4">
-          <label className="block text-white mb-1">Correo electrónico</label>
+          <label className="block font-semibold text-white mb-1">Correo electrónico</label>
           <input
             type="email"
             name="email"
@@ -167,7 +145,8 @@ const RegistrationForm = ({ onSubmit, closeModal }) => {
           />
         </div>
 
-        <div className="mb-4 relative">
+        <div className="mb-4 ">
+        <label className="block text-white font-semibold mb-1">Contraseña</label>
           <input
             type={showPassword ? 'text' : 'password'}
             name="password"
@@ -191,7 +170,8 @@ const RegistrationForm = ({ onSubmit, closeModal }) => {
           </button>
         </div>
 
-        <div className="mb-6 relative">
+        <div className="mb-4">
+        <label className="block text-white font-semibold mb-1">Confirmar contraseña</label>
           <input
             type={showConfirmPassword ? 'text' : 'password'}
             name="confirmPassword"
@@ -208,9 +188,9 @@ const RegistrationForm = ({ onSubmit, closeModal }) => {
             }}
           >
             {showConfirmPassword ? (
-              <FontAwesomeIcon icon={faEye} className="text-white" />    
+              <FontAwesomeIcon icon={faEye} className="text text-default-400 pointer-events-none text-white" />    
             ) : (
-              <FontAwesomeIcon icon={faEyeSlash} className="text-white" />          
+              <FontAwesomeIcon icon={faEyeSlash} className="text text-default-400 pointer-events-none text-white" />          
             )}
           </button>
         </div>
@@ -219,17 +199,21 @@ const RegistrationForm = ({ onSubmit, closeModal }) => {
         <button
           type="submit"
           className="w-full bg-gray-800 text-white p-3 rounded-md mb-4"
-          disabled={isLoading}
         >
-          {isLoading ? "Registrando..." : "Registrarse"}
+          Registrarse
         </button>
 
         {/* Enlace de inicio de sesión */}
         <p className="text-white text-center mb-4">
           ¿Ya tienes una cuenta?{" "}
-          <a href="#" className="underline">
+          <button 
+          className="font-bold bg-transparent"
+          onClick={(e) =>{
+            e.preventDefault();
+            openLogin();
+          }}>
             Inicia sesión
-          </a>
+          </button>
         </p>
 
         {/* Separador */}
@@ -246,38 +230,10 @@ const RegistrationForm = ({ onSubmit, closeModal }) => {
             alt="Google icon"
             className="w-5 h-5 mr-2"
           />
-          Iniciar sesión con Google
+          Registrarse con Google
         </button>
       </form>
     </div>
   );
 };
-
-const RegistrationModal = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
-
-  const handleRegistration = (formData) => {
-    console.log("Datos del formulario:", formData);
-    closeModal();
-  };
-
-  return (
-    <div className="flex justify-center items-center min-h-screen">
-      <button
-        onClick={openModal}
-        className="bg-[#4b478a] text-white p-3 rounded-md"
-      >
-        Abrir Registro
-      </button>
-
-      <Modal isOpen={isOpen} closeModal={closeModal}>
-        <RegistrationForm onSubmit={handleRegistration} />
-      </Modal>
-    </div>
-  );
-};
-
-export default RegistrationModal;
+export default RegistrationForm;

@@ -5,16 +5,16 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"  // Usando PostgreSQL como base de datos
-  url      = env("DATABASE_URL")  // La URL de conexión estará en el archivo .env
+  provider = "mysql" // Asegúrate de que esto sea 'mysql'
+  url      = env("DATABASE_URL") // Esto debe apuntar a tu base de datos MySQL
 }
 
 // Definición de la tabla User para gestionar el registro de usuarios
 model User {
   id          Int      @id @default(autoincrement())  // Campo ID autoincremental
-  name        String   @db.VarChar(100)               // Nombre del usuario, máximo 100 caracteres
+  username        String   @db.VarChar(10)               // Nombre del usuario, máximo 100 caracteres
   email       String   @unique                        // Email único
-  password    String   @db.VarChar(255)               // Contraseña cifrada
+  password    String   @db.VarChar(15)               // Contraseña cifrada
   createdAt   DateTime @default(now())                // Fecha de creación
   updatedAt   DateTime @updatedAt                     // Fecha de actualización automática
   library     Library[]                               //Relation to Library table (1-n)

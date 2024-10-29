@@ -1,12 +1,19 @@
 import { Link } from "react-router-dom";
-import { FaUserCircle } from 'react-icons/fa';
-import Search from "./SearchBar";
+import SearchBar from "./SearchBar";
+import React, { useState} from "react";
+
+import { SearchResultsList } from "../components/SearchResultsList";
+
 
 function Navbar() {
+    const [results, setResults] = useState([]);
     return (
-        <nav className="bg-[#F0F9F9] text-white text-lg flex flex-col lg:flex-row items-center justify-between py-4 px-10">
-            <div className="flex flex-col lg:flex-row lg:items-center mt-4 lg:mt-0 lg:justify-center w-full">
-                {/* <Search />   */}  
+        <nav className="bg-[#F0F9F9] text-white text-lg mt-[25px] lg:flex-row pt-4 px-10">
+            <div className="px-[50px]">
+                <SearchBar setResults={setResults}/>
+            </div>
+            <div className="m-0 pl-[55px]">
+                <SearchResultsList results={results}/>
             </div>
         </nav>
     );

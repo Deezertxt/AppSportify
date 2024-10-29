@@ -1,48 +1,27 @@
 import { motion } from "framer-motion";
 
-const BarLoader = () => {
+const Modal = ({ isOpen, closeModal, children }) => {
+  if (!isOpen) return null; // Si isOpen es false, no renderiza el modal
+
   return (
     <motion.div
-      transition={{
-        staggerChildren: 0.25,
-      }}
-      initial="initial"
-      animate="animate"
-      className="flex gap-1"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
     >
-      <motion.div variants={variants} className="h-12 w-2 bg-white" />
-      <motion.div variants={variants} className="h-12 w-2 bg-white" />
-      <motion.div variants={variants} className="h-12 w-2 bg-white" />
-      <motion.div variants={variants} className="h-12 w-2 bg-white" />
-      <motion.div variants={variants} className="h-12 w-2 bg-white" />
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="bg-first p-6 rounded-lg shadow-lg w-96 relative"
+        onClick={(e) => e.stopPropagation()} // Evita que el clic en el modal cierre el modal
+      >
+        {children} {/* Renderiza el contenido del modal */}
+      </motion.div>
     </motion.div>
   );
 };
 
-const LoaderWrapper = ({ children, isLoading }) => {
-  return (
-    <div className="relative">
-      {children}
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-opacity-50 bg-gray-700 z-10">
-          <BarLoader />
-        </div>
-      )}
-    </div>
-  );
-};
-
-const FormWithLoader = ({ isLoading }) => {
-  return (
-    <LoaderWrapper isLoading={isLoading}>
-      <form className="bg-white p-6 rounded-lg shadow-md">
-        {/* Aquí van los campos de tu formulario */}
-        <input type="text" placeholder="Tu nombre" className="border p-2 mb-4 w-full" />
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">Enviar</button>
-      </form>
-    </LoaderWrapper>
-  );
-};
-
-export default FormWithLoader;
-
+export default Modal;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { isValidCover } from "../utils/fileCoverValidator";
-import { createAudiobook, getCategories, uploadFilesToFirebase } from '../api/api';
+import { createAudiobook, getCategories, uploadFilesToGCS } from '../api/api';
 import { FaTrashAlt, FaFilePdf, FaImage, FaPaperPlane, FaTimes, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate, useParams } from "react-router-dom";
 import BarLoaderWrapper from "../components/BarLoader";
