@@ -6,6 +6,9 @@ import Footer from './components/Footer';
 import Publicar from './pages/Publicar';
 import DropdownMenu from './components/DropdownMenu';
 import { RouteProvider } from './context/RouteContext';
+import PanelAdmin from "./pages/PanelAdmin";
+import Actualizar from "./pages/Actualizar";
+import Pruebita from "./pages/pruebita";
 import InicioSesion from './pages/InicioSesion';
 import TasksPage from './pages/Taskpage';
 
@@ -22,6 +25,9 @@ function App() {
                             <Route path="/" element={<Biblioteca />} />
                             <Route path="/reproductor/:id" element={<Reproductor />} />
                             <Route path="/publicar" element={<Publicar />} />
+                            <Route path="/PanelAdmin" element={<PanelAdmin />} />
+                            <Route path="/Actualizar/:id" element={<Actualizar />} />
+                            <Route path="/pruebita" element={<Pruebita />} />
                             <Route path="/login" element={<InicioSesion />} />
                             <Route path="/taskpage" element={<TasksPage/>} />
 
