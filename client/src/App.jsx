@@ -8,6 +8,8 @@ import DropdownMenu from './components/DropdownMenu';
 import { RouteProvider } from './context/RouteContext';
 import TasksPage from './pages/Taskpage';
 
+import Libro from './pages/Libro';
+
 function App() {
     return (
         <RouteProvider>
@@ -20,13 +22,15 @@ function App() {
                             <Route path="/" element={<Biblioteca />} />
                             <Route path="/reproductor/:id" element={<Reproductor />} />
                             <Route path="/publicar" element={<Publicar />} />
-                            <Route path="/taskpage" element={<TasksPage/>} />
+                            <Route path="/taskpage" element={<TasksPage />} />
+                            <Route path="/libro" element={<Libro />} />
                         </Routes>
                     </div>
-                    <Footer />
+                    {/* <Footer /> */}
+                </div>
             </div>
-        </div>
-    </RouteProvider>
+        </RouteProvider>
+        //<Libro />
 
     );
 }
