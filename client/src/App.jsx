@@ -23,14 +23,13 @@ function App() {
                             <Route path="/reproductor/:id" element={<Reproductor />} />
                             <Route path="/publicar" element={<Publicar />} />
                             <Route path="/taskpage" element={<TasksPage />} />
-                            <Route path="/libro" element={<Libro />} />
+                            <Route path="/preview" element={<Libro />} />
                         </Routes>
                     </div>
-                    {/* <Footer /> */}
+                    {<Footer />}
                 </div>
             </div>
         </RouteProvider>
-        //<Libro />
 
     );
 }
