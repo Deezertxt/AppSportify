@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 
 const Modal = ({ isOpen, closeModal, children }) => {
-  if (!isOpen) return null; 
+  if (!isOpen) return null; // Si isOpen es false, no renderiza el modal
 
   return (
     <motion.div
@@ -9,7 +9,6 @@ const Modal = ({ isOpen, closeModal, children }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      onClick={closeModal}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
@@ -17,9 +16,9 @@ const Modal = ({ isOpen, closeModal, children }) => {
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
         className="bg-first p-6 rounded-lg shadow-lg w-96 relative"
-        onClick={(e) => e.stopPropagation()} 
+        onClick={(e) => e.stopPropagation()} // Evita que el clic en el modal cierre el modal
       >
-        {children}
+        {children} {/* Renderiza el contenido del modal */}
       </motion.div>
     </motion.div>
   );

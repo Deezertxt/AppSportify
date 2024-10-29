@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
-const RegistrationForm = ({ closeModal }) => {
+const ModalInicioSesion = ({ closeModal, openRegister }) => {
   const [showPassword, setShowPassword] = useState(false);
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -11,28 +11,22 @@ const RegistrationForm = ({ closeModal }) => {
   return (
     <div>
       <form>
-        {/* Botón de cierre */}
         <button
           type="button"
-          onClick={closeModal} // Cierra el modal al hacer clic en "X"
-          className="absolute top-2 right-2 text-gray-500 border"
+          onClick={closeModal}
+          className="absolute top-2 right-2 text-gray-500 "
         >
           X
         </button>
 
         <div className="flex flex-col items-center">
-          <img
-            src="logoS.svg" // Reemplazar con la ruta del logo.
-            alt="Sportify logo"
-            className="w-37 mb-4"
-          />
+          <img src="logoS.svg" alt="Sportify logo" className="w-37 mb-4" />
         </div>
 
-        {/* Título */}
         <h2 className="text-2xl font-bold text-white text-left mb-6">Inicio Sesión</h2>
 
-        {/* Formulario */}
         <div className="mb-4">
+          <label className="block text-white font-semibold mb-1">Correo electrónico</label>
           <input
             type="email"
             name="email"
@@ -41,39 +35,44 @@ const RegistrationForm = ({ closeModal }) => {
             required
           />
         </div>
-        
+
         <div className="mb-4">
-        <input
-          type={showPassword ? 'text' : 'password'}
-          placeholder="Password"
-          className="w-full text-white focus:outline-none border-b-2 bg-transparent p-2"
-        />
-        <button 
-        className="absolute right-6 p-2" 
-        onClick={(e) => {
-          e.preventDefault();
-          togglePasswordVisibility();
-        }}
-        >
-          {showPassword ? (
-            <FontAwesomeIcon icon={faEye} className="text text-default-400 pointer-events-none text-white" />    
-          ) : (
-            <FontAwesomeIcon icon={faEyeSlash} className="text text-default-400 pointer-events-none text-white" />          )}
-        </button>
+          <label className="block text-white font-semibold mb-1">Contraseña</label>
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Contraseña"
+            className="w-full text-white focus:outline-none border-b-2 bg-transparent p-2"
+          />
+          <button
+            className="absolute right-6 p-2"
+            onClick={(e) => {
+              e.preventDefault();
+              togglePasswordVisibility();
+            }}
+          >
+            {showPassword ? (
+              <FontAwesomeIcon icon={faEye} className="text text-default-400 pointer-events-none text-white" />
+            ) : (
+              <FontAwesomeIcon icon={faEyeSlash} className="text text-default-400 pointer-events-none text-white" />
+            )}
+          </button>
         </div>
 
-        {/* Botón de inicio de sesión */}
-        <button
-          type="submit"
-          className="w-full bg-gray-800 text-white p-3 rounded-md mb-4"
-        >
+        <button type="submit" className="w-full bg-gray-800 text-white p-3 rounded-md mb-4">
           Iniciar Sesión
         </button>
 
-        {/* Enlace de registro */}
         <p className="text-white text-center mb-4">
           ¿Aun no estas en Sportify?{" "}
-          <button className="font-bold bg-transparent">Registrate</button>
+          <button
+            className="font-bold bg-transparent"
+            onClick={(e) => {
+              e.preventDefault();
+              openRegister(); // Llama a openRegister para cambiar al formulario de registro
+            }}
+          >
+            Registrate
+          </button>
         </p>
 
         {/* Separador */}
@@ -82,7 +81,6 @@ const RegistrationForm = ({ closeModal }) => {
           <span className="px-3 text-white">O</span>
           <hr className="w-full border-white" />
         </div>
-
 
         {/* Botón de Google */}
         <button className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
@@ -98,4 +96,4 @@ const RegistrationForm = ({ closeModal }) => {
   );
 };
 
-export default RegistrationForm;
+export default ModalInicioSesion;
