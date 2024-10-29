@@ -1,22 +1,22 @@
 //navbar//
 import React, { useState } from 'react';
 import LoginModal from './ModalInicioSesion'; 
-
+import Modal from './Modal';
 const Navbar = () => {
     const [isMenuOpen, setMenuOpen] = useState(false);
-    const [isLoginModalOpen, setLoginModalOpen] = useState(false); 
+    const [isModalOpen, setModalOpen] = useState(false); 
 
     const toggleMenu = () => {
         setMenuOpen(!isMenuOpen);
     };
 
     const openModal = () => {
-        setLoginModalOpen(true);
+        setModalOpen(true);
         setMenuOpen(false); 
     };
 
     const closeModal = () => {
-        setLoginModalOpen(false);
+        setModalOpen(false);
     };
 
     return (
@@ -74,9 +74,10 @@ const Navbar = () => {
                     </div>
                 </div>
             )}
-
-           
-            {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={closeModal} />} 
+            {isModalOpen && 
+            <Modal isOpen={isModalOpen} closeModal={closeModal} >
+            <LoginModal closeModal={closeModal} />
+            </Modal>}
         </>
     );
 };

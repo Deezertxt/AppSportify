@@ -1,56 +1,101 @@
-import React from 'react';
+import { useState } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
-const ModalInicioSesion = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
+const RegistrationForm = ({ closeModal }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-[#A8DADC] rounded-lg p-6 w-96 shadow-lg relative">
-        <button onClick={onClose} className="absolute top-2 right-2 text-gray-500">X</button>
-        <div className="flex flex-col items-center space-y-4">
-          
-          <img src='/AppSportify/client/public/logo.png' alt="Logo" className="w-36 h-auto mb-2" />
+    <div>
+      <form>
+        {/* Botón de cierre */}
+        <button
+          type="button"
+          onClick={closeModal} // Cierra el modal al hacer clic en "X"
+          className="absolute top-2 right-2 text-gray-500 border"
+        >
+          X
+        </button>
 
-          <div className="text-3xl font-semibold text-blue-700">Sportify</div>
-          <div className='font-semibold w-72'>Iniciar Sesión</div>
-
-          <form action="" class="mt-10 space-y-8 dark:text-white">
-            
-            <div>
-              <div class="relative before:absolute before:bottom-0 before:h-0.5 before:left-0 before:origin-right focus-within:before:origin-left before:right-0 before:scale-x-0 before:m-auto before:bg-sky-400 dark:before:bg-sky-800 focus-within:before:!scale-x-100 focus-within:invalid:before:bg-red-400 before:transition before:duration-300">
-                <input id="" type="email" placeholder="Email" class="w-72 bg-transparent pb-3  border-b border-black dark:placeholder-gray-300 dark:border-gray-600 outline-none  invalid:border-red-400 transition"/>
-              </div>
-            </div>
-
-            <div class="flex flex-col items-end">
-              <div class="w-full relative before:absolute before:bottom-0 before:h-0.5 before:left-0 before:origin-right focus-within:before:origin-left before:right-0 before:scale-x-0 before:m-auto before:bg-sky-400 dark:before:bg-sky-800 focus-within:before:!scale-x-100 focus-within:invalid:before:bg-red-400 before:transition before:duration-300">
-                <input id="" type="password" placeholder="Password" class="w-full bg-transparent pb-3  border-b border-black dark:placeholder-gray-300 dark:border-gray-600 outline-none  invalid:border-red-400 transition"/>
-              </div>
-            </div>
-
-            <div>
-              <button
-              class="w-full rounded-lg bg-[#003465] dark:bg-sky-400 h-11 flex items-center justify-center px-6 py-3 transition hover:bg-sky-600 focus:bg-sky-600 active:bg-sky-800">
-                <span class="text-base font-semibold text-white dark:text-gray-900">Iniciar Sesion</span>
-              </button>
-              <button href="#" type="reset" class="-ml-3 w-max p-3">
-              <p class="text-sm tracking-wide text-white dark:text-sky-400">Aun no estás en Sportify <span className='font-bold'>Registrate</span></p>
-              </button>
-            </div>
-          </form>
-
-          <div className="flex items-center w-64">
-            <hr className="w-full border-black" />
-            <span className="mx-2 text-gray-500">Or</span>
-            <hr className="w-full border-black" />
-          </div>
-          <button className="w-72 flex items-center justify-center bg-[#003465] text-white p-3 h-11 rounded-lg">
-            <span className="mr-2">G</span> Login with Google
-          </button>
+        <div className="flex flex-col items-center">
+          <img
+            src="logoS.svg" // Reemplazar con la ruta del logo.
+            alt="Sportify logo"
+            className="w-37 mb-4"
+          />
         </div>
-      </div>
+
+        {/* Título */}
+        <h2 className="text-2xl font-bold text-white text-left mb-6">Inicio Sesión</h2>
+
+        {/* Formulario */}
+        <div className="mb-4">
+          <input
+            type="email"
+            name="email"
+            placeholder="Correo electrónico"
+            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            required
+          />
+        </div>
+        
+        <div className="mb-4">
+        <input
+          type={showPassword ? 'text' : 'password'}
+          placeholder="Password"
+          className="w-full text-white focus:outline-none border-b-2 bg-transparent p-2"
+        />
+        <button 
+        className="absolute right-6 p-2" 
+        onClick={(e) => {
+          e.preventDefault();
+          togglePasswordVisibility();
+        }}
+        >
+          {showPassword ? (
+            <FontAwesomeIcon icon={faEye} className="text text-default-400 pointer-events-none text-white" />    
+          ) : (
+            <FontAwesomeIcon icon={faEyeSlash} className="text text-default-400 pointer-events-none text-white" />          )}
+        </button>
+        </div>
+
+        {/* Botón de inicio de sesión */}
+        <button
+          type="submit"
+          className="w-full bg-gray-800 text-white p-3 rounded-md mb-4"
+        >
+          Iniciar Sesión
+        </button>
+
+        {/* Enlace de registro */}
+        <p className="text-white text-center mb-4">
+          ¿Aun no estas en Sportify?{" "}
+          <button className="font-bold bg-transparent">Registrate</button>
+        </p>
+
+        {/* Separador */}
+        <div className="flex items-center mb-4">
+          <hr className="w-full border-white" />
+          <span className="px-3 text-white">O</span>
+          <hr className="w-full border-white" />
+        </div>
+
+
+        {/* Botón de Google */}
+        <button className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
+        <img
+          src="google.svg" 
+          alt="Google icon"
+          className="w-5 h-5 mr-2"
+        />
+          Iniciar sesión con Google
+        </button>
+      </form>
     </div>
   );
 };
 
-export default ModalInicioSesion;
+export default RegistrationForm;
