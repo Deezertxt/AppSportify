@@ -116,7 +116,7 @@ const Sidebar = () => {
           selected={selected}
           setSelected={setSelected}
           open={open}
-        /> */}
+        />
         <Option
           Icon={FiBook}
           title="Preview"

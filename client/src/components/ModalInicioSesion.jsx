@@ -94,31 +94,4 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
   );
 };
 
-const RegistrationModal = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
-
-  const handleRegistration = (formData) => {
-    console.log("Datos del formulario:", formData);
-    closeModal();
-  };
-
-  return (
-    <div className="flex justify-center items-center min-h-screen">
-      <button
-        onClick={openModal}
-        className="bg-blue-600 text-white p-3 rounded-md"
-      >
-        Iniciar Sesión
-      </button>
-
-      <Modal isOpen={isOpen} closeModal={closeModal}>
-        <RegistrationForm onSubmit={handleRegistration} closeModal={closeModal} />
-      </Modal>
-    </div>
-  );
-};
-
-export default RegistrationModal;
+export default ModalInicioSesion;
