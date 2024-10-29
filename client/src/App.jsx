@@ -28,7 +28,7 @@ function App() {
                             <Route path="/PanelAdmin" element={<PanelAdmin />} />
                             <Route path="/Actualizar/:id" element={<Actualizar />} />
                             <Route path="/pruebita" element={<Pruebita />} />
-                            <Route path="/login" element={<InicioSesion />} />
+                           {/* <Route path="/login" element={<InicioSesion />} />*/}
                             <Route path="/taskpage" element={<TasksPage/>} />
 
                         </Routes>

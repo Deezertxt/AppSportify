@@ -89,14 +89,14 @@ const Sidebar = () => {
         open={open}
         to="/publicar"
       />
-      <Option
+      {/*<Option
         Icon={FiUsers}
         title="Registro de Usuarios"
         selected={selected}
         setSelected={setSelected}
         open={open}
         to="/registrarusuario"
-      />
+      />*/}
       <Option
         Icon={FiBarChart}
         title="Panel de Administración"
@@ -105,14 +105,14 @@ const Sidebar = () => {
         open={open}
         to="/PanelAdmin"
       />
-      <Option
+      {/*<Option
         Icon={FiLogIn}
         title="Inicio sesión"
         selected={selected}
         setSelected={setSelected}
         open={open}
         to="/login"
-      />
+      />*/}
       <Option
         Icon={FiBook}
         title="Preview"
