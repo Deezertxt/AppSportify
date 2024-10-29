@@ -7,30 +7,23 @@ import Publicar from './pages/Publicar';
 import DropdownMenu from './components/DropdownMenu';
 import { RouteProvider } from './context/RouteContext';
 import TasksPage from './pages/Taskpage';
-
-import Libro from './pages/Libro';
+import Preview from './components/Preview';
 
 function App() {
     return (
-        <RouteProvider>
-            <div className="flex min-h-screen bg-[#F0F9F9]">
-                <DropdownMenu />
-                <div className="flex-1 flex flex-col">
-                    <Navbar />
-                    <div className="flex-grow p-4 bg-[#F0F9F9]">
-                        <Routes>
-                            <Route path="/" element={<Biblioteca />} />
-                            <Route path="/reproductor/:id" element={<Reproductor />} />
-                            <Route path="/publicar" element={<Publicar />} />
-                            <Route path="/taskpage" element={<TasksPage />} />
-                            <Route path="/preview" element={<Libro />} />
-                        </Routes>
-                    </div>
-                    {<Footer />}
-                </div>
-            </div>
-        </RouteProvider>
+       <Preview 
+       
+         id="1"
+         coverImage="https://firebasestorage.googleapis.com/v0/b/sportify-198e3.appspot.com/o/uploads%2Fcovers%2Fddd.webp?alt=media&token=0c9bd3e5-3da9-4fc6-8c3b-5ec97791d6c4"
+         title="los muertos"
+         author="ricardo milos"
+         duration="15 min"
+         description=  "todos van a morir eceptop yo dylan estas muerto a cagar piedras  sadaslñdñasklñ lñasñl dakñklasladssadlñadslññld sañldaslñklñkdasñkldsañlklñkdasñlkdsal kñlñkdasñlkadñslkñlkdsañlkdkñasllñkdaskñldsaklñ ñalkdsañlskdñlasdkñlkasdkñldsañladskñlkdasñlaskda hola madrir"
+       />
+       
 
+
+       
     );
 }
 
