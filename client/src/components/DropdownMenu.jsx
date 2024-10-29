@@ -55,22 +55,22 @@ const Sidebar = () => {
           open={open}
           to="/"
           />
-       {/*  <Option
+        <Option
           Icon={FiSearch}
           title="Buscar"
           selected={selected}
           setSelected={setSelected}
           open={open}
           
-        /> */}
-       {/*  <Option
+        /> 
+        <Option
           Icon={FiBook}
           title="Biblioteca"
           selected={selected}
           setSelected={setSelected}
           open={open}
-          to="/biblioteca"
-        /> */}
+          to="/taskpage"
+        /> 
         <Option
           Icon={FiFolderMinus}
           title=" Registro Audiolibros"
@@ -79,13 +79,13 @@ const Sidebar = () => {
           open={open}
           to="/publicar"
         />
-        {/* <Option
+         <Option
           Icon={FiTag}
           title="Categorias"
           selected={selected}
           setSelected={setSelected}
           open={open}
-        /> */}
+        /> 
         {/* <Option
           Icon={FiBarChart}
           title="Estadisticas"
@@ -93,16 +93,16 @@ const Sidebar = () => {
           setSelected={setSelected}
           open={open}
         /> */}
-        {/* <Option
+        <Option
           Icon={FiUsers}
           title="Usuarios"
           selected={selected}
           setSelected={setSelected}
           open={open}
-        /> */}
+        />
       </div>
 
-      {/* <ToggleClose open={open} setOpen={setOpen} /> */}
+      <ToggleClose open={open} setOpen={setOpen} /> 
     </motion.nav>
   );
 };
@@ -113,7 +113,7 @@ const Option = ({ Icon, title, selected, setSelected, open, notifs, to }) => {
     
     <motion.button
       layout
-      /*onClick={() => setSelected(title)}*/
+      onClick={() => setSelected(title)}
       className={`relative flex h-10 w-full items-center rounded-md transition-colors ${selected === title ? "bg-white text-gray-600" : "text-gray-50 hover:bg-gray-800"}`}
     >
       <motion.div
@@ -165,7 +165,7 @@ const TitleSection = ({ open }) => {
             </motion.div>
           )}
         </div>
-        {/* {open && <FiChevronDown className="mr-5" />} */}
+        {open && <FiChevronDown className="mr-5" />} 
       </div>
     </div>
   );
