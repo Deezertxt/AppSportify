@@ -149,6 +149,7 @@ const RegistrationModal = () => {
       <Modal isOpen={isOpen} closeModal={closeModal}>
         <RegistrationForm onSubmit={handleRegistration} closeModal={closeModal} />
       </Modal>
+
     </div>
   );
 };
