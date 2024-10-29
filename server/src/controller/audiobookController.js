@@ -12,6 +12,8 @@ const storage = new Storage();
 // Configuración de credenciales y bucket de GCS
 const credentialsPath = path.join(__dirname, '.../src/google-key.json');
 process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
+console.log('Ruta de credenciales:', credentialsPath);
+
 const bucketName = 'sportify-1';
 const audioFolder = 'uploads/audio';
 const outputFolder = 'uploads/json';
