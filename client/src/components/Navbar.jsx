@@ -15,7 +15,7 @@ function Navbar() {
             <div className="m-0 pl-[55px]">
                 <SearchResultsList results={results}/>
             </div>
-        </nav>
+        </nav> 
     );
 }
 
