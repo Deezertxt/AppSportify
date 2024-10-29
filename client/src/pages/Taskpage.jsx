@@ -1,9 +1,6 @@
-import { Example } from '../components/DropdownMenu'
 function TasksPage() {
     return (
-        <div>
-            <Example />
-        </div>
+        <div></div>
     )
 }
 
