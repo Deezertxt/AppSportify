@@ -32,6 +32,8 @@ const Sidebar = () => {
       setSelected("Inicio");
     } else if (currentPath === "/publicar") {
       setSelected("Registro Audiolibros");
+    } else if(currentPath === "/Preview"){
+      setSelected("Preview");
     }
   }, [location.pathname]); // Se ejecuta cada vez que cambia la ruta
 
@@ -62,6 +64,7 @@ const Sidebar = () => {
           setSelected={setSelected}
           open={open}
           
+
         /> 
         <Option
           Icon={FiBook}
@@ -99,6 +102,14 @@ const Sidebar = () => {
           selected={selected}
           setSelected={setSelected}
           open={open}
+        /> */}
+        <Option
+          Icon={FiBook}
+          title="Preview"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+          to="/Preview"
         />
       </div>
 
