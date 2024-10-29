@@ -1,29 +1,45 @@
 import React, { useState } from "react";
 
 import {
-    getAudiobooksByAuthor,
-    getAudiobooksByCategory,
-    getAudiobooksByTitle,
+    getAudiobooks
 } from "../api/api";
 import { SearchOptions } from "./SearchOptions";
 
 function SearchBar({ setResults }) {
     const [input, setInput] = useState("");
+    const [audiobooks, setAudiobooks] = useState([]);
+    // const fetchData = (value) => {
+    //     //fetch("https://jsonplaceholder.typicode.com/users")
+    //     fetch("http://localhost:3000/api/audiobook/get/title")
+    //         .then((response) => response.json())
+    //         .then((json) => {
+    //             const results = json.filter((audiobook) => {
+    //                 return (
+    //                     value &&
+    //                     audiobook &&
+    //                     audiobook.title &&
+    //                     audiobook.title.toLowerCase().includes(value)
+    //                 );
+    //             });
+    //             setResults(results);
+    //         });
+    // };
 
     const fetchData = (value) => {
-        fetch("https://jsonplaceholder.typicode.com/users")
+        //fetch("https://jsonplaceholder.typicode.com/users")
+        fetch("http://localhost:3000/api/audiobook/get/")
             .then((response) => response.json())
             .then((json) => {
-                const results = json.filter((user) => {
-                    return (
-                        value &&
-                        user &&
-                        user.name &&
-                        user.name.toLowerCase().includes(value)
-                    );
-                });
-                setResults(results);
+                console.log("----------------------------------------------");
+                //console.log(typeof json);
+                console.log(json);
+                const results = json.filter((audiobook) => {
+                    return value && audiobook && audiobook.title && audiobook.title.toLowerCase().includes(value);
+                })
+                console.log(results);
+                setResults(results)
             });
+        
     };
 
     const handlechange = (value) => {
