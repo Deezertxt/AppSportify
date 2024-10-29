@@ -145,7 +145,7 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
           />
         </div>
 
-        <div className="mb-4 relative">
+        <div className="mb-4 ">
         <label className="block text-white font-semibold mb-1">Contraseña</label>
           <input
             type={showPassword ? 'text' : 'password'}
@@ -170,7 +170,7 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
           </button>
         </div>
 
-        <div className="mb-6 relative">
+        <div className="mb-4">
         <label className="block text-white font-semibold mb-1">Confirmar contraseña</label>
           <input
             type={showConfirmPassword ? 'text' : 'password'}
