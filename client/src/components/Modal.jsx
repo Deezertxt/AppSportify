@@ -9,7 +9,6 @@ const Modal = ({ isOpen, closeModal, children }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      onClick={closeModal} // Cierra el modal al hacer clic en el fondo oscuro
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}

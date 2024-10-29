@@ -98,6 +98,13 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
   return (
     <div >
       <form onSubmit={handleSubmit}>
+      <button
+          type="button"
+          onClick={closeModal}
+          className="absolute top-2 right-2 text-gray-500 "
+        >
+          X
+        </button>
         {/* Logo */}
         <div className="flex flex-col items-center">
           <img
@@ -108,11 +115,11 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
         </div>
 
         {/* Título */}
-        <h2 className="text-2xl font-bold text-white text-center mb-6">Regístrate</h2>
+        <h2 className="text-2xl font-bold text-white text-left mb-6">Regístrate</h2>
 
         {/* Formulario */}
         <div className="mb-4">
-          <label className="block text-white mb-1">Nombre de usuario</label>
+          <label className="block font-semibold text-white mb-1">Nombre de usuario</label>
           <input
             type="text"
             name="username"
@@ -126,7 +133,7 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-white mb-1">Correo electrónico</label>
+          <label className="block font-semibold text-white mb-1">Correo electrónico</label>
           <input
             type="email"
             name="email"
@@ -139,6 +146,7 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
         </div>
 
         <div className="mb-4 relative">
+        <label className="block text-white font-semibold mb-1">Contraseña</label>
           <input
             type={showPassword ? 'text' : 'password'}
             name="password"
@@ -163,6 +171,7 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
         </div>
 
         <div className="mb-6 relative">
+        <label className="block text-white font-semibold mb-1">Confirmar contraseña</label>
           <input
             type={showConfirmPassword ? 'text' : 'password'}
             name="confirmPassword"
@@ -179,9 +188,9 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
             }}
           >
             {showConfirmPassword ? (
-              <FontAwesomeIcon icon={faEye} className="text-white" />    
+              <FontAwesomeIcon icon={faEye} className="text text-default-400 pointer-events-none text-white" />    
             ) : (
-              <FontAwesomeIcon icon={faEyeSlash} className="text-white" />          
+              <FontAwesomeIcon icon={faEyeSlash} className="text text-default-400 pointer-events-none text-white" />          
             )}
           </button>
         </div>
@@ -221,7 +230,7 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
             alt="Google icon"
             className="w-5 h-5 mr-2"
           />
-          Iniciar sesión con Google
+          Registrarse con Google
         </button>
       </form>
     </div>

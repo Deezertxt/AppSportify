@@ -14,7 +14,7 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
         <button
           type="button"
           onClick={closeModal}
-          className="absolute top-2 right-2 text-gray-500 border"
+          className="absolute top-2 right-2 text-gray-500 "
         >
           X
         </button>
@@ -26,6 +26,7 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
         <h2 className="text-2xl font-bold text-white text-left mb-6">Inicio Sesión</h2>
 
         <div className="mb-4">
+          <label className="block text-white font-semibold mb-1">Correo electrónico</label>
           <input
             type="email"
             name="email"
@@ -36,9 +37,10 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
         </div>
 
         <div className="mb-4">
+          <label className="block text-white font-semibold mb-1">Contraseña</label>
           <input
             type={showPassword ? "text" : "password"}
-            placeholder="Password"
+            placeholder="Contraseña"
             className="w-full text-white focus:outline-none border-b-2 bg-transparent p-2"
           />
           <button
