@@ -1,32 +1,10 @@
 import React, { useState } from "react";
 
-import {
-    getAudiobooks
-} from "../api/api";
-import { SearchOptions } from "./SearchOptions";
-
 function SearchBar({ setResults }) {
+    
     const [input, setInput] = useState("");
-    const [audiobooks, setAudiobooks] = useState([]);
-    // const fetchData = (value) => {
-    //     //fetch("https://jsonplaceholder.typicode.com/users")
-    //     fetch("http://localhost:3000/api/audiobook/get/title")
-    //         .then((response) => response.json())
-    //         .then((json) => {
-    //             const results = json.filter((audiobook) => {
-    //                 return (
-    //                     value &&
-    //                     audiobook &&
-    //                     audiobook.title &&
-    //                     audiobook.title.toLowerCase().includes(value)
-    //                 );
-    //             });
-    //             setResults(results);
-    //         });
-    // };
-
+    
     const fetchData = (value) => {
-        //fetch("https://jsonplaceholder.typicode.com/users")
         fetch("http://localhost:3000/api/audiobook/get/")
             .then((response) => response.json())
             .then((json) => {
@@ -41,10 +19,14 @@ function SearchBar({ setResults }) {
             });
         
     };
-
     const handlechange = (value) => {
-        setInput(value);
-        fetchData(value);
+        if (value.length < 100) {
+            setInput(value);
+            fetchData(value); 
+        }else{
+            alert("menos de 100 caracteres")
+        }
+        
     };
 
     return (
@@ -59,7 +41,6 @@ function SearchBar({ setResults }) {
                     value={input}
                     onChange={(e) => handlechange(e.target.value)}
                 />
-
                 {/* Icono de búsqueda dentro de un contenedor redondeado */}
                 <span
                     className="input-group-text flex items-center justify-center bg-orange-500 rounded-r px-3 py-2 text-white cursor-pointer hover:bg-orange-600 transition duration-200 ease-in-out"
