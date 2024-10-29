@@ -25,17 +25,28 @@ const RegistrationForm = () => {
     setFormErrors({});
     setSuccessMessage("");
 
-    // Aquí puedes agregar la lógica de validación
+    // Validación de campos
+    const errors = {};
+    if (formData.username.trim() === "") {
+      errors.username = "El nombre de usuario es obligatorio.";
+    }
+    if (formData.password !== formData.confirmPassword) {
+      errors.confirmPassword = "Las contraseñas no coinciden.";
+    }
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
 
     setIsLoading(true);
     try {
       const response = await register(formData);
       console.log("Registro exitoso", response);
-      setSuccessMessage("Registro exitoso!");
+      setSuccessMessage("¡Registro exitoso!");
       setFormData({ username: "", email: "", password: "", confirmPassword: "" });
     } catch (error) {
       console.error("Error al registrar:", error);
-      setFormErrors({ general: "Error al registrar. Verifique los campos." });
+      setFormErrors({ general: error.message || "Error al registrar. Verifique los campos." });
     } finally {
       setIsLoading(false);
     }
@@ -46,7 +57,6 @@ const RegistrationForm = () => {
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-6">Regístrate</h2>
         
-        {/* Campos de entrada */}
         <input
           type="text"
           name="username"
@@ -56,8 +66,10 @@ const RegistrationForm = () => {
           className="w-full p-2 border-b-2 mb-4"
           required
         />
+        {formErrors.username && <p className="text-red-500 text-sm">{formErrors.username}</p>}
+
         <input
-          type="email"
+          type="text"
           name="email"
           placeholder="Correo electrónico"
           value={formData.email}
@@ -65,6 +77,7 @@ const RegistrationForm = () => {
           className="w-full p-2 border-b-2 mb-4"
           required
         />
+
         <input
           type="password"
           name="password"
@@ -74,6 +87,7 @@ const RegistrationForm = () => {
           className="w-full p-2 border-b-2 mb-4"
           required
         />
+
         <input
           type="password"
           name="confirmPassword"
@@ -83,6 +97,7 @@ const RegistrationForm = () => {
           className="w-full p-2 border-b-2 mb-6"
           required
         />
+        {formErrors.confirmPassword && <p className="text-red-500 text-sm">{formErrors.confirmPassword}</p>}
 
         <button
           type="submit"

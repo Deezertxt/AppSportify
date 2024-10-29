@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { register } from "../api/api";
-import Eye from "./eye"; 
 
 const Modal = ({ isOpen, closeModal, children }) => {
   if (!isOpen) return null;
@@ -57,7 +56,6 @@ const RegistrationForm = ({ onSubmit }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setFormErrors({});
     setSuccessMessage("");
 
@@ -99,6 +97,8 @@ const RegistrationForm = ({ onSubmit }) => {
         confirmPassword: "",
       });
 
+      if (onSubmit) onSubmit(userData); // Llamar a la función onSubmit con los datos del usuario registrado
+
     } catch (error) {
       console.error("Error al registrar:", error);
       setFormErrors({ general: "Error al registrar. Verifique los campos." });
@@ -108,13 +108,13 @@ const RegistrationForm = ({ onSubmit }) => {
   };
   
   return (
-    <div >
+    <div>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col items-center">
           <img
             src="logoS.svg" 
             alt="Sportify logo"
-            className="w-37  mb-4"
+            className="w-37 mb-4"
           />
         </div>
 
@@ -132,7 +132,11 @@ const RegistrationForm = ({ onSubmit }) => {
             className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
             required
           />
+          {formErrors.username && (
+            <p className="text-red-500 text-sm">{formErrors.username}</p>
+          )}
         </div>
+
         <div className="mb-4">
           <label className="block text-white mb-1">Correo electrónico</label>
           <input
@@ -145,8 +149,9 @@ const RegistrationForm = ({ onSubmit }) => {
             required
           />
         </div>
-        <div className="mb-4  ">
-        <label className="block text-white mb-1">Contraseña</label>
+
+        <div className="mb-4">
+          <label className="block text-white mb-1">Contraseña</label>
           <input
             type="password"
             name="password"
@@ -157,9 +162,13 @@ const RegistrationForm = ({ onSubmit }) => {
             className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
             required
           />
+          {formErrors.password && (
+            <p className="text-red-500 text-sm">{formErrors.password}</p>
+          )}
         </div>
-        <div className="mb-6  ">
-        <label className="block text-white mb-1">Confirmar contraseña</label>
+
+        <div className="mb-6">
+          <label className="block text-white mb-1">Confirmar contraseña</label>
           <input
             type="password"
             name="confirmPassword"
@@ -175,9 +184,18 @@ const RegistrationForm = ({ onSubmit }) => {
         <button
           type="submit"
           className="w-full bg-gray-800 text-white p-3 rounded-md mb-4"
+          disabled={isLoading}
         >
-          Registrarse
+          {isLoading ? "Registrando..." : "Registrarse"}
         </button>
+
+        {successMessage && (
+          <p className="text-green-500 text-center mb-4">{successMessage}</p>
+        )}
+
+        {formErrors.general && (
+          <p className="text-red-500 text-center mb-4">{formErrors.general}</p>
+        )}
 
         <p className="text-white text-center mb-4">
           ¿Ya tienes una cuenta?{" "}
