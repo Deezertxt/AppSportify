@@ -102,14 +102,14 @@ const Sidebar = () => {
           setSelected={setSelected}
           open={open}
         /> */}
-        <Option
+        {/* <Option
           Icon={FiBook}
           title="Preview"
           selected={selected}
           setSelected={setSelected}
           open={open}
           to="/Preview"
-        />
+        /> */}
       </div>
 
       {/* <ToggleClose open={open} setOpen={setOpen} /> */}
