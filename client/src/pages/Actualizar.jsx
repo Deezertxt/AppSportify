@@ -1,16 +1,20 @@
 import { useState, useEffect } from "react";
 import { isValidCover } from "../utils/fileCoverValidator";
-import { isValidPdf } from "../utils/fileValidator";
-import { createAudiobook, getCategories, uploadFilesToGCS} from '../api/api';
+import { createAudiobook, getCategories, uploadFilesToGCS } from '../api/api';
 import { FaTrashAlt, FaFilePdf, FaImage, FaPaperPlane, FaTimes, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 import BarLoaderWrapper from "../components/BarLoader";
+import { getAudiobookById } from "../api/api";
+import { useParams } from "react-router-dom";
 
-function Publicar() {
+function Actualizar() {
+    const { id } = useParams(); 
     const navigate = useNavigate();
     const [documentFileName, setDocumentFileName] = useState(""); // Nombre del archivo PDF
     const [coverFileName, setCoverFileName] = useState(""); // Nombre del archivo de portada
-    const [preview, setPreview] = useState(null); // Vista previa de la portada
+    const [preview, setPreview] = useState(null);
+    
+
     const [formData, setFormData] = useState({
         title: "",
         author: "",
@@ -19,6 +23,8 @@ function Publicar() {
         pdfFile: null,  // Para el archivo PDF
         portadaFile: null,    // Para la portada
     });
+
+
     const [errors, setErrors] = useState({});  // Estado para manejar errores
     const [successMessage, setSuccessMessage] = useState(null); // Estado para mensaje de éxito
     const [categories, setCategories] = useState([]);
@@ -27,53 +33,78 @@ function Publicar() {
 
     const [isModalOpen, setIsModalOpen] = useState(false); //Estado para el modal
     const handleNavigateHome = () => {
-        setIsModalOpen(false);
-        navigate('/');
+    setIsModalOpen(false); 
+    navigate('/PanelAdmin'); 
     };
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const response = await getCategories(); // Obtener categorías
-                setCategories(response.data);
-            } catch (error) {
-                console.error("Error al obtener las categorías:", error);
-            }
-        };
+    const fetchCategories = async () => {
+        try {
+            const response = await getCategories(); // Obtener categorías
+            setCategories(response.data);
+        } catch (error) {
+            console.error("Error al obtener las categorías:", error);
+        }
+    };
 
-        fetchCategories();
-    }, []);
+    fetchCategories();
+}, []);
+
+    useEffect(() => {
+    const fetchAudiobook = async () => {
+        try {
+            const response = await getAudiobookById(id); 
+            setFormData({
+                title: response.data.title,
+                author: response.data.author,
+                category: response.data.category,
+                description: response.data.description,
+                coverUrl: response.data.coverUrl,
+                pdfFile: null,
+                portadaFile: null
+            });
+        } catch (error) {
+            console.error("Error al obtener el audiolibro:", error);
+        }
+    };
+
+    fetchAudiobook();
+}, [id]);
+
+
+    // Validar que el archivo sea un PDF y no exceda 50MB
+    const validatePDF = (file) => {
+        const isPDF = file.type === 'application/pdf';
+        const isUnderSize = file.size <= 50 * 1024 * 1024; // 50MB
+        if (!isPDF) {
+            setErrorMessage("Solo se permiten archivos PDF.");
+            return false;
+        }
+        if (!isUnderSize) {
+            setErrors(prevErrors => ({ ...prevErrors, pdfFile: "El archivo no puede ser mayor a 50 MB." }));
+            return false;
+        }
+        return true;
+    };
+
     // Validar caracteres especiales en los campos de texto
     const validateTextInput = (input) => {
         const regex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s.,!?()\-:;]*$/;
         return regex.test(input);
     };
-    const handleDocumentoChange = async (event) => {
-        const newFile = event.target.files[0];
 
-        // Validate if no file is selected
-        if (!newFile) {
-            return; // Do nothing if no new file
+    // Función para manejar el cambio del archivo PDF
+    const handleDocumentoChange = (e) => {
+        const file = e.target.files[0];
+        if (file && validatePDF(file)) {
+            setFormData({
+                ...formData,
+                pdfFile: file,
+            });
+            setDocumentFileName(file.name); // Actualiza el nombre del archivo PDF
+            setErrors(prevErrors => ({ ...prevErrors, pdfFile: "" })); // Limpiar error del archivo
         }
-
-        // Validate the PDF file using isValidPdf
-        const validationResult = await isValidPdf(newFile);
-        if (!validationResult.isValid) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                pdfFile: validationResult.error,
-            }));
-            event.target.value = ""; // Reset the file input
-            return;
-        }
-
-        // If the file is valid, update the state
-        setErrors((prevErrors) => ({ ...prevErrors, pdfFile: null })); // Clear previous errors
-        setFormData({
-            ...formData,
-            pdfFile: newFile,
-        });
-        setDocumentFileName(newFile.name); // Update the file name
+        document.getElementById("pdfFile").value = ""; // Cerrar explorador de archivos después de selección
     };
 
     const handleDrop = async (event) => {
@@ -93,7 +124,7 @@ function Publicar() {
                 setErrors({ ...errors, portadaFile: validationResult }); // Mostrar el error de validación
             }
         }
-    };
+    };     
 
 
     const handleDragOver = (event) => {
@@ -219,11 +250,11 @@ function Publicar() {
             form.append("portadaFile", formData.portadaFile);
             form.append("title", formData.title);
             form.append("author", formData.author);
-            form.append("categoryId", formData.category); // Asegúrate de que coincida con el backend
+            form.append("category", formData.category);
             form.append("description", formData.description);
 
-            // Subir archivos a Firebase y obtener las URLs
-            const uploadResponse = await uploadFilesToGCS(form);
+             
+            const uploadResponse = await uploadFilesToFirebase(form);
 
             // Verificar si la respuesta es exitosa
             if (uploadResponse.status === 200) {
@@ -246,8 +277,8 @@ function Publicar() {
                 };
 
                 // Ahora crear el audiolibro en la base de datos
-                const response = await createAudiobook(audiobookData);
-                console.log('Publicación registrada con éxito:', response);
+                const response = await updateAudiobook(audiobookData);
+                console.log('Publicación Editada con éxito:', response);
 
                 setErrors({});
                 setSuccessMessage("Audiolibro publicado con éxito!");
@@ -265,8 +296,6 @@ function Publicar() {
                 setCoverFileName("");
                 setPreview(null);
                 document.getElementById("documento").value = "";
-            } else {
-                setErrors({ general: "Error al registrar la publicación." });
             }
         } catch (error) {
             console.error("Error al subir los archivos:", error);
@@ -274,7 +303,8 @@ function Publicar() {
         } finally {
             setIsLoading(false);
         }
-    }
+    };
+
     return (
         <div className="max-h-screen-xl bg-[#F0F9F9]">
             <BarLoaderWrapper isLoading={isLoading} />
@@ -282,14 +312,13 @@ function Publicar() {
                 <div className="flex justify-between items-center mb-8">
                     <button
                     
-                       onClick={() => setIsModalOpen(true)} // Abre el modal
-                        className="mb-4 text-[#0B6477] flex items-center"
+                    onClick={() => setIsModalOpen(true)} // Abre el modal
+                    className="mb-4 text-[#0B6477] flex items-center"
                     >
-        
-                        <FaArrowLeft className="mr-2" /> Volver al inicio
+                    <FaArrowLeft className="mr-2" /> Volver al panel de Administración
                     </button>
                     <div className="text-center flex-grow">
-                        <span className="text-4xl font-extrabold text-[#213A57]">Registro de Audiolibro</span>
+                        <span className="text-4xl font-extrabold text-[#213A57]">Editar Audiolibro</span>
                     </div>
                 </div>
 
@@ -419,22 +448,13 @@ function Publicar() {
                                 <p className="text-gray-500 text-sm">Tamaño máximo del archivo: 50 MB</p>
                             </div>
 
-
-
                             {/* Botones Publicar y Cancelar */}
-                            <div className="grid grid-cols-2 gap-4 mt-2">
+                            <div className="flex justify-center gap-4 mt-2 ">
                                 <button
                                     type="submit"
-                                    className="w-full bg-[#0B6477] text-white py-3 rounded-lg hover:bg-[#14919B] transition-all duration-300 ease-in-out transform hover:scale-105"
+                                    className="w-1/2 bg-[#0B6477] text-white py-3 rounded-lg hover:bg-[#14919B] transition-all duration-300 ease-in-out transform hover:scale-105"
                                 >
-                                    <FaPaperPlane className="inline-block mr-2" /> Registrar
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleCancel}
-                                    className="w-full bg-[#FF6F61] text-white py-3 rounded-lg hover:bg-[#FF4F3F] transition-all duration-300 ease-in-out transform hover:scale-105"
-                                >
-                                    <FaTimes className="inline-block mr-2" /> Cancelar
+                                    <FaPaperPlane className="inline-block mr-2 " /> Actualizar
                                 </button>
                             </div>
                         </div>
@@ -506,38 +526,40 @@ function Publicar() {
                         </div>
                     </div>
                 )}
-                {/* Modal de Confirmación */}
-                {isModalOpen && (
-                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
-                        <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
-                            <p className="text-lg font-semibold text-[#213A57]">¿Está seguro de salir?</p>
-                            <div className="mt-4">
-                                <button
-                                    onClick={handleNavigateHome}
-                                    className="bg-[#0B6477] text-white py-2 px-4 rounded-lg hover:bg-[#14919B] mr-2"
-                                >
-                                    Confirmar
-                                </button>
-                                <button
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-400"
-                                >
-                                    Cancelar
-                                </button>
-                            </div>
-                            <button
-                                onClick={() => setIsModalOpen(false)}
-                                className="absolute top-2 right-2 text-gray-500"
-                            >
-                                <FaTimes />
-                            </button>
-                        </div>
-                    </div>
-                )}
+
+         {/* Modal de Confirmación */}
+          {isModalOpen && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
+             <p className="text-lg font-semibold text-[#213A57]">¿Está seguro de salir?</p>
+             <div className="mt-4">
+                <button
+                onClick={handleNavigateHome}
+                    className="bg-[#0B6477] text-white py-2 px-4 rounded-lg hover:bg-[#14919B] mr-2"
+                >
+                    Confirmar
+                </button>
+                <button
+                    onClick={() => setIsModalOpen(false)}
+                    className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-400"
+                >
+                    Cancelar
+                </button>
+            </div>
+            <button
+                onClick={() => setIsModalOpen(false)} 
+                className="absolute top-2 right-2 text-gray-500"
+            >
+                <FaTimes />
+            </button>
+        </div>
+      </div>
+    )}
             </div>
         </div>
     );
 }
 
-export default Publicar;
+export default Actualizar;
+
 
