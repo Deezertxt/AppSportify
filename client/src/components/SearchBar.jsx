@@ -18,7 +18,9 @@ function SearchBar({ setResults }) {
                         value &&
                         audiobook &&
                         audiobook.title &&
-                        audiobook.title.toLowerCase().includes(value.toLowerCase())
+                        audiobook.title.toLowerCase().includes(value.toLowerCase()) || 
+                        audiobook.author &&
+                        audiobook.author.toLowerCase().includes(value.toLowerCase())  
                     );
                 });
                 console.log(value.toLowerCase());
@@ -30,8 +32,12 @@ function SearchBar({ setResults }) {
     const handlechange = (value) => {
         if (value.length < 100) {
             setInput(value);
-            fetchData(value);
-        } else {
+            if (value === '') {
+                setResults([]);
+            }else{
+                fetchData(value)
+            }
+        } else{
             alert("menos de 100 caracteres");
         }
     };

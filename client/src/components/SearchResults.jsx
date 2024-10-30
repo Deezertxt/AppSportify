@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { getAudiobooks } from "../api/api";
 import Card from "../components/Card";
 
 import { SearchOptions } from "./SearchOptions";
@@ -11,42 +10,70 @@ export const SearchResults = () => {
     const location = useLocation();
     const entrada = location.state?.input || "";
     const navigate = useNavigate();
-    
-    useEffect(() => {
-      // Llama a la API y filtra resultados
-      const fetchAudiobooks = async () => {
-        try {
-            fetch("http://localhost:3000/api/audiobook/get/")
-            .then((response) => response.json())
-            .then((json) => {
-                console.log("----------------------------------------------");
-                //console.log(typeof json);
-                console.log(json);
-                const results = json.filter((audiobook) => {
-                    return (
-                        entrada &&
-                        audiobook &&
-                        audiobook.title &&
-                        audiobook.title.toLowerCase().includes(entrada.toLowerCase())
-                    );
-                });
-                console.log(entrada.toLowerCase());
-                console.log("ENCONTRADOS:    " + results);
-                setAudiobooks(results);
-                console.log("------------------------------------------");
-            });
-          } catch (error) {
-              console.error("Error al obtener audiolibros:", error);
-          }
-          
-      };
 
-      fetchAudiobooks();
-  }, [entrada]);
-    
-    
+    useEffect(() => {
+        // Llama a la API y filtra resultados
+        const fetchAudiobooks = async () => {
+            if (entrada === "") {
+                //si no hay nada en la entrada
+                try {
+                    fetch("http://localhost:3000/api/audiobook/get/")
+                        .then((response) => response.json())
+                        .then((json) => {
+                            console.log(
+                                "----------------------------------------------"
+                            );
+                            //console.log(typeof json);
+                            console.log("AAAAAAAAAAAA");
+                            console.log("si audiobooks esta vacio:" + json);
+                            console.log(entrada.toLowerCase());
+                            console.log("ENCONTRADOS:    " + json);
+                            setAudiobooks(json);
+                            console.log(
+                                "------------------------------------------"
+                            );
+                        });
+                } catch (error) {
+                    console.error("Error al obtener audiolibros:", error);
+                }
+            } else {
+                try {
+                    fetch("http://localhost:3000/api/audiobook/get/")
+                        .then((response) => response.json())
+                        .then((json) => {
+                            console.log(
+                                "----------------------------------------------"
+                            );
+                            //console.log(typeof json);
+                            console.log(json);
+                            const results = json.filter((audiobook) => {
+                                return (
+                                    entrada &&
+                                    audiobook &&
+                                    audiobook.title &&
+                                    audiobook.title
+                                        .toLowerCase()
+                                        .includes(entrada.toLowerCase())
+                                );
+                            });
+                            console.log(entrada.toLowerCase());
+                            console.log("ENCONTRADOS:    " + results);
+                            setAudiobooks(results);
+                            console.log(
+                                "------------------------------------------"
+                            );
+                        });
+                } catch (error) {
+                    console.error("Error al obtener audiolibros:", error);
+                }
+            }
+        };
+
+        fetchAudiobooks();
+    }, [entrada]);
+
     const handleCardClick = (id) => {
-      navigate(`/reproductor/${id}`); // Redirigir al reproductor del audiolibro
+        navigate(`/reproductor/${id}`); // Redirigir al reproductor del audiolibro
     };
     return (
         <div>
