@@ -61,7 +61,7 @@ const Sidebar = () => {
           selected={selected}
           setSelected={setSelected}
           open={open}
-          
+          to="/buscar"
         /> 
         <Option
           Icon={FiBook}

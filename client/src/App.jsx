@@ -7,8 +7,9 @@ import Publicar from './pages/Publicar';
 import DropdownMenu from './components/DropdownMenu';
 import { RouteProvider } from './context/RouteContext';
 import TasksPage from './pages/Taskpage';
+import { SearchResults } from './components/SearchResults';
 
-function App() {
+function App() { 
     return (
         <RouteProvider>
             <div className="flex min-h-screen bg-[#F0F9F9]">
@@ -21,6 +22,7 @@ function App() {
                             <Route path="/reproductor/:id" element={<Reproductor />} />
                             <Route path="/publicar" element={<Publicar />} />
                             <Route path="/taskpage" element={<TasksPage/>} />
+                            <Route path='/buscar' element={<SearchResults/>}/>
                         </Routes>
                     </div>
                     <Footer />
