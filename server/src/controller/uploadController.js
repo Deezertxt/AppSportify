@@ -1,15 +1,14 @@
 const { Storage } = require('@google-cloud/storage');
 const path = require('path');
 
-// Configura las credenciales de Google Cloud
-const credentialsPath = path.join(__dirname, '.../src/google-key.json');
+const credentialsPath = path.join(__dirname, './google-key.json');
 process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
 
 const gcsClient = new Storage(); // Inicializa el cliente de GCS
 
 // Función para subir archivos a Google Cloud Storage
 const uploadToGCS = async (fileBuffer, filename, folder) => {
-    const bucketName = 'sportify-1'; // Cambia esto por tu nombre de bucket
+    const bucketName = process.env.GCS_BUCKET_NAME; // Cambia esto por tu nombre de bucket
     const bucket = gcsClient.bucket(bucketName);
     const file = bucket.file(`${folder}/${filename}`);
 
@@ -19,7 +18,7 @@ const uploadToGCS = async (fileBuffer, filename, folder) => {
 
 // Función para subir la portada y devolver una URL pública en formato HTTP
 const uploadCoverToGCS = async (fileBuffer, filename) => {
-    const bucketName = 'sportify-1';
+    const bucketName = process.env.GCS_BUCKET_NAME; // Cambia esto por tu nombre de bucket
     const bucket = gcsClient.bucket(bucketName);
     const file = bucket.file(`uploads/covers/${filename}`);
 

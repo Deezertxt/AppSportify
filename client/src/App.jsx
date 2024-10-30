@@ -1,44 +1,51 @@
-import { Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import supabase from './utils/supabase';
+
+import MainLayout from './pages/MainLayout';
 import Biblioteca from '../src/pages/Biblioteca';
-import Reproductor from '../src/pages/Reproductor';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import AudioLibroReproductor from './pages/AudiolibroRepro';
 import Publicar from './pages/Publicar';
-import DropdownMenu from './components/DropdownMenu';
-import { RouteProvider } from './context/RouteContext';
 import PanelAdmin from "./pages/PanelAdmin";
 import Actualizar from "./pages/Actualizar";
-import Pruebita from "./pages/pruebita";
 import InicioSesion from './pages/InicioSesion';
 import TasksPage from './pages/Taskpage';
+import HeroSection from './pages/HeroSection';
+import Preview from './pages/Preview';
+import ChapterText from './components/ChapterText';
+import Reproductor from './pages/Reproductor';
+import ResultsPage from './pages/ResultsPage';
 
 
 function App() {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (!session) {
+                navigate('/')
+            } else {
+                navigate('/libros')
+            }
+        })
+    }, [])
     return (
-        <RouteProvider>
-            <div className="flex min-h-screen bg-[#F0F9F9]">
-                <DropdownMenu />
-                <div className="flex-1 flex flex-col">
-                    <Navbar />
-                    <div className="flex-grow p-4 bg-[#F0F9F9]">
-                        <Routes>
-                            <Route path="/" element={<Biblioteca />} />
-                            <Route path="/reproductor/:id" element={<Reproductor />} />
-                            <Route path="/publicar" element={<Publicar />} />
-                            <Route path="/PanelAdmin" element={<PanelAdmin />} />
-                            <Route path="/Actualizar/:id" element={<Actualizar />} />
-                            <Route path="/pruebita" element={<Pruebita />} />
-                           {/* <Route path="/login" element={<InicioSesion />} />*/}
-                            <Route path="/taskpage" element={<TasksPage/>} />
+        <Routes>
+            <Route path="/" element={<HeroSection />} />
+            <Route path="/libros" element={<MainLayout><Biblioteca /></MainLayout>} />
+            <Route path="/reproductor/:id" element={<AudioLibroReproductor />} />
+            <Route path="/texto/:id" element={<ChapterText />} />
+            <Route path="/escuchar/:id" element={<Reproductor />} />
+            <Route path="/panelAdmin" element={<MainLayout><PanelAdmin /></MainLayout>} />
+            <Route path="/publicar" element={<MainLayout><Publicar /></MainLayout>} />
+            <Route path="/actualizar/:id" element={<MainLayout><Actualizar /></MainLayout>} />
+            <Route > element Protected</Route>
+            <Route path="/login" element={<InicioSesion />} />
+            <Route path="/taskpage" element={<TasksPage />} />
+            <Route path="/preview/:id" element={<MainLayout><Preview /></MainLayout>} />
 
-                        </Routes>
-                    </div>
-                    <Footer />
-            </div>
-        </div>
-    </RouteProvider>
-
+            <Route path="/buscar" element={<MainLayout><ResultsPage /></MainLayout>} />
+        </Routes>
     );
 }
-
 export default App;

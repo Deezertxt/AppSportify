@@ -1,20 +1,10 @@
 import React, { useState, useEffect } from "react";
 
 
-import {
-  FiBarChart,
-  FiBook,
-  FiChevronDown,
-  FiChevronsRight,
-  FiFolderMinus,
-  FiHome,
-  FiLogIn,
-  FiSearch,
-  FiTag,
-  FiUsers,
-} from "react-icons/fi";
+import {FiBarChart,FiBook,FiChevronDown,FiChevronsRight,FiFolderMinus,FiHome,FiLogIn,FiLogOut,FiSearch,FiTag,FiUsers,} from "react-icons/fi";
 import { motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
+import supabase from "../utils/supabase";
 
 const DropdownMenu = () => {
   return (
@@ -27,7 +17,7 @@ const DropdownMenu = () => {
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
   const location = useLocation(); 
-  const [selected, setSelected] = useState("Panel de Administración");
+  const [selected, setSelected] = useState("Inicio");
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -37,19 +27,19 @@ const Sidebar = () => {
       setSelected("Registro Audiolibros");
     } else if (currentPath === "/registrarusuario") {
       setSelected("Registro de Usuarios");
+    } 
 
-    }else if (currentPath === "/login"){
-      setSelected("Inicio sesion")
-    } else if(currentPath === "/Preview"){
-      setSelected("Preview");
-
-    }
   }, [location.pathname]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/"); // Redirigir a la página de inicio o a donde desees
+  };
 
   return (
     <motion.nav
     layout
-    className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-[#5758a6] p-2"
+    className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-first p-2"
     style={{
       width: open ? "225px" : "fit-content",
     }}
@@ -63,7 +53,7 @@ const Sidebar = () => {
         selected={selected}
         setSelected={setSelected}
         open={open}
-        to="/"
+        to="/libros"
       />
       <Option
         Icon={FiSearch}
@@ -113,16 +103,14 @@ const Sidebar = () => {
         open={open}
         to="/login"
       />*/}
-      <Option
-        Icon={FiBook}
-        title="Preview"
-        selected={selected}
-        setSelected={setSelected}
-        open={open}
-        to="/Preview"
-      />
     </div>
-
+    <Option
+        Icon={FiLogOut}
+        title="Log Out"
+        onClick = {handleLogout}
+        open={open}
+        to="/"
+      />
     <ToggleClose open={open} setOpen={setOpen} /> 
   </motion.nav>
 );

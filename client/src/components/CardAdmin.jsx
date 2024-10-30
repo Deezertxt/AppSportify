@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from 'react-router-dom';
-import { useParams } from "react-router-dom";
 
 function CardRow({ id, title, author, description, coverUrl, category, onDelete }) {
     return (
