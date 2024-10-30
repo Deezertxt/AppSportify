@@ -4,13 +4,13 @@ const { Storage } = require('@google-cloud/storage');
 const { prisma } = require('../conf/db');
 const path = require('path');
 
+
 // Configuración de los clientes de Google Cloud
 const visionClient = new vision.ImageAnnotatorClient();
 const ttsClient = new textToSpeech.TextToSpeechClient();
 const storage = new Storage();
 
-// Configuración de credenciales y bucket de GCS
-const credentialsPath = path.join(__dirname, '.../src/google-key.json');
+const credentialsPath = path.join(__dirname, './google-key.json');
 process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
 const bucketName = 'sportify-1';
 const audioFolder = 'uploads/audio';
@@ -28,9 +28,9 @@ async function extractTextFromPDF(pdfGcsUrl) {
         features: [{ type: 'DOCUMENT_TEXT_DETECTION' }],
         outputConfig: {
           gcsDestination: {
-            uri: `gs://${bucketName}/${outputFolder}`,
+            uri: `gs://${bucketName}/${outputFolder}/`,
           },
-          batchSize: 2,
+          batchSize: 8, // Adjust the batch size as needed
         },
       },
     ],
@@ -41,27 +41,28 @@ async function extractTextFromPDF(pdfGcsUrl) {
 
   console.log('Extrayendo texto del PDF...');
 
-  // Obtener el archivo JSON generado por Vision API en el folder de salida
+  // Retrieve all JSON files from the output folder in GCS
   const [files] = await storage.bucket(bucketName).getFiles({ prefix: outputFolder });
-  const outputFile = files.find(file => file.name.endsWith('.json'));
+  const jsonFiles = files.filter(file => file.name.endsWith('.json'));
 
-  if (!outputFile) {
-    throw new Error('No se encontró el archivo JSON generado por Vision API.');
+  if (jsonFiles.length === 0) {
+    throw new Error('No se encontraron archivos JSON generados por Vision API.');
   }
-
-  const [content] = await outputFile.download();
-  const jsonResponse = JSON.parse(content.toString());
 
   let extractedText = '';
-  if (jsonResponse.responses && jsonResponse.responses[0].fullTextAnnotation) {
-    extractedText = jsonResponse.responses[0].fullTextAnnotation.text;
+
+  for (const file of jsonFiles) {
+    const [content] = await file.download();
+    const jsonResponse = JSON.parse(content.toString());
+
+    if (jsonResponse.responses && jsonResponse.responses[0].fullTextAnnotation) {
+      extractedText += jsonResponse.responses[0].fullTextAnnotation.text + '\n';
+    }
   }
 
-  console.log('Texto extraído:', extractedText);
-  // Generar la URL HTTP del archivo JSON
-  const jsonUrl = `https://storage.googleapis.com/${bucketName}/${outputFile.name}`;
+  console.log('Texto extraído del PDF:', extractedText);
 
-  return { extractedText, jsonUrl };
+  return { extractedText }; // Retorna todo el texto
 }
 
 // Función para convertir texto a voz y guardar el archivo de audio en GCS
@@ -78,6 +79,8 @@ async function convertirTextoAVoz(texto, title) {
   };
 
   const [response] = await ttsClient.synthesizeSpeech(request);
+
+  const audioDuration = response.audioContent.length / 16000;
   const audioFileName = `${title}-audio.mp3`;
   const file = storage.bucket(bucketName).file(`${audioFolder}/${audioFileName}`);
 
@@ -86,11 +89,15 @@ async function convertirTextoAVoz(texto, title) {
     resumable: false,
   });
   console.log(`Audio subido a GCS en la ruta: gs://${bucketName}/${audioFolder}/${audioFileName}`);
-   // Generar la URL HTTP del archivo de audio
-   const audioUrl = `https://storage.googleapis.com/${bucketName}/${audioFolder}/${audioFileName}`;
+  // Generar la URL HTTP del archivo de audio
+  const audioUrl = `https://storage.googleapis.com/${bucketName}/${audioFolder}/${audioFileName}`;
 
-   return audioUrl;
+  return {audioUrl, audioDuration};
 }
+const convertDurationToMinutes = (durationInSeconds) => {
+  const minutes = Math.ceil(durationInSeconds / 60);
+  return `${minutes} min`;
+};
 
 // Función principal para crear un audiolibro a partir de URLs
 const createAudiobook = async (req, res) => {
@@ -117,11 +124,14 @@ const createAudiobook = async (req, res) => {
       return res.status(409).json({ error: "Ya existe un audiolibro con el mismo título, PDF URL o URL de portada." });
     }
 
-    // Extraer texto del PDF y convertirlo a audio
-    const { extractedText, jsonUrl } = await extractTextFromPDF(pdfUrl);
-    const audioGcsUrl = await convertirTextoAVoz(extractedText, title);
+    const { extractedText } = await extractTextFromPDF(pdfUrl);
+    const [titleLine, ...contentLines] = extractedText.split('\n');
+    const contentText = contentLines.join('\n');
 
-    // Guardar toda la información en la base de datos
+    // Convertir el texto a voz y obtener URL y duración
+    const { audioUrl, audioDuration } = await convertirTextoAVoz(contentText, title);
+    const durationInMinutes = convertDurationToMinutes(audioDuration);
+    // Guardar información en la base de datos
     const newAudiobook = await prisma.audiobook.create({
       data: {
         title,
@@ -130,14 +140,14 @@ const createAudiobook = async (req, res) => {
         author,
         pdfUrl,
         coverUrl,
-        audioUrl: audioGcsUrl,
-        jsonUrl: jsonUrl
+        duration: durationInMinutes,
+        audioUrl,
+        text: extractedText,  // Guarda el texto completo, incluido el título
       },
     });
 
     res.status(201).json(newAudiobook);
   } catch (error) {
-    // Captura el error de unicidad de Prisma
     if (error.code === 'P2002') {
       return res.status(409).json({ error: "Ya existe un audiolibro con un valor único duplicado en la base de datos." });
     }

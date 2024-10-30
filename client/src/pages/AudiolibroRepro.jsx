@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import AudiobookCover from "../components/AudiobookCover";
+import ChapterText from "../components/ChapterText";
 import ProgressBar from "../components/ProgressBar";
 import AudioDetails from "../components/AudioDetails";
 import ControlButtons from "../components/ControlButtons";
 import PlayerControls from "../components/PlayerControls";
 import { getAudiobookById } from "../api/api";
 
-const Reproductor = () => {
+const AudioLibroReproductor = () => {
     const { id } = useParams();
     const [audiobook, setAudiobook] = useState(null);
+    const [fontSize, setFontSize] = useState("16px");
     const audioRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [speed, setSpeed] = useState(1.0);
@@ -85,42 +87,48 @@ const Reproductor = () => {
     if (!audiobook) {
         return <div className="flex items-center justify-center h-screen text-xl">Loading...</div>;
     }
-return ( 
-    <div className="min-h-screen bg-white">
-        <main className="max-w-4xl mx-auto p-4">
-            <button className="text-black font-bold mb-4 flex items-center">
-                <FaArrowLeft className="mr-2" />
-                Volver
-            </button>
-            <section className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
-                <AudiobookCover coverImage={audiobook.coverImage} title={audiobook.title} />
-                <AudioDetails
-                    title={audiobook.title}
-                    author={audiobook.author}
-                    duration={audiobook.duration}
+
+    return (
+        <div className="flex flex-col h-screen bg-econd">
+            <div className="flex-grow flex items-center justify-center">
+                <ChapterText text={audiobook.text} fontSize={fontSize} />
+            </div>
+
+            <div className="bg-first text-white p-4 flex flex-col items-center">
+                <ProgressBar
+                    progress={progress}
+                    totalDuration={totalDuration}
+                    onProgressChange={handleProgressChange}
                 />
-            </section>
-            <ProgressBar
-                progress={progress}
-                onProgressChange={handleProgressChange}
-            />
-            <ControlButtons
-                isPlaying={isPlaying}
-                onPlayPause={togglePlayPause}
-                onBackward={handleBackward}
-                onForward={handleForward}
-            />
-            <PlayerControls
-                audioRef={audioRef}
-                onLoadedMetadata={handleLoadedMetadata}
-                onTimeUpdate={handleProgress}
-                volume={volume}
-                onVolumeChange={setVolume}
-                speed={speed}
-                onSpeedChange={setSpeed}
-            />
-        </main>
-    </div>
-);
-}
-export default Reproductor;
+
+                <div className="flex justify-between items-center w-full mt-4">
+                    <div className="flex items-start mb-2">
+                        <AudiobookCover coverUrl={audiobook.coverUrl} className="w-25 h-20 object-cover" />
+                        <div className="ml-4">
+                            <AudioDetails title={audiobook.title} author={audiobook.author} />
+                        </div>
+                    </div>
+                    <ControlButtons
+                        isPlaying={isPlaying}
+                        togglePlay={togglePlayPause}
+                        handleBackward={handleBackward}
+                        handleForward={handleForward}
+                    />
+
+                    <div className="flex items-center">
+                        <PlayerControls speed={speed} setSpeed={setSpeed} volume={volume} setVolume={setVolume} />
+                    </div>
+
+                    <audio
+                        ref={audioRef}
+                        src={audiobook.audioUrl}
+                        onTimeUpdate={handleProgress}
+                        onLoadedMetadata={handleLoadedMetadata}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default AudioLibroReproductor;
