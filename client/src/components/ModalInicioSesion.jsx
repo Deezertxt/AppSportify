@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { GoogleLogin} from '@react-oauth/google';
 
 const ModalInicioSesion = ({ closeModal, openRegister }) => {
   const [showPassword, setShowPassword] = useState(false);
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  
 
   return (
     <div>
@@ -83,14 +85,26 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
         </div>
 
         {/* Botón de Google */}
-        <button className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
-        <img
-          src="google.svg" 
-          alt="Google icon"
-          className="w-5 h-5 mr-2"
-        />
-          Iniciar sesión con Google
-        </button>
+
+        <button 
+        onClick={GoogleLogin}
+        className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
+<img
+  src="google.svg" 
+  alt="Google icon"
+  className="w-5 h-5 mr-2"
+/>
+  Iniciar sesión con Google
+</button>
+
+        <GoogleLogin
+          onSuccess={credentialResponse => {
+            console.log(credentialResponse);
+          }}
+            onError={() => {
+            console.log('Login Failed');
+          }}
+        />;
       </form>
     </div>
   );

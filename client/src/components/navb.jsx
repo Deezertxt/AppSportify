@@ -1,22 +1,27 @@
 //navbar//
 import React, { useState } from 'react';
-import LoginModal from './ModalInicioSesion'; 
+import Modal from './Modal';
+import ModalRegistro from './ModalRegistro';
+import ModalInicioSesion from './ModalInicioSesion';
 
 const Navbar = () => {
     const [isMenuOpen, setMenuOpen] = useState(false);
-    const [isLoginModalOpen, setLoginModalOpen] = useState(false); 
+    const [isModalOpen, setModalOpen] = useState(false); 
+    const [isLogin, setIsLogin] = useState(true);
+
+    const toggleForm = () => setIsLogin(!isLogin);
 
     const toggleMenu = () => {
         setMenuOpen(!isMenuOpen);
     };
 
     const openModal = () => {
-        setLoginModalOpen(true);
+        setModalOpen(true);
         setMenuOpen(false); 
     };
 
     const closeModal = () => {
-        setLoginModalOpen(false);
+        setModalOpen(false);
     };
 
     return (
@@ -32,7 +37,10 @@ const Navbar = () => {
                     <a href="#" className="hover:text-[#E63946]">Sobre nosotros</a>
                     <a href="#" className="hover:text-[#E63946]">Coaching</a>
                     <button
-                        onClick={openModal} // Cambiar a openModal
+                        onClick={() => {
+                            openModal();
+                            setIsLogin(true);
+                        }} // Cambiar a openModal
                         className="bg-[#A8DADC] text-white px-4 py-2 rounded hover:bg-[#457B9D]"
                     >
                         Iniciar sesión
@@ -74,9 +82,14 @@ const Navbar = () => {
                     </div>
                 </div>
             )}
-
-           
-            {isLoginModalOpen && <LoginModal isOpen={isLoginModalOpen} onClose={closeModal} />} 
+            {isModalOpen && 
+            <Modal isOpen={isModalOpen} closeModal={closeModal} >
+                {isLogin ? (
+                    <ModalInicioSesion closeModal={closeModal} openRegister={toggleForm}/>
+                ):(
+                    <ModalRegistro closeModal={closeModal} openLogin={toggleForm} />
+                )}
+            </Modal>}
         </>
     );
 };

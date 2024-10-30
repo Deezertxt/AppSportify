@@ -2,6 +2,8 @@ import { useState } from "react";
 import { register } from "../api/api";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { GoogleLogin } from '@react-oauth/google';
+
 
 const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
   
@@ -145,7 +147,7 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
           />
         </div>
 
-        <div className="mb-4 relative">
+        <div className="mb-4 ">
         <label className="block text-white font-semibold mb-1">Contraseña</label>
           <input
             type={showPassword ? 'text' : 'password'}
@@ -170,7 +172,7 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
           </button>
         </div>
 
-        <div className="mb-6 relative">
+        <div className="mb-4">
         <label className="block text-white font-semibold mb-1">Confirmar contraseña</label>
           <input
             type={showConfirmPassword ? 'text' : 'password'}
@@ -224,14 +226,16 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
         </div>
 
         {/* Botón de Google */}
-        <button className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
-          <img
-            src="google.svg" 
-            alt="Google icon"
-            className="w-5 h-5 mr-2"
-          />
-          Registrarse con Google
-        </button>
+          
+
+        <GoogleLogin
+          onSuccess={credentialResponse => {
+            console.log(credentialResponse);
+          }}
+            onError={() => {
+            console.log('Login Failed');
+          }}
+        />;
       </form>
     </div>
   );
