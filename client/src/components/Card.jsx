@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function concertir(cadena) {
     return cadena
@@ -7,9 +8,17 @@ function concertir(cadena) {
         .join(" ");
 }
 
-function Card({ title, author, description, coverUrl, duration, rating, onClick }) {
+function Card({ id, title, author, description, coverUrl, duration, rating, onClick }) {
+    // const handleCardClick = () => {
+    //     onClick();
+    // };
+
+    const navigate = useNavigate();
+
     const handleCardClick = () => {
-        onClick();
+        navigate(`/preview/${id}`, {
+            state: { title, author, description, coverUrl, duration, rating }
+        });
     };
 
     return (
