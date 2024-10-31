@@ -2,6 +2,8 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { GoogleLogin} from '@react-oauth/google';
+import { GoX } from "react-icons/go";
+
 
 const ModalInicioSesion = ({ closeModal, openRegister }) => {
   const [showPassword, setShowPassword] = useState(false);

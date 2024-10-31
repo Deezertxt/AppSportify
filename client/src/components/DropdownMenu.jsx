@@ -31,15 +31,8 @@ const Sidebar = () => {
     const currentPath = location.pathname;
     if (currentPath === "/") {
       setSelected("Inicio");
-    } else if (currentPath === "/publicar") {
-      setSelected("Registro Audiolibros");
-    }else if (currentPath === "/login"){
-      setSelected("Inicio sesion")
-    } else if(currentPath === "/Preview"){
-      setSelected("Preview");
     }
   }, [location.pathname]); // Se ejecuta cada vez que cambia la ruta
-
 
   return (
     <motion.nav
