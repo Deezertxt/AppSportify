@@ -7,7 +7,7 @@ import Publicar from './pages/Publicar';
 import DropdownMenu from './components/DropdownMenu';
 import { RouteProvider } from './context/RouteContext';
 import TasksPage from './pages/Taskpage';
-import Preview from './components/Preview';
+import Preview from './pages/Preview';
 
 function App() {
     return (
@@ -19,7 +19,6 @@ function App() {
                 <div className="flex-grow p-4 bg-[#F0F9F9]">
                     <Routes>
                         <Route path="/" element={<Biblioteca />} />
-                        <Route path="/reproductor/:id" element={<Reproductor />} />
                         <Route path="/publicar" element={<Publicar />} />
                         <Route path="/taskpage" element={<TasksPage />} />
                         <Route path="/preview/:id" element={<Preview />} />

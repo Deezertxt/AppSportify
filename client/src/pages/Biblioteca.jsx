@@ -29,7 +29,7 @@ function Biblioteca() {
     }, []);
 
     const handleCardClick = (id) => {
-        navigate(`/reproductor/${id}`); // Redirigir al reproductor del audiolibro
+        navigate(`/preview/${id}`); // Redirigir al reproductor del audiolibro
     };
 
     return (
