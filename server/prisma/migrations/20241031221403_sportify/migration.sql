@@ -1,9 +1,9 @@
 -- CreateTable
 CREATE TABLE `User` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(100) NOT NULL,
+    `username` VARCHAR(10) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
-    `password` VARCHAR(255) NOT NULL,
+    `password` VARCHAR(15) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
