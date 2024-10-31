@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { SearchResultsList } from "./SearchResultsList";
 
 function SearchBar() {
@@ -31,7 +31,7 @@ function SearchBar() {
                 });
                 console.log(value.toLowerCase());
                 console.log(results);
-                setResults(results);
+                setResults(results.slice(0, 4));
                 console.log("------------------------------------------");
             });
     };
@@ -53,8 +53,8 @@ function SearchBar() {
     //click en la lupa, dependencia con SearchResults.jsx en el navigate
     const find = (entrada) => {
         console.log("buscando:   " + entrada);
-        navigate("/buscar", { state: { input } });  //redirige a la ruta de buscar pasando el parametro 'input' para listas coincidencias en la vista entera
-        setInput('') //vacio la barra de busqueda
+        navigate("/buscar", { state: { input } }); //redirige a la ruta de buscar pasando el parametro 'input' para listas coincidencias en la vista entera
+        //setInput('') //vacio la barra de busqueda
         setResults([]); //vacio la lista de coincidencias
     };
 
@@ -97,16 +97,37 @@ function SearchBar() {
                     </span>
                 </div>
             </div>
-            {aparecer ? (
-                <div
-                    id="lista-de-resultados"
-                    className="results-list flex absolute w-[1000px] bg-white text-black flex-col shadow-none rounded-lg max-h-[415px] overflow-y-scroll z-50"
-                >
-                    {results.map((results, id) => {
-                        return <SearchResultsList results={results} key={id} setInput={setInput} setResults={setResults}/>;
-                    })}
-                </div>
-            ) : null}
+            <div>
+                {aparecer ? (
+                    <div
+                        id="lista-de-resultados"
+                        className="results-list flex absolute w-[1000px] bg-white text-black flex-col shadow-none rounded-lg max-h-[415px] overflow-y-scroll z-50"
+                    >
+                        <div>
+                            {results.map((results, id) => {
+                                return (
+                                    <SearchResultsList
+                                        results={results}
+                                        key={id}
+                                        setInput={setInput}
+                                        setResults={setResults}
+                                    />
+                                );
+                            })}
+                        </div>
+                        <div>
+                            {results.length === 4 ? (
+                                <div
+                                    className="font-bold hover:underline pl-[15px]"
+                                    onClick={() => find(input)}
+                                >
+                                    Ver todos los resultados...
+                                </div>
+                            ) : null}
+                        </div>
+                    </div>
+                ) : null}
+            </div>
         </div>
     );
 }
