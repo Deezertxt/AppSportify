@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Card from "../components/Card";
 import { useLocation, useNavigate } from "react-router-dom";
+import SearchBar from "../components/SearchBar";
 
 //resultados de busqueda al darle a la lupa
 export const SearchResults = () => {
@@ -54,11 +55,17 @@ export const SearchResults = () => {
     }, [entrada]);
 
     const handleCardClick = (id) => {
-        navigate(`/reproductor/${id}`); // Redirigir al reproductor del audiolibro
+        navigate(`/Preview/${id}`); // Redirigir al reproductor del audiolibro
     };
     return (
         <div>
+           <div className="px-20">
+                    {/* <div className="pb-[5px]">Filtrar por: </div> */}
+                    <SearchBar/>
+                </div>
             <div className="max-w-5xl mx-auto mt-8">
+            
+
                 {Array.isArray(audiobooks) && audiobooks.length > 0 ? (
                     <div className="flex flex-wrap -m-4">
                         {audiobooks.map((audiobook) => (

@@ -1,10 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-
 export const SearchResultsList = ({ results, setInput, setResults }) => {
     const navigate = useNavigate();
     const handleCardClick = (id) => {
-        navigate(`/reproductor/${id}`); // Redirigir al reproductor del audiolibro
+        navigate(`/Preview/${id}`); // Redirigir al reproductor del audiolibro
         setInput(""); //despues de dar click al libro limpio input y lista de coincidencias
         setResults([]);
     };

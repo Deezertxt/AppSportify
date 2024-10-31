@@ -55,14 +55,14 @@ const Sidebar = () => {
           open={open}
           to="/"
           />
-        <Option
+        {/*<Option
           Icon={FiSearch}
           title="Buscar"
           selected={selected}
           setSelected={setSelected}
           open={open}
           to="/buscar"
-        /> 
+        /> */}
         <Option
           Icon={FiBook}
           title="Biblioteca"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getAudiobooks } from "../api/api";
-
+import SearchBar from "../components/SearchBar";
 import Card from "../components/Card"; // Importar el componente Card
 import {useNavigate} from 'react-router-dom';
 
@@ -30,15 +30,18 @@ function Biblioteca() {
     }, []);
 
     const handleCardClick = (id) => {
-        navigate(`/reproductor/${id}`); // Redirigir al reproductor del audiolibro
+        navigate(`/Preview/${id}`); // Redirigir al reproductor del audiolibro
     };
 
     return (
         <>
             <div className="">
+                
                 <div className="px-20">
                     {/* <div className="pb-[5px]">Filtrar por: </div> */}
+                    <SearchBar/>
                 </div>
+
                 <div className="max-w-5xl mx-auto mt-8">
                     {Array.isArray(audiobooks) && audiobooks.length > 0 ? (
                         <div className="flex flex-wrap -m-4">

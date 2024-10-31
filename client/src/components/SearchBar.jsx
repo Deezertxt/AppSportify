@@ -12,9 +12,6 @@ function SearchBar() {
         fetch("http://localhost:3000/api/audiobook/get/")
             .then((response) => response.json())
             .then((json) => {
-                console.log("----------------------------------------------");
-                //console.log(typeof json);
-                console.log(json);
                 const results = json.filter((audiobook) => {
                     return (
                         (value &&
@@ -29,12 +26,10 @@ function SearchBar() {
                                 .includes(value.toLowerCase()))
                     );
                 });
-                console.log(value.toLowerCase());
-                console.log(results);
                 setResults(results.slice(0, 4));
-                console.log("------------------------------------------");
             });
     };
+
     const handlechange = (value) => {
         if (value.length < 100) {
             setInput(value);
@@ -50,43 +45,37 @@ function SearchBar() {
         }
     };
 
-    //click en la lupa, dependencia con SearchResults.jsx en el navigate
     const find = (entrada) => {
-        console.log("buscando:   " + entrada);
-        navigate("/buscar", { state: { input } }); //redirige a la ruta de buscar pasando el parametro 'input' para listas coincidencias en la vista entera
-        //setInput('') //vacio la barra de busqueda
-        setResults([]); //vacio la lista de coincidencias
+        navigate("/buscar", { state: { input } });
+        setResults([]);
     };
 
     return (
-        <div className="mb-3 xl:w-96">
-            <div className="relative mb-4 flex w-[1000px] flex-wrap items-stretch">
-                <input
-                    type="search"
-                    className="relative m-0 block flex-auto rounded-l border border-solid border-gray-300 bg-white px-3 py-2 text-base font-normal text-gray-700 placeholder-gray-400 transition duration-200 ease-in-out focus:z-[3] focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                    placeholder="Buscar por titulo, autor o categoria"
-                    aria-label="Buscar por titulo, autor o categoria"
-                    aria-describedby="button-addon2"
-                    value={input}
-                    onChange={(e) => handlechange(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                            find(input);
-                        }
-                    }}
-                />
-                {/* Icono de búsqueda dentro de un contenedor redondeado */}
-                <div>
-                    <span
-                        className="h-[42px] input-group-text flex items-center justify-center bg-orange-500 rounded-r px-3 py-2 text-white cursor-pointer hover:bg-orange-600 transition duration-200 ease-in-out"
-                        id="basic-addon2"
+        <div className="flex justify-end w-full px-4">
+            <div className="mb-3 w-full max-w-xs sm:max-w-sm md:max-w-md">
+                <div className="relative flex items-center">
+                    <input
+                        type="search"
+                        className="w-full rounded-l border border-solid border-gray-300 bg-white px-2 py-1 text-sm font-normal text-gray-700 placeholder-gray-400 transition duration-200 ease-in-out focus:z-[3] focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                        placeholder="Buscar por titulo, autor o categoria"
+                        aria-label="Buscar por titulo, autor o categoria"
+                        value={input}
+                        onChange={(e) => handlechange(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                find(input);
+                            }
+                        }}
+                    />
+                    <button
+                        className="h-[38px] flex items-center justify-center bg-orange-500 rounded-r px-2 py-1 text-white cursor-pointer hover:bg-orange-600 transition duration-200 ease-in-out"
                         onClick={() => find(input)}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            className="h-5 w-5"
+                            className="h-4 w-4"
                         >
                             <path
                                 fillRule="evenodd"
@@ -94,39 +83,31 @@ function SearchBar() {
                                 clipRule="evenodd"
                             />
                         </svg>
-                    </span>
+                    </button>
                 </div>
-            </div>
-            <div>
-                {aparecer ? (
+                {aparecer && (
                     <div
                         id="lista-de-resultados"
-                        className="results-list flex absolute w-[1000px] bg-white text-black flex-col shadow-none rounded-lg max-h-[415px] overflow-y-scroll z-50"
+                        className="absolute w-full bg-white text-black flex-col shadow-md rounded-lg max-h-[300px] overflow-y-scroll z-50 mt-1"
                     >
-                        <div>
-                            {results.map((results, id) => {
-                                return (
-                                    <SearchResultsList
-                                        results={results}
-                                        key={id}
-                                        setInput={setInput}
-                                        setResults={setResults}
-                                    />
-                                );
-                            })}
-                        </div>
-                        <div>
-                            {results.length === 4 ? (
-                                <div
-                                    className="font-bold hover:underline pl-[15px]"
-                                    onClick={() => find(input)}
-                                >
-                                    Ver todos los resultados...
-                                </div>
-                            ) : null}
-                        </div>
+                        {results.map((results, id) => (
+                            <SearchResultsList
+                                results={results}
+                                key={id}
+                                setInput={setInput}
+                                setResults={setResults}
+                            />
+                        ))}
+                        {results.length === 4 && (
+                            <div
+                                className="font-bold hover:underline pl-4 cursor-pointer"
+                                onClick={() => find(input)}
+                            >
+                                Ver todos los resultados...
+                            </div>
+                        )}
                     </div>
-                ) : null}
+                )}
             </div>
         </div>
     );
