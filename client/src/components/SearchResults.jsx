@@ -30,12 +30,16 @@ export const SearchResults = () => {
                         .then((json) => {
                             const results = json.filter((audiobook) => {
                                 return (
-                                    entrada &&
-                                    audiobook &&
-                                    audiobook.title &&
-                                    audiobook.title
-                                        .toLowerCase()
-                                        .includes(entrada.toLowerCase())
+                                    (entrada &&
+                                        audiobook &&
+                                        audiobook.title &&
+                                        audiobook.title
+                                            .toLowerCase()
+                                            .includes(entrada.toLowerCase())) ||
+                                    (audiobook.author &&
+                                        audiobook.author
+                                            .toLowerCase()
+                                            .includes(entrada.toLowerCase()))
                                 );
                             });
                             setAudiobooks(results);
