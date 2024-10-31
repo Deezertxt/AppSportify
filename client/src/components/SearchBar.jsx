@@ -128,23 +128,6 @@ function SearchBar() {
                     </div>
                 ) : null}
             </div>
-            {aparecer ? (
-                <div
-                    id="lista-de-resultados"
-                    className="results-list flex absolute w-[1000px] bg-white text-black flex-col shadow-none rounded-lg max-h-[415px] overflow-y-scroll z-50"
-                >
-                    {results.map((results, id) => {
-                        return (
-                            <SearchResultsList
-                                results={results}
-                                key={id}
-                                setInput={setInput}
-                                setResults={setResults}
-                            />
-                        );
-                    })}
-                </div>
-            ) : null}
         </div>
     );
 }
