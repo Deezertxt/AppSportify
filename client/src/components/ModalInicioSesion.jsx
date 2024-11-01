@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { GoogleLogin} from '@react-oauth/google';
-import { GoX } from "react-icons/go";
+import { GoXCircleFill } from "react-icons/go";
 
 
 const ModalInicioSesion = ({ closeModal, openRegister }) => {
@@ -18,9 +18,9 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
         <button
           type="button"
           onClick={closeModal}
-          className="absolute top-2 right-2 text-gray-500 "
+          className="absolute top-2 right-2 text-gray-500 m-4"
         >
-          X
+          <GoXCircleFill className="text-white"/>
         </button>
 
         <div className="flex flex-col items-center">
