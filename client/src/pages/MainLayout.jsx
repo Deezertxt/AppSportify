@@ -12,7 +12,7 @@ const MainLayout = ({ children }) => {
       {/* Page Content */}
       <div className="flex-grow flex flex-col">
         {/* Main content */}
-        <main className="flex-grow p-4 bg-gray-100">
+        <main className="flex-grow p-4 bg-second">
           {children}
         </main>
 

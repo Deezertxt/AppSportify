@@ -220,12 +220,14 @@ const getAudioBookById = async (req, res) => {
 };
 
 
-// Actualizar un libro
 const updateAudiobook = async (req, res) => {
   const { id } = req.params;
   const { title, categoryId, description, author, pdfUrl, coverUrl } = req.body;
+  let newPdfUrl = pdfUrl;
+  let newAudioUrl = null;
 
   try {
+    // Buscar el audiolibro existente
     const audiobook = await prisma.audiobook.findUnique({
       where: { id: parseInt(id) },
     });
@@ -233,19 +235,37 @@ const updateAudiobook = async (req, res) => {
       return res.status(404).json({ error: 'Audiobook not found' });
     }
 
-    const updatedAudioBook = await prisma.audiobook.update({
+    // Verificar si hay un nuevo archivo PDF
+    if (req.files?.pdfFile) {
+      // Subir el nuevo archivo PDF y obtener la URL
+      newPdfUrl = await uploadFile(req.files.pdfFile);
+
+      // Extraer texto y generar audio
+      const extractedText = await extractTxtFromPdf(newPdfUrl);
+      newAudioUrl = await textToSpeech(extractedText);
+    }
+
+    // Verificar si hay una nueva portada
+    let newCoverUrl = coverUrl;
+    if (req.files?.coverFile) {
+      newCoverUrl = await uploadFile(req.files.coverFile);
+    }
+
+    // Actualizar el audiolibro solo con los cambios
+    const updatedAudiobook = await prisma.audiobook.update({
       where: { id: parseInt(id) },
       data: {
         title,
         categoryId,
         description,
         author,
-        pdfUrl,     // Agregar la URL del archivo PDF
-        coverUrl,   // Agregar la URL de la portada
+        pdfUrl: newPdfUrl,
+        coverUrl: newCoverUrl,
+        audioUrl: newAudioUrl || audiobook.audioUrl, // Solo actualizar si hay un nuevo audio
       },
     });
 
-    res.status(200).json(updatedAudioBook);
+    res.status(200).json(updatedAudiobook);
   } catch (error) {
     console.error('Error updating Audiobook:', error);
     res.status(500).json({ error: 'Error updating Audiobook', details: error.message });

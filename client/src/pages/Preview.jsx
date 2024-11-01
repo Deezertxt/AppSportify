@@ -1,72 +1,107 @@
-import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getAudiobookById } from '../api/api'; // Asegúrate de tener esta función en tu API
 import { FaArrowLeft } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+import { getAudiobooks } from '../api/api';
 
 function Preview() {
-    const { id } = useParams(); // Obtener el ID desde la URL
-    const navigate = useNavigate();
-    const [audiobook, setAudiobook] = useState(null); // Estado para almacenar los detalles del audiolibro
+  const { id } = useParams(); // Obtener el id desde la URL
+  const navigate = useNavigate();
+  const [bookData, setBookData] = useState(null);
+  const [audiobooks, setAudiobooks] = useState([]);
 
-    // Cargar el audiolibro cuando se monta el componente o cambia el ID
-    useEffect(() => {
-        const fetchAudiobook = async () => {
-            try {
-                const response = await getAudiobookById(id); // Llamar a la API con el ID
-                setAudiobook(response.data); // Asignar los datos al estado
-            } catch (error) {
-                console.error("Error fetching audiobook:", error);
-            }
-        };
-        fetchAudiobook();
-    }, [id]);
 
-    if (!audiobook) {
-        return <p className="text-center">Cargando información del audiolibro...</p>; // Mostrar mensaje de carga
-    }
+  useEffect(() => {
+    const fetchBookData = async () => {
+      try {
+        const response = await getAudiobooks();
+        if (Array.isArray(response.data)) {
+          setAudiobooks(response.data);
 
-    return (
-        <div className="min-h-screen bg-white">
-            <main className="max-w-4xl mx-auto p-4">
-                {/* Botón de retroceso */}
-                <button
-                    className="text-black font-bold mb-4 flex items-center"
-                    onClick={() => navigate(-1)}
-                >
-                    <FaArrowLeft className="mr-2" />
-                    Volver
-                </button>
+          const foundBook = response.data.find(book => book.id === parseInt(id, 10));
+          if (foundBook) {
+            setBookData(foundBook);
+          } else {
+            console.error(`No se encontró un libro con el id: ${id}`);
+          }
+        } else {
+          console.error("La respuesta no es un array:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching audiobooks:", error);
+      }
+    };
 
-                {/* Información del libro */}
-                <section className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
-                    <img
-                        src={audiobook.coverUrl}
-                        alt="Book Cover"
-                        className="w-full md:w-48 md:h-64 transition-transform duration-300 hover:scale-105 object-cover"
-                    />
-                    <div className="flex flex-col">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-2">{audiobook.title}</h2>
-                        <p className="text-lg font-semibold">Autor:</p>
-                        <p className="text-lg text-gray-500 font-semibold">{audiobook.author}</p>
-                        <div className="flex space-x-4 mt-2 text-gray-700">
-                            <span>⏱ {audiobook.duration}</span>
-                        </div>
-                    </div>
-                </section>
+    fetchBookData();
+  }, [id]);
 
-                {/* Botones de acción */}
-                <Actions audiobookId={id} />
+  if (!bookData) {
+    return <div className="flex items-center justify-center h-screen">Cargando...</div>;
+  }
 
-                {/* Descripción */}
-                <section className="mt-4">
-                    <h3 className="text-lg font-semibold">Descripción</h3>
-                    <p className="text-gray-700 mt-2">
-                        {audiobook.description}
-                    </p>
-                </section>
-            </main>
-        </div>
-    );
+  const handleViewDetails = () => {
+      navigate(`/reproductor/${id}`); // Redirige a la página de detalles
+  };
+
+  const handleListen = () => {
+      navigate(`/escuchar/${id}`); // Redirige al reproductor
+  };
+
+  const { title, author, description, coverUrl, duration } = bookData;
+
+  return (
+    <div className="min-h-0 bg-second">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Botón de retroceso */}
+        <button
+          onClick={() => navigate(-1)}
+          className="text-black font-bold mb-6 flex items-center"
+        >
+          <FaArrowLeft className="mr-2" />
+          Volver
+        </button>
+
+        {/* Información del libro */}
+        <section className="flex flex-col md:flex-row items-start md:items-center w-full bg-gray-50 rounded-lg shadow-lg overflow-hidden">
+          <div className="w-full md:w-1/3">
+            <img
+              src={coverUrl}
+              alt="Book Cover"
+              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            />
+          </div>
+          <div className="flex flex-col p-4 md:p-6 w-full md:w-2/3">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">{title}</h2>
+            <p className="text-lg font-semibold mb-1">Autor:</p>
+            <p className="text-lg text-gray-500 font-semibold">{author}</p>
+            <div className="flex space-x-4 mt-4 text-gray-700">
+              <span className="flex items-center">⏱ {duration}</span>
+            </div>
+            {/* Botones de acciones */}
+            <div className="flex space-x-4 mt-4">
+              <button
+                onClick={(handleViewDetails)}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-300"
+              >
+                Ver
+              </button>
+              <button
+                onClick={(handleListen)}
+                className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-300"
+              >
+                Escuchar
+              </button>
+            </div>
+            <div> {/* Descripción */}
+              <section className="mt-6">
+                <h3 className="text-lg font-semibold">Descripción</h3>
+                <p className="text-gray-700 mt-2">{description}</p>
+              </section></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
 }
 
 export default Preview;
+

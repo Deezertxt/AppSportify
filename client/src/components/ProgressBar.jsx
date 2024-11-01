@@ -23,7 +23,7 @@ const ProgressBar = ({ progress, totalDuration, onProgressChange }) => {
                 style={{ position: "relative" }}
             >
                 <div
-                    className="bg-blue-500 h-full rounded-full"
+                    className="bg-green-500 h-full rounded-full"
                     style={{ width: `${progress}%` }}
                 ></div>
             </div>
