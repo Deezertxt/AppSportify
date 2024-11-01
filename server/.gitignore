@@ -1,4 +1,3 @@
-
 .idea
 # Logs
 logs
@@ -131,5 +130,4 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-google-key.json
-
+/server/models/audiolibros.js
