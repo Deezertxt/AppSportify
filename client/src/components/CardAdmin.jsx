@@ -42,7 +42,7 @@ function CardRow({ id, title, author, description, coverUrl, category, onDelete 
                 <div className="mb-1 justify-center">
                 <Link to={`/Actualizar/${id}`}>
                         <button className="text-red-500 hover:text-red-700 text-white">
-                            <img src="lapiz.svg">
+                            <img src="">
 
                             </img>
                         </button>

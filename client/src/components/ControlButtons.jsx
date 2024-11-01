@@ -18,7 +18,7 @@ const ControlButtons = ({ isPlaying, togglePlay, handleBackward, handleForward }
         <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
         <path d="M3 3v5h5" />
       </svg>
-      <span className="absolute text-white text-xs font-semibold inset-0 flex items-center justify-center transition group-hover:text-sky-500">
+      <span className="absolute text-white text-xs font-semibold inset-0 flex items-center justify-center transition group-hover:text-green-500">
         -10
       </span>
       <svg
@@ -29,7 +29,7 @@ const ControlButtons = ({ isPlaying, togglePlay, handleBackward, handleForward }
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="absolute h-12 w-12 inset-0 flex items-center justify-center transition group-hover:text-sky-500"
+        className="absolute h-12 w-12 inset-0 flex items-center justify-center transition group-hover:text-green-500"
       >
         <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
         <path d="M3 3v5h5" />
@@ -48,7 +48,7 @@ const ControlButtons = ({ isPlaying, togglePlay, handleBackward, handleForward }
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="h-16 w-16 transition group-hover:text-sky-500"
+            className="h-16 w-16 transition group-hover:text-green-500"
           >
             {/* Se quita el relleno blanco del círculo */}
             <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" />
@@ -63,7 +63,7 @@ const ControlButtons = ({ isPlaying, togglePlay, handleBackward, handleForward }
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="h-16 w-16 transition group-hover:text-sky-500"
+            className="h-16 w-16 transition group-hover:text-green-500"
           >
             {/* Se quita el relleno blanco del círculo */}
             <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" />
@@ -89,7 +89,7 @@ const ControlButtons = ({ isPlaying, togglePlay, handleBackward, handleForward }
         <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
         <path d="M21 3v5h-5" />
       </svg>
-      <span className="absolute text-white text-xs font-semibold inset-0 flex items-center justify-center transition group-hover:text-sky-500">
+      <span className="absolute text-white text-xs font-semibold inset-0 flex items-center justify-center transition group-hover:text-green-500">
         +10
       </span>
       <svg
@@ -100,7 +100,7 @@ const ControlButtons = ({ isPlaying, togglePlay, handleBackward, handleForward }
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="absolute h-12 w-12 inset-0 flex items-center justify-center transition group-hover:text-sky-500"
+        className="absolute h-12 w-12 inset-0 flex items-center justify-center transition group-hover:text-green-500"
       >
         <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
         <path d="M21 3v5h-5" />

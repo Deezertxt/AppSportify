@@ -28,7 +28,7 @@ function Publicar() {
     const [isModalOpen, setIsModalOpen] = useState(false); //Estado para el modal
     const handleNavigateHome = () => {
         setIsModalOpen(false);
-        navigate('/');
+        navigate('/libros');
     };
 
     useEffect(() => {

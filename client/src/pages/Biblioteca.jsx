@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getAudiobooks } from "../api/api";
 import Card from "../components/Card"; // Importar el componente Card
 import {useNavigate} from 'react-router-dom';
+import SearchBar from "../components/SearchBar";
 
 
 function Biblioteca() {
@@ -36,6 +37,9 @@ function Biblioteca() {
     return (
         <>
             <div className="">
+                <div className="px-20">
+                    <SearchBar/>
+                </div>
                 <div className="max-w-5xl mx-auto mt-8">
                     {Array.isArray(audiobooks) && audiobooks.length > 0 ? (
                         <div className="flex flex-wrap -m-4">

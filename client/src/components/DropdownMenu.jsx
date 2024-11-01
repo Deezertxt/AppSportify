@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import {FiBarChart,FiBook,FiChevronDown,FiChevronsRight,FiFolderMinus,FiHome,FiLogIn,FiLogOut,FiSearch,FiTag,FiUsers,} from "react-icons/fi";
 import { motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
-import supabase from "../utils/supabase";
+import { UserAuth } from "../context/AuthContextProvider";
+
 
 const DropdownMenu = () => {
   return (
@@ -18,23 +19,8 @@ const Sidebar = () => {
   const [open, setOpen] = useState(true);
   const location = useLocation(); 
   const [selected, setSelected] = useState("Inicio");
+const {signout} = UserAuth();
 
-  useEffect(() => {
-    const currentPath = location.pathname;
-    if (currentPath === "/") {
-      setSelected("Inicio");
-    } else if (currentPath === "/publicar") {
-      setSelected("Registro Audiolibros");
-    } else if (currentPath === "/registrarusuario") {
-      setSelected("Registro de Usuarios");
-    } 
-
-  }, [location.pathname]);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/"); // Redirigir a la página de inicio o a donde desees
-  };
 
   return (
     <motion.nav
@@ -55,22 +41,15 @@ const Sidebar = () => {
         open={open}
         to="/libros"
       />
-      <Option
-        Icon={FiSearch}
-        title="Buscar"
-        selected={selected}
-        setSelected={setSelected}
-        open={open}
-        to="/buscar" // Asegúrate de tener esta ruta
-      />
-      <Option
+      
+      {/* <Option
         Icon={FiBook}
         title="Biblioteca"
         selected={selected}
         setSelected={setSelected}
         open={open}
         to="/taskpage"
-      /> 
+      />  */}
       <Option
         Icon={FiFolderMinus}
         title="Registro Audiolibros"
@@ -89,7 +68,7 @@ const Sidebar = () => {
       />*/}
       <Option
         Icon={FiBarChart}
-        title="Panel de Administración"
+        title="Administración"
         selected={selected}
         setSelected={setSelected}
         open={open}
@@ -106,8 +85,8 @@ const Sidebar = () => {
     </div>
     <Option
         Icon={FiLogOut}
-        title="Log Out"
-        onClick = {handleLogout}
+        title="Cerrar sesión"
+        onClick = {signout}
         open={open}
         to="/"
       />
@@ -173,8 +152,7 @@ const TitleSection = ({ open }) => {
               transition={{ delay: 0.125 }}
             />
           )}
-        </div>
-        {open && <FiChevronDown className="mr-5" />} 
+        </div> 
       </div>
     </div>
   );
@@ -200,9 +178,9 @@ const ToggleClose = ({ open, setOpen }) => {
     <motion.button
       layout
       onClick={() => setOpen((pv) => !pv)}
-      className="absolute bottom-0 left-0 right-0 border-t border-slate-300 transition-colors hover:bg-slate-100"
+      className="absolute bottom-0 left-0 right-0 border-t border-slate-300 transition-colors hover:bg-gray-800"
     >
-      <div className="flex items-center p-2 text-gray-400">
+      <div className="flex items-center p-2 text-white">
         <motion.div
           layout
           className="grid size-10 place-content-center text-lg"
@@ -217,7 +195,7 @@ const ToggleClose = ({ open, setOpen }) => {
             transition={{ delay: 0.125 }}
             className="text-x font-medium"
           >
-            Hide
+            Ocultar
           </motion.span>
         )}
       </div>
