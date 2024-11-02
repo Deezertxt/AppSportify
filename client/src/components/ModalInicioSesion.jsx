@@ -30,7 +30,8 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
         <h2 className="text-2xl font-bold text-white text-left mb-6">Inicio Sesión</h2>
 
         <div className="mb-4">
-          <label className="block text-white font-semibold mb-1">Correo electrónico</label>
+          <label className="block text-white font-semibold mb-1">Correo electrónico <span className="text-red-500">*</span></label>
+          
           <input
             type="email"
             name="email"
@@ -41,7 +42,7 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-white font-semibold mb-1">Contraseña</label>
+          <label className="block text-white font-semibold mb-1">Contraseña <span className="text-red-500">*</span></label>
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Contraseña"
@@ -98,15 +99,6 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
 />
   Iniciar sesión con Google
 </button>
-
-        <GoogleLogin
-          onSuccess={credentialResponse => {
-            console.log(credentialResponse);
-          }}
-            onError={() => {
-            console.log('Login Failed');
-          }}
-        />;
       </form>
     </div>
   );

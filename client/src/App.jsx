@@ -8,7 +8,6 @@ import DropdownMenu from './components/DropdownMenu';
 import { RouteProvider } from './context/RouteContext';
 import InicioSesion from './pages/InicioSesion';
 import TasksPage from './pages/Taskpage';
-import HeroSecction from './components/HeroSection';
 import HeroSection from './components/HeroSection';
 
 function App() {

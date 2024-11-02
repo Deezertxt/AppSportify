@@ -16,11 +16,15 @@ import { Link, useLocation } from "react-router-dom";
 
 const DropdownMenu = () => {
   return (
-    <div className="w-56 bg-second flex-shrink-0">
+    <div className="w-auto bg-second flex-shrink-0 justify-end">
       <Sidebar />
     </div>
   );
 };
+
+//w-auto bg-second flex-shrink-0 justify-end -- :)
+//h-screen flex items-end justify-end
+//w-56 bg-second flex-shrink-0
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);

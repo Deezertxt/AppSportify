@@ -3,6 +3,7 @@ import { register } from "../api/api";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { GoogleLogin } from '@react-oauth/google';
+import { GoXCircleFill } from "react-icons/go";
 
 
 const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
@@ -103,9 +104,9 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
       <button
           type="button"
           onClick={closeModal}
-          className="absolute top-2 right-2 text-gray-500 "
+          className="absolute top-2 right-2 text-gray-500 m-4"
         >
-          X
+                    <GoXCircleFill className="text-white"/>
         </button>
         {/* Logo */}
         <div className="flex flex-col items-center">
@@ -121,7 +122,7 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
 
         {/* Formulario */}
         <div className="mb-4">
-          <label className="block font-semibold text-white mb-1">Nombre de usuario</label>
+          <label className="block font-semibold text-white mb-1">Nombre de usuario <span className="text-red-500">*</span></label>
           <input
             type="text"
             name="username"
@@ -135,7 +136,7 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block font-semibold text-white mb-1">Correo electrónico</label>
+          <label className="block font-semibold text-white mb-1">Correo electrónico <span className="text-red-500">*</span></label>
           <input
             type="email"
             name="email"
@@ -148,7 +149,7 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
         </div>
 
         <div className="mb-4 ">
-        <label className="block text-white font-semibold mb-1">Contraseña</label>
+        <label className="block text-white font-semibold mb-1">Contraseña <span className="text-red-500">*</span></label>
           <input
             type={showPassword ? 'text' : 'password'}
             name="password"
@@ -173,7 +174,7 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
         </div>
 
         <div className="mb-4">
-        <label className="block text-white font-semibold mb-1">Confirmar contraseña</label>
+        <label className="block text-white font-semibold mb-1">Confirmar contraseña <span className="text-red-500">*</span></label>
           <input
             type={showConfirmPassword ? 'text' : 'password'}
             name="confirmPassword"
@@ -228,14 +229,16 @@ const RegistrationForm = ({ onSubmit, closeModal, openLogin }) => {
         {/* Botón de Google */}
           
 
-        <GoogleLogin
-          onSuccess={credentialResponse => {
-            console.log(credentialResponse);
-          }}
-            onError={() => {
-            console.log('Login Failed');
-          }}
-        />;
+        <button 
+        onClick={GoogleLogin}
+        className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
+        <img
+          src="google.svg" 
+          alt="Google icon"
+          className="w-5 h-5 mr-2"
+        />
+          Registrarse con Google
+        </button>
       </form>
     </div>
   );
