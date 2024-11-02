@@ -12,28 +12,31 @@ import HeroSection from './pages/HeroSection';
 import Preview from './pages/Preview';
 import Reproductor from './pages/Reproductor';
 import SearchResults from './components/SearchResults';
-import { AuthContextProvider } from './context/AuthContextProvider';
+import { AuthProvider } from './context/authContext';
+import { ProtectedRoutes } from './context/ProtectedRoutes';
 
 
 function App() {
 
     return (
-        <AuthContextProvider>
+        <AuthProvider>
         <Routes>
             <Route path="/" element={<HeroSection />} />
-            <Route path="/libros" element={<MainLayout><Biblioteca /></MainLayout>} />
+            <Route path="/login" element={<InicioSesion />} />
+            {/* <Route path="/registro" element={<Registro/>}/> */}
+            <Route path="/libros" element={<ProtectedRoutes><MainLayout><Biblioteca /></MainLayout></ProtectedRoutes>} />
             <Route path="/reproductor/:id" element={<AudioLibroReproductor />} />
             <Route path="/escuchar/:id" element={<MainLayout><Reproductor /></MainLayout>} />
             <Route path="/panelAdmin" element={<MainLayout><PanelAdmin /></MainLayout>} />
             <Route path="/publicar" element={<MainLayout><Publicar /></MainLayout>} />
             <Route path="/actualizar/:id" element={<MainLayout><Actualizar /></MainLayout>} />
-            <Route path="/login" element={<InicioSesion />} />
+            
             <Route path="/taskpage" element={<TasksPage />} />
             <Route path="/preview/:id" element={<MainLayout><Preview /></MainLayout>} />
 
-            <Route path="/buscar" element={<SearchResults/> } />
+            <Route path="/buscar" element={<MainLayout><SearchResults/></MainLayout> } />
         </Routes>
-        </AuthContextProvider>
+        </AuthProvider>
     );
 }
 export default App;

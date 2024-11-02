@@ -1,11 +1,11 @@
 import { useState } from "react";
+import { useNavigate   } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import supabase  from "../utils/supabase";  // Asegúrate de importar tu instancia de Supabase
-import {UserAuth} from "../context/AuthContextProvider";  // Asegúrate de importar la función de inicio de sesión con Google
+
+import { useAuth } from "../context/authContext";  // Asegúrate de importar la función de inicio de sesión con Google
 
 const RegistrationForm = ({ closeModal, openLogin }) => {
-  const {signInWithGoogle} = UserAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -17,9 +17,12 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
   const [formErrors, setFormErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
+
+  const { signUp, loginWithGoogle } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,7 +41,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
     setFormErrors({});
     setSuccessMessage("");
     const errors = {};
-  
+
     // Validaciones
     if (!validatePassword(formData.password, formData.confirmPassword)) {
       errors.password = "Las contraseñas no coinciden.";
@@ -48,27 +51,18 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
     } else if (formData.username.trim() === "") {
       errors.usernameEmpty = "El nombre de usuario no puede estar vacío.";
     }
-  
+
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
     }
-  
+
     setIsLoading(true);
     try {
-      // Llamada a Supabase para registrar
-      const { data, error } = await supabase.auth.signUp({
-        email: 'wireni3163@nestvia.com',
-        password: 'Sportify12345*.',
-      });
-  
-      // Manejo de errores
-      if (error) {
-        throw new Error(error.message);
-      }
-  
-      setSuccessMessage("Registro exitoso! Por favor, verifica tu correo electrónico.");
+      await signUp(formData.email, formData.password);
+      setSuccessMessage("Registro exitoso!");
       setFormData({ username: "", email: "", password: "", confirmPassword: "" });
+      navigate("/login");
     } catch (error) {
       console.error("Error al registrar:", error);
       setFormErrors({ general: error.message || "Error al registrar. Verifique los campos." });
@@ -76,7 +70,15 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
       setIsLoading(false);
     }
   };
-  
+
+  const handleGoogleSignin = async () => {  
+    try {
+      await loginWithGoogle();
+      navigate("/libros");
+    } catch (error) {
+      setError("Error al iniciar sesión con Google: " + error.message);
+    }
+  };
 
   return (
     <div>
@@ -102,8 +104,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
         {successMessage && <p className="text-green-500">{successMessage}</p>}
 
         <div className="mb-4">
-          <label className="block font-semibold text-white mb-1">Nombre de usuario</label>
-          <input
+          <label className="block font-semibold text-white mb-1">Nombre de usuario<span className="text-red-500"> *</span></label> <input
             type="text"
             name="username"
             maxLength={10}
@@ -117,11 +118,11 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block font-semibold text-white mb-1">Correo electrónico</label>
+          <label className="block font-semibold text-white mb-1">Correo electrónico<span className="text-red-500"> *</span></label>
           <input
             type="email"
             name="email"
-            placeholder="Correo electrónico"
+            placeholder="example@gmail.com"
             value={formData.email}
             onChange={handleChange}
             className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
@@ -130,11 +131,11 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-white font-semibold mb-1">Contraseña</label>
+          <label className="block text-white font-semibold mb-1">Contraseña<span className="text-red-500"> *</span></label>
           <input
             type={showPassword ? "text" : "password"}
             name="password"
-            placeholder="Contraseña"
+            placeholder="******"
             value={formData.password}
             onChange={handleChange}
             className="w-full text-white focus:outline-none border-b-2 bg-transparent p-2"
@@ -151,11 +152,11 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-white font-semibold mb-1">Confirmar contraseña</label>
+          <label className="block text-white font-semibold mb-1">Confirmar contraseña<span className="text-red-500"> *</span></label>
           <input
             type={showConfirmPassword ? "text" : "password"}
             name="confirmPassword"
-            placeholder="Confirmar contraseña"
+            placeholder="******"
             value={formData.confirmPassword}
             onChange={handleChange}
             className="w-full text-white focus:outline-none border-b-2 bg-transparent p-2"
@@ -198,7 +199,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
         {/* Botón de Google */}
         <button
           type="button"
-          onClick={signInWithGoogle}
+          onClick={handleGoogleSignin}
           className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center"
         >
           <img src="google.svg" alt="Google icon" className="w-5 h-5 mr-2" />
