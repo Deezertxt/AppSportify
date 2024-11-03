@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { useNavigate   } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 import { useAuth } from "../context/authContext";  // Asegúrate de importar la función de inicio de sesión con Google
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../utils/firebase";
 
 const RegistrationForm = ({ closeModal, openLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -59,10 +61,15 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
 
     setIsLoading(true);
     try {
-      await signUp(formData.email, formData.password);
+      const userCredential = await signUp(formData.email, formData.password);
+      const user = userCredential.user;
+      // Guardar `username` en Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        username: formData.username,
+        email: formData.email,
+      });
       setSuccessMessage("Registro exitoso!");
       setFormData({ username: "", email: "", password: "", confirmPassword: "" });
-      navigate("/login");
     } catch (error) {
       console.error("Error al registrar:", error);
       setFormErrors({ general: error.message || "Error al registrar. Verifique los campos." });
@@ -71,9 +78,14 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
     }
   };
 
-  const handleGoogleSignin = async () => {  
+  const handleGoogleSignin = async () => {
     try {
-      await loginWithGoogle();
+      const result = await loginWithGoogle();
+      const user = result.user;
+
+      const userDoc = doc(db, "users", user.uid);
+      await setDoc(userDoc, {username: user.displayName, email: user.email}, {merge: true});
+
       navigate("/libros");
     } catch (error) {
       setError("Error al iniciar sesión con Google: " + error.message);

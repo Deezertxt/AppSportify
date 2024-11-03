@@ -19,6 +19,22 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
     e.preventDefault();
     setIsLoading(true);
     setError(""); // Limpia el error previo
+
+
+    // Validación de email y contraseña
+    if (!email || !password) {
+      setError("El email y la contraseña son obligatorios");
+      setIsLoading(false);
+      return;
+    }
+
+    // Email formato simple
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Por favor ingresa un email válido");
+      setIsLoading(false);
+      return;
+    }
     try {
       await login(email, password);
       navigate("/libros"); // Redirige si el inicio de sesión fue exitoso
@@ -30,7 +46,7 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
     }
   };
 
-  const handleGoogleSignin = async () => {  
+  const handleGoogleSignin = async () => {
     try {
       await loginWithGoogle();
       navigate("/libros");
@@ -105,7 +121,7 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
           <hr className="w-full border-white" />
         </div>
 
-        <button onClick= {handleGoogleSignin}className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
+        <button onClick={handleGoogleSignin} className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
           <img src="google.svg" alt="Google icon" className="w-5 h-5 mr-2" />
           Iniciar sesión con Google
         </button>

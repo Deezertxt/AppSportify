@@ -25,10 +25,12 @@ const Sidebar = () => {
   const handleLogout = async () => {
     try {
       await logout();
+      navigate("/"); // Redirige al usuario después de cerrar sesión
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }
   };
+  
 
     return (
       <motion.nav
@@ -58,38 +60,26 @@ const Sidebar = () => {
         open={open}
         to="/taskpage"
       />  */}
-          <Option
-            Icon={FiFolderMinus}
-            title="Registro Audiolibros"
-            selected={selected}
-            setSelected={setSelected}
-            open={open}
-            to="/publicar"
-          />
-          {/*<Option
-        Icon={FiUsers}
-        title="Registro de Usuarios"
-        selected={selected}
-        setSelected={setSelected}
-        open={open}
-        to="/registrarusuario"
-      />*/}
-          <Option
-            Icon={FiBarChart}
-            title="Administración"
-            selected={selected}
-            setSelected={setSelected}
-            open={open}
-            to="/PanelAdmin"
-          />
-          {/*<Option
-        Icon={FiLogIn}
-        title="Inicio sesión"
-        selected={selected}
-        setSelected={setSelected}
-        open={open}
-        to="/login"
-      />*/}
+          {user?.email === "yalasoft@gmail.com" && (
+          <>
+            <Option
+              Icon={FiFolderMinus}
+              title="Registro Audiolibros"
+              selected={selected}
+              setSelected={setSelected}
+              open={open}
+              to="/publicar"
+            />
+            <Option
+              Icon={FiBarChart}
+              title="Administración"
+              selected={selected}
+              setSelected={setSelected}
+              open={open}
+              to="/PanelAdmin"
+            />
+          </>
+        )}
         </div>
         <Option
           Icon={FiLogOut}
