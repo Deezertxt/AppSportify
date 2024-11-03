@@ -12,7 +12,7 @@ const storage = new Storage();
 
 const credentialsPath = path.join(__dirname, './google-key.json');
 process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
-const bucketName = 'sportify-1';
+const bucketName = 'sportify-2';
 const audioFolder = 'uploads/audio';
 const outputFolder = 'uploads/json';
 
