@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { getAudiobooks } from "../api/api";
+<<<<<<< HEAD
 import SearchBar from "../components/SearchBar";
+=======
+>>>>>>> origin/main
 import Card from "../components/Card"; // Importar el componente Card
 import {useNavigate} from 'react-router-dom';
+import SearchBar from "../components/SearchBar";
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
 function Biblioteca() {
     const [audiobooks, setAudiobooks] = useState([]); // Estado para almacenar los audiolibros
     const navigate = useNavigate();
     
-    console.log(audiobooks.title)
     // Cargar los audiolibros cuando el componente se monta
     useEffect(() => {
         const fetchAudiobooks = async () => {
@@ -30,15 +37,23 @@ function Biblioteca() {
     }, []);
 
     const handleCardClick = (id) => {
+<<<<<<< HEAD
         navigate(`/Preview/${id}`); // Redirigir al reproductor del audiolibro
+=======
+        navigate(`/preview/${id}`); // Redirigir al reproductor del audiolibro
+>>>>>>> origin/main
     };
 
     return (
         <>
             <div className="">
+<<<<<<< HEAD
                 
                 <div className="px-20">
                     {/* <div className="pb-[5px]">Filtrar por: </div> */}
+=======
+                <div className="px-20">
+>>>>>>> origin/main
                     <SearchBar/>
                 </div>
 
@@ -50,7 +65,8 @@ function Biblioteca() {
                                     key={audiobook.id}
                                     title={audiobook.title}
                                     author={audiobook.author}
-                                    coverUrl={audiobook.coverUrl} // Suponiendo que tienes una propiedad 'coverImage' para la URL de la portada
+                                    coverUrl={audiobook.coverUrl}
+                                    duration={audiobook.duration} // Suponiendo que tienes una propiedad 'coverImage' para la URL de la portada
                                     onClick={() => handleCardClick(audiobook.id)} // Pasar la función onClick
                                 />
                             ))}

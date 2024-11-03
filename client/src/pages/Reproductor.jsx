@@ -1,17 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
-import AudiobookCover from "../components/AudiobookCover";
-import ChapterText from "../components/ChapterText";
+import { useParams, useNavigate } from "react-router-dom";
 import ProgressBar from "../components/ProgressBar";
-import AudioDetails from "../components/AudioDetails";
 import ControlButtons from "../components/ControlButtons";
 import PlayerControls from "../components/PlayerControls";
-import { getAudiobookById } from "../api/api";
+import { FiArrowLeft } from "react-icons/fi";
+import { getAudiobooks } from '../api/api';
 
 const Reproductor = () => {
     const { id } = useParams();
-    const [audiobook, setAudiobook] = useState(null);
-    const [fontSize, setFontSize] = useState("16px");
+    const navigate = useNavigate();
+    const [bookData, setBookData] = useState(null);
     const audioRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [speed, setSpeed] = useState(1.0);
@@ -20,17 +18,25 @@ const Reproductor = () => {
     const [totalDuration, setTotalDuration] = useState(0);
 
     useEffect(() => {
-        const fetchAudiobook = async () => {
+        const fetchBookData = async () => {
             try {
-                const response = await getAudiobookById(id);
-                setAudiobook(response.data);
+                const response = await getAudiobooks();
+                if (Array.isArray(response.data)) {
+                    const foundBook = response.data.find(book => book.id === parseInt(id, 10));
+                    if (foundBook) {
+                        setBookData(foundBook);
+                    } else {
+                        console.error(`No se encontró un libro con el id: ${id}`);
+                    }
+                } else {
+                    console.error("La respuesta no es un array:", response.data);
+                }
             } catch (error) {
-                console.error("Error fetching audiobook:", error);
-                setAudiobook(null);
+                console.error("Error fetching audiobooks:", error);
             }
         };
 
-        fetchAudiobook();
+        fetchBookData();
     }, [id]);
 
     const togglePlayPause = () => {
@@ -41,6 +47,10 @@ const Reproductor = () => {
         }
         setIsPlaying(!isPlaying);
     };
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
     const handleProgress = () => {
         if (audioRef.current) {
             const currentProgress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
@@ -61,6 +71,10 @@ const Reproductor = () => {
             setProgress(newProgress);
         }
     };
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
     const handleBackward = () => {
         if (audioRef.current) {
             audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 10);
@@ -72,6 +86,10 @@ const Reproductor = () => {
             audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 10);
         }
     };
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.volume = volume / 100;
@@ -84,23 +102,31 @@ const Reproductor = () => {
         }
     }, [speed]);
 
-    if (!audiobook) {
-        return <div className="flex items-center justify-center h-screen text-xl">Loading...</div>;
+    if (!bookData) {
+        return <div className="flex items-center justify-center h-screen text-xl text-white">Cargando...</div>;
     }
 
+    const { title, author, description, coverUrl, audioUrl } = bookData;
+
     return (
-        <div className="flex flex-col h-screen bg-econd">
-            <div className="flex-grow flex items-center justify-center">
-                <ChapterText text={audiobook.jsonUrl} fontSize={fontSize} />
-            </div>
+        <div className="min-h-0 bg-second text-white relative flex flex-col items-center p-4">
+            {/* Botón de cierre en la esquina superior izquierda */}
+            <button onClick={() => navigate(-1)} className="absolute top-4 left-4 text-black mb-6 flex items-center">
+                <FiArrowLeft className="mr-2" />
+                Volver
+            </button>
 
-            <div className="bg-first text-white p-4 flex flex-col items-center">
-                <ProgressBar
-                    progress={progress}
-                    totalDuration={totalDuration}
-                    onProgressChange={handleProgressChange}
-                />
+            <main className="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-6 mt-8 flex flex-col items-center">
+                {/* Imagen de portada que ocupa casi toda la altura */}
+                <div className="w-full md:w-1/3 mb-4">
+                    <img
+                        src={coverUrl}
+                        alt="Book Cover"
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105 rounded-lg"
+                    />
+                </div>
 
+<<<<<<< HEAD
                 <div className="flex justify-between items-center w-full mt-4">
                     <div className="flex items-start mb-2">
                         <AudiobookCover coverUrl={audiobook.coverUrl} className="w-25 h-20 object-cover" />
@@ -108,25 +134,45 @@ const Reproductor = () => {
                             <AudioDetails title={audiobook.title} author={audiobook.author} />
                         </div>
                     </div>
+=======
+                {/* Título y Autor con más espacio y centrado */}
+                <div className="text-center mt-4 mb-2">
+                    <h2 className="text-2xl font-bold">{title}</h2>
+                    <p className="text-gray-400 text-sm mt-1">{author}</p>
+                </div>
+
+                {/* Barra de Progreso con más espacio */}
+                <div className="w-full mb-4">
+                    <ProgressBar
+                        progress={progress}
+                        totalDuration={totalDuration}
+                        onProgressChange={handleProgressChange}
+                    />
+                </div>
+
+                {/* Controles de Reproducción con más separación */}
+                <div className="flex items-center justify-center space-x-4 mb-6">
+>>>>>>> origin/main
                     <ControlButtons
                         isPlaying={isPlaying}
                         togglePlay={togglePlayPause}
                         handleBackward={handleBackward}
                         handleForward={handleForward}
                     />
-
-                    <div className="flex items-center">
-                        <PlayerControls speed={speed} setSpeed={setSpeed} volume={volume} setVolume={setVolume} />
-                    </div>
-
-                    <audio
-                        ref={audioRef}
-                        src={audiobook.audioUrl}
-                        onTimeUpdate={handleProgress}
-                        onLoadedMetadata={handleLoadedMetadata}
-                    />
                 </div>
-            </div>
+
+                {/* Controles de Velocidad y Volumen */}
+                <div className="justify-self-center">
+                    <PlayerControls speed={speed} setSpeed={setSpeed} volume={volume} setVolume={setVolume} />
+                </div>
+
+                <audio
+                    ref={audioRef}
+                    src={audioUrl}
+                    onTimeUpdate={handleProgress}
+                    onLoadedMetadata={handleLoadedMetadata}
+                />
+            </main>
         </div>
     );
 };

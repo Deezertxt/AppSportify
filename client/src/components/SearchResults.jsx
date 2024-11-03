@@ -3,43 +3,42 @@ import Card from "../components/Card";
 import { useLocation, useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
 
-export const SearchResults = () => {
+const SearchResults = () => {
     const [audiobooks, setAudiobooks] = useState([]);
-    const [filter, setFilter] = useState("all"); // Estado del filtro: "all", "title", "author"
+    const [filter, setFilter] = useState("Todo"); // Estado para controlar el filtro seleccionado
     const location = useLocation();
-    const entrada = location.state?.input || ""; // Entrada de búsqueda
+    const entrada = location.state?.input || ""; 
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Llama a la API y filtra los resultados
         const fetchAudiobooks = async () => {
             try {
                 const response = await fetch("http://localhost:3000/api/audiobook/get/");
                 const json = await response.json();
-
-                // Filtrar según el filtro activo
-                const results = json.filter((audiobook) => {
-                    if (filter === "title") {
+                const filteredResults = json.filter((audiobook) => {
+                    if (filter === "Título") {
                         return audiobook.title?.toLowerCase().includes(entrada.toLowerCase());
-                    } else if (filter === "author") {
+                    } else if (filter === "Autor") {
                         return audiobook.author?.toLowerCase().includes(entrada.toLowerCase());
+                    } else {
+                        // Filtro "Todo" muestra coincidencias en título o autor
+                        return (
+                            (audiobook.title?.toLowerCase().includes(entrada.toLowerCase())) ||
+                            (audiobook.author?.toLowerCase().includes(entrada.toLowerCase()))
+                        );
                     }
-                    return (
-                        audiobook.title?.toLowerCase().includes(entrada.toLowerCase()) ||
-                        audiobook.author?.toLowerCase().includes(entrada.toLowerCase())
-                    );
                 });
-                setAudiobooks(results);
+                setAudiobooks(filteredResults);
             } catch (error) {
                 console.error("Error al obtener audiolibros:", error);
             }
         };
 
         fetchAudiobooks();
-    }, [entrada, filter]); // Refresca los resultados al cambiar el filtro o la entrada
+    }, [entrada, filter]);
 
     const handleCardClick = (id) => {
-        navigate(`/Preview/${id}`); // Redirigir al reproductor del audiolibro
+        navigate(`/Preview/${id}`);
     };
 
     return (
@@ -49,27 +48,27 @@ export const SearchResults = () => {
             </div>
             <div className="max-w-5xl mx-auto mt-8">
                 {/* Botones de filtro */}
-                <div className="flex justify-center space-x-4 mb-6">
+                <div className="flex justify-end mb-4">
                     <button
-                        onClick={() => setFilter("all")}
-                        className={`px-4 py-2 rounded ${filter === "all" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}`}
+                        onClick={() => setFilter("Todo")}
+                        className={`px-4 py-2 mr-2 ${filter === "Todo" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
                     >
-                        Todos
+                        Todo
                     </button>
                     <button
-                        onClick={() => setFilter("title")}
-                        className={`px-4 py-2 rounded ${filter === "title" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}`}
+                        onClick={() => setFilter("Título")}
+                        className={`px-4 py-2 mr-2 ${filter === "Título" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
                     >
                         Título
                     </button>
                     <button
-                        onClick={() => setFilter("author")}
-                        className={`px-4 py-2 rounded ${filter === "author" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}`}
+                        onClick={() => setFilter("Autor")}
+                        className={`px-4 py-2 ${filter === "Autor" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
                     >
                         Autor
                     </button>
                 </div>
-
+                
                 {Array.isArray(audiobooks) && audiobooks.length > 0 ? (
                     <div className="flex flex-wrap -m-4">
                         {audiobooks.map((audiobook) => (
@@ -77,8 +76,8 @@ export const SearchResults = () => {
                                 key={audiobook.id}
                                 title={audiobook.title}
                                 author={audiobook.author}
-                                coverUrl={audiobook.coverUrl} // Suponiendo que tienes una propiedad 'coverUrl' para la URL de la portada
-                                onClick={() => handleCardClick(audiobook.id)} // Pasar la función onClick
+                                coverUrl={audiobook.coverUrl}
+                                onClick={() => handleCardClick(audiobook.id)}
                             />
                         ))}
                     </div>
