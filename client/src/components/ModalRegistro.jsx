@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
-import { useAuth } from "../context/authContext";  // Asegúrate de importar la función de inicio de sesión con Google
+import { useAuth } from "../context/authContext";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../utils/firebase";
 
@@ -32,6 +32,18 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
       ...prev,
       [name]: value,
     }));
+
+    // Validación en tiempo real para contraseñas
+    if (name === "confirmPassword") {
+      if (value !== formData.password) {
+        setFormErrors((prev) => ({ ...prev, confirmPassword: "Las contraseñas no coinciden." }));
+      } else {
+        setFormErrors((prev) => {
+          const { confirmPassword, ...rest } = prev;
+          return rest;
+        });
+      }
+    }
   };
 
   const validateTextInput = (input) => /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s.,!?()\-:;]*$/.test(input);
@@ -46,7 +58,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
 
     // Validaciones
     if (!validatePassword(formData.password, formData.confirmPassword)) {
-      errors.password = "Las contraseñas no coinciden.";
+      errors.confirmPassword = "Las contraseñas no coinciden.";
     }
     if (!validateTextInput(formData.username)) {
       errors.username = "El nombre de usuario contiene caracteres no permitidos.";
@@ -84,11 +96,11 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
       const user = result.user;
 
       const userDoc = doc(db, "users", user.uid);
-      await setDoc(userDoc, {username: user.displayName, email: user.email}, {merge: true});
+      await setDoc(userDoc, { username: user.displayName, email: user.email }, { merge: true });
 
       navigate("/libros");
     } catch (error) {
-      setError("Error al iniciar sesión con Google: " + error.message);
+      setFormErrors({ general: "Error al iniciar sesión con Google: " + error.message });
     }
   };
 
@@ -116,7 +128,8 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
         {successMessage && <p className="text-green-500">{successMessage}</p>}
 
         <div className="mb-4">
-          <label className="block font-semibold text-white mb-1">Nombre de usuario<span className="text-red-500"> *</span></label> <input
+          <label className="block font-semibold text-white mb-1">Nombre de usuario<span className="text-red-500"> *</span></label>
+          <input
             type="text"
             name="username"
             maxLength={10}
@@ -182,6 +195,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           >
             <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} className="text-white" />
           </button>
+          {formErrors.confirmPassword && <p className="text-red-500">{formErrors.confirmPassword}</p>}
         </div>
 
         {/* Botón de registro */}

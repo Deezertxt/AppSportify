@@ -47,10 +47,6 @@ const Reproductor = () => {
         }
         setIsPlaying(!isPlaying);
     };
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
     const handleProgress = () => {
         if (audioRef.current) {
             const currentProgress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
@@ -71,10 +67,6 @@ const Reproductor = () => {
             setProgress(newProgress);
         }
     };
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
     const handleBackward = () => {
         if (audioRef.current) {
             audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 10);
@@ -86,10 +78,6 @@ const Reproductor = () => {
             audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 10);
         }
     };
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.volume = volume / 100;
@@ -126,15 +114,6 @@ const Reproductor = () => {
                     />
                 </div>
 
-<<<<<<< HEAD
-                <div className="flex justify-between items-center w-full mt-4">
-                    <div className="flex items-start mb-2">
-                        <AudiobookCover coverUrl={audiobook.coverUrl} className="w-25 h-20 object-cover" />
-                        <div className="ml-4">
-                            <AudioDetails title={audiobook.title} author={audiobook.author} />
-                        </div>
-                    </div>
-=======
                 {/* Título y Autor con más espacio y centrado */}
                 <div className="text-center mt-4 mb-2">
                     <h2 className="text-2xl font-bold">{title}</h2>
@@ -152,7 +131,6 @@ const Reproductor = () => {
 
                 {/* Controles de Reproducción con más separación */}
                 <div className="flex items-center justify-center space-x-4 mb-6">
->>>>>>> origin/main
                     <ControlButtons
                         isPlaying={isPlaying}
                         togglePlay={togglePlayPause}

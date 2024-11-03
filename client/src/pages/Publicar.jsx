@@ -281,12 +281,8 @@ function Publicar() {
             <div className="max-w-screen-xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-8">
                     <button
-<<<<<<< HEAD
-                        onClick={() => setIsModalOpen(true)} // Abre el modal
-=======
                     
                        onClick={() => setIsModalOpen(true)} // Abre el modal
->>>>>>> origin/main
                         className="mb-4 text-[#0B6477] flex items-center"
                     >
         

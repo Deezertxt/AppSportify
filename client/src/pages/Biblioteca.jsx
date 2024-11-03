@@ -1,17 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { getAudiobooks } from "../api/api";
-<<<<<<< HEAD
-import SearchBar from "../components/SearchBar";
-=======
->>>>>>> origin/main
 import Card from "../components/Card"; // Importar el componente Card
 import {useNavigate} from 'react-router-dom';
 import SearchBar from "../components/SearchBar";
 
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
 function Biblioteca() {
     const [audiobooks, setAudiobooks] = useState([]); // Estado para almacenar los audiolibros
     const navigate = useNavigate();
@@ -37,23 +29,13 @@ function Biblioteca() {
     }, []);
 
     const handleCardClick = (id) => {
-<<<<<<< HEAD
-        navigate(`/Preview/${id}`); // Redirigir al reproductor del audiolibro
-=======
         navigate(`/preview/${id}`); // Redirigir al reproductor del audiolibro
->>>>>>> origin/main
     };
 
     return (
         <>
             <div className="">
-<<<<<<< HEAD
-                
                 <div className="px-20">
-                    {/* <div className="pb-[5px]">Filtrar por: </div> */}
-=======
-                <div className="px-20">
->>>>>>> origin/main
                     <SearchBar/>
                 </div>
 
