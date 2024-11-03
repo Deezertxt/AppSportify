@@ -33,7 +33,6 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
       [name]: value,
     }));
 
-    // Validación en tiempo real para contraseñas
     if (name === "confirmPassword") {
       if (value !== formData.password) {
         setFormErrors((prev) => ({ ...prev, confirmPassword: "Las contraseñas no coinciden." }));
@@ -48,7 +47,22 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
 
   const validateTextInput = (input) => /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s.,!?()\-:;]*$/.test(input);
 
-  const validatePassword = (password, confirmPassword) => password === confirmPassword;
+  const validatePassword = (password) => {
+    const hasNumber = /\d/;
+    const hasUpperCase = /[A-Z]/;
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/;
+
+    if (!hasNumber.test(password)) {
+      return "La contraseña debe contener al menos un número.";
+    }
+    if (!hasUpperCase.test(password)) {
+      return "La contraseña debe contener al menos una letra mayúscula.";
+    }
+    if (!hasSpecialChar.test(password)) {
+      return "La contraseña debe contener al menos un carácter especial.";
+    }
+    return null;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,8 +70,12 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
     setSuccessMessage("");
     const errors = {};
 
-    // Validaciones
-    if (!validatePassword(formData.password, formData.confirmPassword)) {
+    // Validación de la contraseña
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      errors.password = passwordError;
+    }
+    if (formData.password !== formData.confirmPassword) {
       errors.confirmPassword = "Las contraseñas no coinciden.";
     }
     if (!validateTextInput(formData.username)) {
@@ -75,7 +93,6 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
     try {
       const userCredential = await signUp(formData.email, formData.password);
       const user = userCredential.user;
-      // Guardar `username` en Firestore
       await setDoc(doc(db, "users", user.uid), {
         username: formData.username,
         email: formData.email,
@@ -115,15 +132,12 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           X
         </button>
 
-        {/* Logo */}
         <div className="flex flex-col items-center">
           <img src="logoS.svg" alt="Sportify logo" className="w-37 mb-4" />
         </div>
 
-        {/* Título */}
         <h2 className="text-2xl font-bold text-white text-left mb-6">Regístrate</h2>
 
-        {/* Campos de entrada y manejo de errores */}
         {formErrors.general && <p className="text-red-500">{formErrors.general}</p>}
         {successMessage && <p className="text-green-500">{successMessage}</p>}
 
@@ -155,7 +169,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           />
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 relative">
           <label className="block text-white font-semibold mb-1">Contraseña<span className="text-red-500"> *</span></label>
           <input
             type={showPassword ? "text" : "password"}
@@ -174,9 +188,10 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           >
             <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className="text-white" />
           </button>
+          {formErrors.password && <p className="text-red-500">{formErrors.password}</p>}
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 relative">
           <label className="block text-white font-semibold mb-1">Confirmar contraseña<span className="text-red-500"> *</span></label>
           <input
             type={showConfirmPassword ? "text" : "password"}
@@ -198,7 +213,6 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           {formErrors.confirmPassword && <p className="text-red-500">{formErrors.confirmPassword}</p>}
         </div>
 
-        {/* Botón de registro */}
         <button
           type="submit"
           className="w-full bg-gray-800 text-white p-3 rounded-md mb-4"
@@ -207,7 +221,6 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           {isLoading ? "Registrando..." : "Registrarse"}
         </button>
 
-        {/* Enlace de inicio de sesión */}
         <p className="text-white text-center mb-4">
           ¿Ya tienes una cuenta?{" "}
           <button className="font-bold bg-transparent" onClick={openLogin}>
@@ -215,14 +228,12 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           </button>
         </p>
 
-        {/* Separador */}
         <div className="flex items-center mb-4">
           <hr className="w-full border-white" />
           <span className="px-3 text-white">O</span>
           <hr className="w-full border-white" />
         </div>
 
-        {/* Botón de Google */}
         <button
           type="button"
           onClick={handleGoogleSignin}
