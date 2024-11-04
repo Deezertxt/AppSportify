@@ -118,10 +118,14 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
     if (formData.password !== formData.confirmPassword) {
       errors.confirmPassword = "Las contraseñas no coinciden.";
     }
+
+    // Validación del nombre de usuario
     if (!validateTextInput(formData.username)) {
       errors.username = "El nombre de usuario contiene caracteres no permitidos.";
     } else if (formData.username.trim() === "") {
-      errors.username = "El nombre de usuario no puede estar vacío.";
+      errors.usernameEmpty = "El nombre de usuario no puede estar vacío.";
+    } else if (formData.username.length < 3) {
+      errors.username = "El nombre de usuario debe tener al menos 3 caracteres.";
     }
 
     if (Object.keys(errors).length > 0) {
