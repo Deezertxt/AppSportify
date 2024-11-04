@@ -46,9 +46,11 @@ function SearchBar() {
     };
 
     const find = (entrada) => {
-        navigate("/buscar", { state: { input } });
-        setResults([]);
+        localStorage.setItem("searchQuery", input);
+        navigate("/buscar");
     };
+    
+    
 
     return (
         <div className="flex justify-end w-full px-4">
