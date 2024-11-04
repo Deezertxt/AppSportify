@@ -62,25 +62,28 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
         }
       }
 
-      // Validar que la confirmación coincida si se cambia la contraseña
-      if (formData.confirmPassword && value !== formData.confirmPassword) {
-        errors.confirmPassword = "Las contraseñas no coinciden.";
-      } else {
-        delete errors.confirmPassword;
-      }
+       
     }
 
-    // Validación para confirmar la contraseña
-    if (name === "confirmPassword") {
-      if (value !== formData.password) {
-        errors.confirmPassword = "Las contraseñas no coinciden.";
-      } else {
-        delete errors.confirmPassword;
-      }
-    }
+    
+     
 
     setFormErrors(errors);
   };
+
+  useEffect(() => {
+     
+    if (formData.password && formData.confirmPassword) {
+      if (formData.password === formData.confirmPassword) {
+        setPasswordMatchMessage("Las contraseñas coinciden.");
+        setFormErrors((prev) => ({ ...prev, confirmPassword: "" }));  
+      } else {
+        setPasswordMatchMessage("Las contraseñas no coinciden.");
+      }
+    } else {
+      setPasswordMatchMessage("");  
+    }
+  }, [formData.password, formData.confirmPassword]);
 
   const validateTextInput = (input) => /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s.,!?()\-:;]*$/.test(input);
 
@@ -168,7 +171,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
 
   return (
     <div className="">
-      <div>
+      <div className="">
       <form onSubmit={handleSubmit}>
         <button
           type="button"
@@ -226,7 +229,6 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           <input
             type={showPassword ? "text" : "password"}
             name="password"
-            maxLength={12}
             placeholder="******"
             value={formData.password}
             onChange={handleChange}
@@ -255,7 +257,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           <button type="button" onClick={toggleConfirmPasswordVisibility} className="absolute right-2 top-1/2 transform -translate-y-1/2">
             <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} className="text-white pt-5" />
           </button>
-          {formErrors.confirmPassword && <p className="text-red-500">{formErrors.confirmPassword}</p>}
+          {formErrors.confirmPassword && <p className="text-red-500 ">{formErrors.confirmPassword}</p>}
         </div>
 
         {passwordMatchMessage && (
