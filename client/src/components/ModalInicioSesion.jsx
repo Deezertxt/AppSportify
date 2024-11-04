@@ -1,9 +1,8 @@
 import { useState } from "react";
-import supabase from "../utils/supabase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import {UserAuth}  from "../context/AuthContextProvider";
+import { useAuth } from "../context/authContext";
 
 const ModalInicioSesion = ({ closeModal, openRegister }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,43 +11,54 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { signInWithGoogle} = UserAuth();
+  const { login, loginWithGoogle } = useAuth(); // Extrae login desde el contexto
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(""); // Limpiar errores previos
+    setError(""); // Limpia el error previo
 
-    // Llama a Supabase para autenticar
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
 
-    setIsLoading(false);
+    // Validación de email y contraseña
+    if (!email || !password) {
+      setError("El email y la contraseña son obligatorios");
+      setIsLoading(false);
+      return;
+    }
 
-    if (error) {
-      setError("Error al iniciar sesión: " + error.message); // Muestra el mensaje de error
-    } else {
-      navigate("/"); // Redirige si el inicio de sesión fue exitoso
+    // Email formato simple
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Por favor ingresa un email válido");
+      setIsLoading(false);
+      return;
+    }
+    try {
+      await login(email, password);
+      navigate("/libros"); // Redirige si el inicio de sesión fue exitoso
       closeModal(); // Cierra el modal
+    } catch (error) {
+      setError("Error al iniciar sesión: " + error.message); // Muestra el mensaje de error
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignin = async () => {
+    try {
+      await loginWithGoogle();
+      navigate("/libros");
+    } catch (error) {
+      setError("Error al iniciar sesión con Google: " + error.message);
     }
   };
 
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <button
-          type="button"
-          onClick={closeModal}
-          className="absolute top-2 right-2 text-gray-500 "
-        >
+        <button type="button" onClick={closeModal} className="absolute top-2 right-2 text-gray-500">
           X
         </button>
 
@@ -90,7 +100,7 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
               togglePasswordVisibility();
             }}
           >
-            <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className="text-default-400 text-white" />
+            <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className="text-white" />
           </button>
         </div>
 
@@ -99,15 +109,9 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
         </button>
 
         <p className="text-white text-center mb-4">
-          ¿Aun no estas en Sportify?{" "}
-          <button
-            className="font-bold bg-transparent"
-            onClick={(e) => {
-              e.preventDefault();
-              openRegister(); // Cambia al formulario de registro
-            }}
-          >
-            Registrate
+          ¿Aún no estás en Sportify?{" "}
+          <button className="font-bold bg-transparent" onClick={(e) => { e.preventDefault(); openRegister(); }}>
+            Regístrate
           </button>
         </p>
 
@@ -117,10 +121,10 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
           <hr className="w-full border-white" />
         </div>
 
-        <button onClick={signInWithGoogle} className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
-      <img src="google.svg" alt="Google icon" className="w-5 h-5 mr-2" />
-      Iniciar sesión con Google
-    </button>
+        <button onClick={handleGoogleSignin} className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
+          <img src="google.svg" alt="Google icon" className="w-5 h-5 mr-2" />
+          Iniciar sesión con Google
+        </button>
       </form>
     </div>
   );
