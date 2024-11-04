@@ -33,16 +33,52 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
       [name]: value,
     }));
 
-    if (name === "confirmPassword") {
-      if (value !== formData.password) {
-        setFormErrors((prev) => ({ ...prev, confirmPassword: "Las contraseñas no coinciden." }));
+    const errors = { ...formErrors };
+
+    // Validación para el nombre de usuario
+    if (name === "username") {
+      if (value.trim() === "") {
+        errors.username = "El nombre de usuario no puede estar vacío.";
+      } else if (!validateTextInput(value)) {
+        errors.username = "El nombre de usuario contiene caracteres no permitidos.";
+      } else if (value.length < 4) {
+        errors.username = "El nombre de usuario debe tener al menos 4 caracteres.";
       } else {
-        setFormErrors((prev) => {
-          const { confirmPassword, ...rest } = prev;
-          return rest;
-        });
+        delete errors.username;
       }
     }
+
+    // Validación para la contraseña
+    if (name === "password") {
+      if (value.length < 6) {
+        errors.password = "La contraseña debe tener al menos 6 caracteres.";
+      } else {
+        const passwordError = validatePassword(value);
+        if (passwordError) {
+          errors.password = passwordError;
+        } else {
+          delete errors.password;
+        }
+      }
+
+      // Validar que la confirmación coincida si se cambia la contraseña
+      if (formData.confirmPassword && value !== formData.confirmPassword) {
+        errors.confirmPassword = "Las contraseñas no coinciden.";
+      } else {
+        delete errors.confirmPassword;
+      }
+    }
+
+    // Validación para confirmar la contraseña
+    if (name === "confirmPassword") {
+      if (value !== formData.password) {
+        errors.confirmPassword = "Las contraseñas no coinciden.";
+      } else {
+        delete errors.confirmPassword;
+      }
+    }
+
+    setFormErrors(errors);
   };
 
   const validateTextInput = (input) => /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s.,!?()\-:;]*$/.test(input);
@@ -71,9 +107,13 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
     const errors = {};
 
     // Validación de la contraseña
-    const passwordError = validatePassword(formData.password);
-    if (passwordError) {
-      errors.password = passwordError;
+    if (formData.password.length < 6) {
+      errors.password = "La contraseña debe tener al menos 6 caracteres.";
+    } else {
+      const passwordError = validatePassword(formData.password);
+      if (passwordError) {
+        errors.password = passwordError;
+      }
     }
     if (formData.password !== formData.confirmPassword) {
       errors.confirmPassword = "Las contraseñas no coinciden.";
@@ -81,7 +121,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
     if (!validateTextInput(formData.username)) {
       errors.username = "El nombre de usuario contiene caracteres no permitidos.";
     } else if (formData.username.trim() === "") {
-      errors.usernameEmpty = "El nombre de usuario no puede estar vacío.";
+      errors.username = "El nombre de usuario no puede estar vacío.";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -142,7 +182,9 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
         {successMessage && <p className="text-green-500">{successMessage}</p>}
 
         <div className="mb-4">
-          <label className="block font-semibold text-white mb-1">Nombre de usuario<span className="text-red-500"> *</span></label>
+          <label className="block font-semibold text-white mb-1">
+            Nombre de usuario<span className="text-red-500"> *</span>
+          </label>
           <input
             type="text"
             name="username"
@@ -157,7 +199,9 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block font-semibold text-white mb-1">Correo electrónico<span className="text-red-500"> *</span></label>
+          <label className="block font-semibold text-white mb-1">
+            Correo electrónico<span className="text-red-500"> *</span>
+          </label>
           <input
             type="email"
             name="email"
@@ -170,10 +214,13 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
         </div>
 
         <div className="mb-4 relative">
-          <label className="block text-white font-semibold mb-1">Contraseña<span className="text-red-500"> *</span></label>
+          <label className="block text-white font-semibold mb-1">
+            Contraseña<span className="text-red-500"> *</span>
+          </label>
           <input
             type={showPassword ? "text" : "password"}
             name="password"
+            maxLength={12}
             placeholder="******"
             value={formData.password}
             onChange={handleChange}
@@ -192,7 +239,9 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
         </div>
 
         <div className="mb-4 relative">
-          <label className="block text-white font-semibold mb-1">Confirmar contraseña<span className="text-red-500"> *</span></label>
+          <label className="block text-white font-semibold mb-1">
+            Confirmar contraseña<span className="text-red-500"> *</span>
+          </label>
           <input
             type={showConfirmPassword ? "text" : "password"}
             name="confirmPassword"
