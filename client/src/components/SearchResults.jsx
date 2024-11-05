@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Card from "../components/Card";
 import { useLocation, useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
+import BarLoaderWrapper from "./BarLoader";
 
 const SearchResults = () => {
     const [audiobooks, setAudiobooks] = useState([]);
@@ -9,9 +10,11 @@ const SearchResults = () => {
     const location = useLocation();
     const entrada = location.state?.input || ""; 
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const fetchAudiobooks = async () => {
+            setIsLoading(true)
             try {
                 const response = await fetch("http://localhost:3000/api/audiobook/get/");
                 const json = await response.json();
@@ -32,6 +35,7 @@ const SearchResults = () => {
             } catch (error) {
                 console.error("Error al obtener audiolibros:", error);
             }
+            setIsLoading(false)
         };
 
         fetchAudiobooks();
@@ -43,6 +47,7 @@ const SearchResults = () => {
 
     return (
         <div>
+            <BarLoaderWrapper isLoading={isLoading} />
             <div className="px-20">
                 <SearchBar />
             </div>
@@ -63,15 +68,9 @@ const SearchResults = () => {
                     </button>
                     <button
                         onClick={() => setFilter("Autor")}
-                        className={`px-4 py-2 mr-2 ${filter === "Autor" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-                    >
-                        Autor
-                    </button>
-                    <button
-                        onClick={() => setFilter("Categoria")}
                         className={`px-4 py-2 ${filter === "Autor" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
                     >
-                        Categoria
+                        Autor
                     </button>
                 </div>
                 
