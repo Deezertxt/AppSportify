@@ -3,7 +3,7 @@ import { FaDiscord, FaInstagram, FaTwitter } from 'react-icons/fa';
 
 const Footer = () => {
     return (
-        <footer className="text-gray-400 bg-[#0B6477]  body-font">
+        <footer className="text-gray-400 bg-first  body-font">
             <div className="container px-5 py-8 mx-auto flex items-center sm:flex-row flex-col">
                 <a className="flex title-font font-medium items-center md:justify-start justify-center text-white">
                     <img className="block lg:hidden h-14 w-16" src="/logoS.svg" alt="Logo" />

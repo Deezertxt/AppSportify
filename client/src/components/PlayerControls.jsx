@@ -36,7 +36,6 @@ const PlaybackSpeed = ({ speed, setSpeed }) => {
 };
 
 
-
 const VolumeControl = ({ volume, setVolume }) => {
     const [isMuted, setIsMuted] = useState(false);
 
@@ -82,12 +81,8 @@ const VolumeControl = ({ volume, setVolume }) => {
                     style={{
                         WebkitAppearance: 'none',
                         appearance: 'none',
+                        background: `linear-gradient(to right, #48bb78 ${volume}%, #4b5563 ${volume}%)`
                     }}
-                />
-                {/* Barra de volumen que se llena */}
-                <div
-                    className="absolute top-0 h-2 bg-green-500 rounded-lg"
-                    style={{ width: `${volume}%` }} // Ajuste la altura y el color de la barra
                 />
                 {/* Estilos del thumb */}
                 <style jsx>{`

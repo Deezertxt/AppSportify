@@ -28,10 +28,11 @@ model Audiobook {
   category    Category  @relation(fields: [categoryId], references: [id]) // Clave foránea a Category
   description String?   @db.Text                       // Descripción opcional (usar Text para textos largos)
   author      String    @db.VarChar(100)               // Autor del audiolibro, máximo 100 caracteres
+  duration    String    @db.VarChar(10)                // Duración del audiolibro, máximo 10 caracteres
   pdfUrl      String?   @db.Text      @unique          // URL del archivo PDF
   coverUrl    String?   @db.Text      @unique         // URL de la portada
   audioUrl    String?   @db.Text      @unique        // URL del archivo de audio
-  jsonUrl     String?   @db.Text      @unique         // URL para un archivo JSON
+  text     String?   @db.Text      @unique         // URL para un archivo JSON
   createdAt   DateTime  @default(now())                // Fecha de creación
   updatedAt   DateTime  @updatedAt                     // Fecha de actualización automática
   library     Library[]                               // Relación con la tabla Library (1-n)
@@ -52,3 +53,4 @@ model Category {
   name       String     @unique @db.VarChar(100)       // Nombre de la categoría, máximo 100 caracteres
   audiobooks Audiobook[]                              // Relación con la tabla Audiobook (1-n)
 }
+
