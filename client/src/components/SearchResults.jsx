@@ -48,7 +48,7 @@ const SearchResults = () => {
             </div>
             <div className="max-w-5xl mx-auto mt-8">
                 {/* Botones de filtro */}
-                <div className="flex justify-end mb-4">
+                <div className="flex justify-start mb-4">
                     <button
                         onClick={() => setFilter("Todo")}
                         className={`px-4 py-2 mr-2 ${filter === "Todo" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
@@ -63,9 +63,14 @@ const SearchResults = () => {
                     </button>
                     <button
                         onClick={() => setFilter("Autor")}
-                        className={`px-4 py-2 ${filter === "Autor" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                        className={`px-4 py-2 mr-2 ${filter === "Autor" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
                     >
                         Autor
+                    </button>
+                    <button 
+                        onClick={() => setFilter("Categoria")}
+                        className={`px-4 py-2 ${filter === "Categoria" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>
+                        Categoria
                     </button>
                 </div>
                 
