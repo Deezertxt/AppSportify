@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import { FiVolume2, FiVolumeX } from 'react-icons/fi';
 
 const PlaybackSpeed = ({ speed, setSpeed }) => {
@@ -8,11 +8,14 @@ const PlaybackSpeed = ({ speed, setSpeed }) => {
 
     return (
         <div
-            className="relative"
+            className="relative inline-block" // Cambié a inline-block para que el contenedor no ocupe toda la línea
             onMouseEnter={() => setShowSpeed(true)}
             onMouseLeave={() => setShowSpeed(false)}
         >
-            <button className="text-xl text-white rounded-full px-4 py-2 hover:text-green-500">
+            <button
+                className="text-xl text-white rounded-full px-4 py-2 hover:text-green-500"
+                style={{ minWidth: '70px' }} // Establecer un ancho mínimo
+            >
                 {speed}x
             </button>
 
@@ -34,7 +37,6 @@ const PlaybackSpeed = ({ speed, setSpeed }) => {
         </div>
     );
 };
-
 
 const VolumeControl = ({ volume, setVolume }) => {
     const [isMuted, setIsMuted] = useState(false);
@@ -123,13 +125,18 @@ const VolumeControl = ({ volume, setVolume }) => {
 
 const PlayerControls = ({ speed, setSpeed, volume, setVolume }) => {
     return (
-        <div className="flex items-center">
-            <PlaybackSpeed speed={speed} setSpeed={setSpeed} />
-            <VolumeControl volume={volume} setVolume={setVolume} />
+        <div className="flex justify-between items-center space-x-1">
+            {/* PlaybackSpeed */}
+            <div className="flex-shrink-0">
+                <PlaybackSpeed speed={speed} setSpeed={setSpeed} />
+            </div>
+            
+            {/* VolumeControl */}
+            <div className="flex-shrink-0">
+                <VolumeControl volume={volume} setVolume={setVolume} />
+            </div>
         </div>
     );
 };
 
 export default PlayerControls;
-
-
