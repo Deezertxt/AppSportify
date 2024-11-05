@@ -82,6 +82,7 @@ const AudioLibroReproductor = () => {
         }
     }, [volume]);
 
+    // Actualiza la velocidad sin afectar el diseño
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.playbackRate = speed;
@@ -93,7 +94,7 @@ const AudioLibroReproductor = () => {
     }
 
     return (
-        <div className="flex flex-col  h-screen bg-white">
+        <div className="flex flex-col h-screen bg-white">
             {/* Sidebar with navigation and settings icons */}
             <div className="fixed top-0 left-0 h-full w-12 bg-gray-100 flex flex-col items-center pt-4 space-y-4">
                 <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={() => navigate(-2)} >🏠</button>
@@ -131,6 +132,7 @@ const AudioLibroReproductor = () => {
                         className="flex justify-center space-x-2 md:space-x-4"
                     />
 
+                    {/* PlayerControls ahora tiene velocidad y volumen sin afectar el layout */}
                     <PlayerControls
                         speed={speed}
                         setSpeed={setSpeed}
