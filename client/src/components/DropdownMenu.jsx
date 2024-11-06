@@ -8,7 +8,7 @@ import { useAuth } from "../context/authContext";
 
 const DropdownMenu = () => {
   return (
-    <div className="w-56 bg-second flex-shrink-0">
+    <div className="w-auto bg-second flex-shrink-0 justify-end">
       <Sidebar />
     </div>
   );

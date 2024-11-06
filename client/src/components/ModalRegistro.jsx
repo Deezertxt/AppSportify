@@ -222,7 +222,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           <input
             type={showPassword ? "text" : "password"}
             name="password"
-            placeholder="**"
+            placeholder="*****"
             value={formData.password}
             onChange={handleChange}
             className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
@@ -241,7 +241,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           <input
             type={showConfirmPassword ? "text" : "password"}
             name="confirmPassword"
-            placeholder="**"
+            placeholder="*****"
             value={formData.confirmPassword}
             onChange={handleChange}
             className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
@@ -282,7 +282,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
 
         <p className="text-white text-1g mt-4 text-center">
           ¿Ya tienes cuenta?{" "}
-          <button type="button" onClick={openLogin} className="text-blue-500 underline  ">
+          <button type="button" onClick={openLogin} className="text-blue-500">
              <p className=" text-lg text-white font-bold "> Inicia sesión </p> 
           </button>
         </p>
