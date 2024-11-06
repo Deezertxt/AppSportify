@@ -83,7 +83,7 @@ const SearchResults = () => {
                     </div>
                 ) : (
                     <p className="text-center text-[30px] font-bold py-5">
-                        No se encontraron audiolibros.
+                        Cargando...
                     </p>
                 )}
             </div>

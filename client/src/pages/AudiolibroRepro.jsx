@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AudiobookCover from "../components/AudiobookCover";
-import ChapterText from "../components/ChapterText";
 import ProgressBar from "../components/ProgressBar";
 import AudioDetails from "../components/AudioDetails";
 import ControlButtons from "../components/ControlButtons";
@@ -12,7 +11,7 @@ const AudioLibroReproductor = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [audiobook, setAudiobook] = useState(null);
-    const [fontSize, setFontSize] = useState("16px");
+    const [fontSize, setFontSize] = useState(16); // Estado para tamaño de fuente
     const audioRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [speed, setSpeed] = useState(1.0);
@@ -30,9 +29,12 @@ const AudioLibroReproductor = () => {
                 setAudiobook(null);
             }
         };
-
         fetchAudiobook();
     }, [id]);
+
+    // Funciones para aumentar y disminuir el tamaño de la fuente
+    const increaseFontSize = () => setFontSize(prev => prev + 2);
+    const decreaseFontSize = () => setFontSize(prev => Math.max(prev - 2, 10));
 
     const togglePlayPause = () => {
         if (isPlaying) {
@@ -82,7 +84,6 @@ const AudioLibroReproductor = () => {
         }
     }, [volume]);
 
-    // Actualiza la velocidad sin afectar el diseño
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.playbackRate = speed;
@@ -93,21 +94,36 @@ const AudioLibroReproductor = () => {
         return <div className="flex items-center justify-center h-screen text-xl">Loading...</div>;
     }
 
+    // Separar el texto en título y párrafos
+    const [title, ...paragraphs] = audiobook.text.split("\n").filter(line => line.trim() !== "");
+
     return (
         <div className="flex flex-col h-screen bg-white">
-            {/* Sidebar with navigation and settings icons */}
+            {/* Sidebar con los botones de control */}
             <div className="fixed top-0 left-0 h-full w-12 bg-gray-100 flex flex-col items-center pt-4 space-y-4">
-                <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={() => navigate(-2)} >🏠</button>
+                <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={() => navigate(-2)}>🏠</button>
                 <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300">⚙️</button>
-                <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300">Aa</button>
+                {/* Botones de aumentar y disminuir tamaño */}
+                <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={increaseFontSize}>A+</button>
+                <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={decreaseFontSize}>A-</button>
             </div>
 
-            {/* Text container with independent scroll */}
-            <div className="flex-wrap-reverse justify-items-center overflow-y-auto p-4 ml-12 h-[calc(100vh-120px)]" style={{ fontSize }}>
-                <ChapterText text={audiobook.text} fontSize="text-base md:text-lg lg:text-xl" />
+            {/* Contenedor de texto con scroll independiente */}
+            <div className="flex-wrap-reverse justify-items-center overflow-y-auto p-4 ml-12 h-[calc(100vh-120px)]">
+                <div className="text-gray-900 p-4 overflow-y-auto h-full" style={{ fontSize: `${fontSize}px` }}>
+                    {/* Título */}
+                    <h1 className="text-2xl font-bold mb-4 text-gray-900">{title}</h1>
+
+                    {/* Contenido en párrafos */}
+                    {paragraphs.map((paragraph, index) => (
+                        <p key={index} className="mb-4 text-lg leading-relaxed text-gray-800">
+                            {paragraph}
+                        </p>
+                    ))}
+                </div>
             </div>
 
-            {/* Fixed player controls at the bottom */}
+            {/* Controles fijos en la parte inferior */}
             <div className="fixed bottom-0 w-full bg-first text-white p-4 flex flex-col space-y-4 md:space-y-6">
                 <ProgressBar
                     progress={progress}
@@ -132,7 +148,6 @@ const AudioLibroReproductor = () => {
                         className="flex justify-center space-x-2 md:space-x-4"
                     />
 
-                    {/* PlayerControls ahora tiene velocidad y volumen sin afectar el layout */}
                     <PlayerControls
                         speed={speed}
                         setSpeed={setSpeed}

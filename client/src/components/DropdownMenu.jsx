@@ -22,45 +22,49 @@ const Sidebar = () => {
   const { user, logout } = useAuth();
 
   console.log(user);
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/"); // Redirige al usuario después de cerrar sesión
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error);
+
+  useEffect(() => {
+    if (!user) {
+        // Si el usuario es null después de hacer logout, redirige
+        navigate("/"); // O redirige a cualquier página que desees
     }
-  };
+}, [user, navigate]); // Dependiendo de 'user' y 'navigate'
+
+
+
+const handleLogout = async () => {
+  try {
+      await logout(); // Cierra sesión y actualiza el estado
+      console.log("Usuario cerrado sesión, redirigiendo...");
+      navigate("/", { replace: true }); // Redirige sin recargar la página
+  } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+  }
+};
+
+
   
 
     return (
       <motion.nav
-        layout
-        className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-first p-2"
-        style={{
-          width: open ? "225px" : "fit-content",
-        }}
-      >
-        <TitleSection open={open} />
+      layout
+      className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-first p-2"
+      style={{
+        width: open ? "225px" : "fit-content",
+      }}
+    >
+      <TitleSection open={open} />
+      <div className="space-y-1">
+        <Option
+          Icon={FiHome}
+          title="Inicio"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+          to="/libros"
+        />
 
-        <div className="space-y-1">
-          <Option
-            Icon={FiHome}
-            title="Inicio"
-            selected={selected}
-            setSelected={setSelected}
-            open={open}
-            to="/libros"
-          />
-
-          {/* <Option
-        Icon={FiBook}
-        title="Biblioteca"
-        selected={selected}
-        setSelected={setSelected}
-        open={open}
-        to="/taskpage"
-      />  */}
-          {user?.email === "yalasoft@gmail.com" && (
+        {user?.email === "yalasoft@gmail.com" && (
           <>
             <Option
               Icon={FiFolderMinus}
@@ -80,17 +84,34 @@ const Sidebar = () => {
             />
           </>
         )}
-        </div>
-        <Option
-          Icon={FiLogOut}
-          title="Cerrar sesión"
-          open={open}
+      </div>
+
+      {/* Botón de Cerrar Sesión con icono */}
+      <div className="mt-auto mb-3">
+        <button
+          type="button"
           onClick={handleLogout}
-        />
-        <ToggleClose open={open} setOpen={setOpen} />
-      </motion.nav>
-    );
-  };
+          className="flex items-center space-x-2 w-full justify-start text-gray-50 hover:bg-gray-800 p-2 rounded-md"
+        >
+          <FiLogOut className="text-xl" />
+          {open && (
+            <motion.span
+              layout
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.125 }}
+              className="text-lg font-medium"
+            >
+              Cerrar sesión
+            </motion.span>
+          )}
+        </button>
+      </div>
+
+      <ToggleClose open={open} setOpen={setOpen} />
+    </motion.nav>
+  );
+};
 
   const Option = ({ Icon, title, selected, setSelected, open, notifs, to }) => {
     return (
