@@ -46,8 +46,12 @@ function SearchBar() {
     };
 
     const find = (entrada) => {
-        navigate("/buscar", { state: { input } });
-        setResults([]);
+        if (entrada === "") {
+            alert("Buscador vacio")
+        }else{
+            navigate("/buscar", { state: { input } });
+            setResults([]);
+        }
     };
 
     return (
