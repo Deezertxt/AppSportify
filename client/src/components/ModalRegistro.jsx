@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
@@ -18,6 +18,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
   });
   const [formErrors, setFormErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const [passwordMatchMessage, setPasswordMatchMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -61,25 +62,24 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
         }
       }
 
-      // Validar que la confirmación coincida si se cambia la contraseña
-      if (formData.confirmPassword && value !== formData.confirmPassword) {
-        errors.confirmPassword = "Las contraseñas no coinciden.";
-      } else {
-        delete errors.confirmPassword;
-      }
-    }
-
-    // Validación para confirmar la contraseña
-    if (name === "confirmPassword") {
-      if (value !== formData.password) {
-        errors.confirmPassword = "Las contraseñas no coinciden.";
-      } else {
-        delete errors.confirmPassword;
-      }
     }
 
     setFormErrors(errors);
   };
+
+  useEffect(() => {
+  
+    if (formData.password && formData.confirmPassword) {
+      if (formData.password === formData.confirmPassword) {
+        setPasswordMatchMessage("Las contraseñas coinciden.");
+        setFormErrors((prev) => ({ ...prev, confirmPassword: "" }));  
+      } else {
+        setPasswordMatchMessage("Las contraseñas no coinciden.");
+      }
+    } else {
+      setPasswordMatchMessage("");  
+    }
+  }, [formData.password, formData.confirmPassword]);
 
   const validateTextInput = (input) => /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s.,!?()\-:;]*$/.test(input);
 
@@ -166,12 +166,13 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
   };
 
   return (
-    <div>
+    <div className="">
+      <div>
       <form onSubmit={handleSubmit}>
         <button
           type="button"
           onClick={closeModal}
-          className="absolute top-2 right-2 text-gray-500"
+          className="absolute top-5 right-2 text-gray-500"
         >
           X
         </button>
@@ -224,20 +225,14 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           <input
             type={showPassword ? "text" : "password"}
             name="password"
-            maxLength={12}
             placeholder="******"
             value={formData.password}
             onChange={handleChange}
-            className="w-full text-white focus:outline-none border-b-2 bg-transparent p-2"
+            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            required
           />
-          <button
-            className="absolute right-6 p-2"
-            onClick={(e) => {
-              e.preventDefault();
-              togglePasswordVisibility();
-            }}
-          >
-            <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className="text-white" />
+          <button type="button" onClick={togglePasswordVisibility} className="absolute right-2 top-1/2 transform -translate-y-1/2">
+            <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className="pb-6 text-white" />
           </button>
           {formErrors.password && <p className="text-red-500">{formErrors.password}</p>}
         </div>
@@ -252,50 +247,47 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
             placeholder="******"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="w-full text-white focus:outline-none border-b-2 bg-transparent p-2"
+            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            required
           />
-          <button
-            className="absolute right-6 p-2"
-            onClick={(e) => {
-              e.preventDefault();
-              toggleConfirmPasswordVisibility();
-            }}
-          >
-            <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} className="text-white" />
+          <button type="button" onClick={toggleConfirmPasswordVisibility} className="absolute right-2 top-1/2 transform -translate-y-1/2">
+            <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} className="text-white pt-5" />
           </button>
           {formErrors.confirmPassword && <p className="text-red-500">{formErrors.confirmPassword}</p>}
         </div>
 
+        {passwordMatchMessage && (
+          <p className={`text-${passwordMatchMessage.includes('no') ? 'red' : 'green'}-500`}>
+            {passwordMatchMessage}
+          </p>
+        )}
+
         <button
           type="submit"
-          className="w-full bg-gray-800 text-white p-3 rounded-md mb-4"
           disabled={isLoading}
+          className={`w-full bg-gray-800 text-white p-3 rounded-md mb-4 ${isLoading ? 'opacity-50' : ''}`}
         >
-          {isLoading ? "Registrando..." : "Registrarse"}
+          {isLoading ? "Cargando..." : "Registrarse"}
         </button>
 
-        <p className="text-white text-center mb-4">
-          ¿Ya tienes una cuenta?{" "}
-          <button className="font-bold bg-transparent" onClick={openLogin}>
-            Inicia sesión
-          </button>
-        </p>
-
-        <div className="flex items-center mb-4">
-          <hr className="w-full border-white" />
-          <span className="px-3 text-white">O</span>
-          <hr className="w-full border-white" />
+        <div className="text-center my-4">
+          <p className="text-white">¿Ya tienes una cuenta? 
+            <button type="button" onClick={openLogin} className="text-blue-500 font-semibold"> Inicia sesión</button>
+          </p>
         </div>
 
-        <button
-          type="button"
-          onClick={handleGoogleSignin}
-          className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center"
-        >
+        <div className="flex items-center my-2">
+          <div className="flex-1 border-t border-white"></div>
+          <span className="mx-2 text-white">O</span>
+          <div className="flex-1 border-t border-white"></div>
+        </div>
+
+        <button onClick={handleGoogleSignin} className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
           <img src="google.svg" alt="Google icon" className="w-5 h-5 mr-2" />
-          Registrarse con Google
+          Iniciar sesión con Google
         </button>
       </form>
+    </div>
     </div>
   );
 };
