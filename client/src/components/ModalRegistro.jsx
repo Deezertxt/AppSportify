@@ -53,7 +53,9 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
     if (name === "password") {
       if (value.length < 6) {
         errors.password = "La contraseña debe tener al menos 6 caracteres.";
-      } else {
+      } else if (value.length >= 12) {
+        errors.password = "La contraseña debe ser menor a 12 caracteres.";
+      }else{
         const passwordError = validatePassword(value);
         if (passwordError) {
           errors.password = passwordError;
@@ -107,7 +109,9 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
     // Validación de la contraseña
     if (formData.password.length < 6) {
       errors.password = "La contraseña debe tener al menos 6 caracteres.";
-    } else {
+    } else if (formData.password.length < 6) {
+      errors.password = "La contraseña debe ser menor a 12 caracteres.";
+    }else{
       const passwordError = validatePassword(formData.password);
       if (passwordError) {
         errors.password = passwordError;
