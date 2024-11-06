@@ -24,22 +24,33 @@ export function AuthProvider({ children }) {
         return createUserWithEmailAndPassword(auth, email, password);
     };
 
-    const logout = () => {
-        return signOut(auth);
+    const logout = async () => {
+        await signOut(auth); // Cierra sesión
+        setUser(null); // Actualiza el estado de user a null después de hacer logout
     };
+    
 
-    const loginWithGoogle = () => {
+    const loginWithGoogle = async () => {
         const googleProvider = new GoogleAuthProvider();
-        signInWithPopup(auth, googleProvider);
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user; // El usuario autenticado con Google
+            console.log('Usuario autenticado con Google:', user);
+            setUser(user); // Guarda el usuario en el estado
+        } catch (error) {
+            console.error('Error al iniciar sesión con Google:', error);
+        }
     };
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
-            setLoading(false);
+            setUser(currentUser); // Establece el usuario
+            setLoading(false); // Establece loading a false después de verificar el estado de autenticación
         });
-        return () => unsubscribe();
+        return () => unsubscribe(); // Desuscribirse cuando se desmonta el componente
     }, []);
+    
+    
 
     return (
         <authContext.Provider value={{ login, signUp, user, logout, loading, loginWithGoogle }}>

@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
-import { useAuth } from "../context/authContext";  // Asegúrate de importar la función de inicio de sesión con Google
+import { useAuth } from "../context/authContext";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../utils/firebase";
 
@@ -18,6 +18,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
   });
   const [formErrors, setFormErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const [passwordMatchMessage, setPasswordMatchMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -32,11 +33,76 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
       ...prev,
       [name]: value,
     }));
+
+    const errors = { ...formErrors };
+
+    // Validación para el nombre de usuario
+    if (name === "username") {
+      if (value.trim() === "") {
+        errors.username = "El nombre de usuario no puede estar vacío.";
+      } else if (!validateTextInput(value)) {
+        errors.username = "El nombre de usuario contiene caracteres no permitidos.";
+      } else if (value.length < 4) {
+        errors.username = "El nombre de usuario debe tener al menos 4 caracteres.";
+      } else {
+        delete errors.username;
+      }
+    }
+
+    // Validación para la contraseña
+    if (name === "password") {
+      if (value.length < 6) {
+        errors.password = "La contraseña debe tener al menos 6 caracteres.";
+      } else {
+        const passwordError = validatePassword(value);
+        if (passwordError) {
+          errors.password = passwordError;
+        } else {
+          delete errors.password;
+        }
+      }
+
+       
+    }
+
+    
+     
+
+    setFormErrors(errors);
   };
+
+  useEffect(() => {
+     
+    if (formData.password && formData.confirmPassword) {
+      if (formData.password === formData.confirmPassword) {
+        setPasswordMatchMessage("Las contraseñas coinciden.");
+        setFormErrors((prev) => ({ ...prev, confirmPassword: "" }));  
+      } else {
+        setPasswordMatchMessage("Las contraseñas no coinciden.");
+      }
+    } else {
+      setPasswordMatchMessage("");  
+    }
+  }, [formData.password, formData.confirmPassword]);
 
   const validateTextInput = (input) => /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s.,!?()\-:;]*$/.test(input);
 
-  const validatePassword = (password, confirmPassword) => password === confirmPassword;
+  const validatePassword = (password) => {
+    const hasNumber = /\d/;
+    const hasUpperCase = /[A-Z]/;
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/;
+
+    if (!hasNumber.test(password)) {
+      return "La contraseña debe contener al menos un número.";
+    }
+    if (!hasUpperCase.test(password)) {
+      return "La contraseña debe contener al menos una letra mayúscula.";
+    }
+    if (!hasSpecialChar.test(password)) {
+      return "La contraseña debe contener al menos un carácter especial.";
+    }
+    return null;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,14 +110,26 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
     setSuccessMessage("");
     const errors = {};
 
-    // Validaciones
-    if (!validatePassword(formData.password, formData.confirmPassword)) {
-      errors.password = "Las contraseñas no coinciden.";
+    // Validación de la contraseña
+    if (formData.password.length < 6) {
+      errors.password = "La contraseña debe tener al menos 6 caracteres.";
+    } else {
+      const passwordError = validatePassword(formData.password);
+      if (passwordError) {
+        errors.password = passwordError;
+      }
     }
+    if (formData.password !== formData.confirmPassword) {
+      errors.confirmPassword = "Las contraseñas no coinciden.";
+    }
+
+    // Validación del nombre de usuario
     if (!validateTextInput(formData.username)) {
       errors.username = "El nombre de usuario contiene caracteres no permitidos.";
     } else if (formData.username.trim() === "") {
       errors.usernameEmpty = "El nombre de usuario no puede estar vacío.";
+    } else if (formData.username.length < 3) {
+      errors.username = "El nombre de usuario debe tener al menos 3 caracteres.";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -63,7 +141,6 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
     try {
       const userCredential = await signUp(formData.email, formData.password);
       const user = userCredential.user;
-      // Guardar `username` en Firestore
       await setDoc(doc(db, "users", user.uid), {
         username: formData.username,
         email: formData.email,
@@ -84,39 +161,40 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
       const user = result.user;
 
       const userDoc = doc(db, "users", user.uid);
-      await setDoc(userDoc, {username: user.displayName, email: user.email}, {merge: true});
+      await setDoc(userDoc, { username: user.displayName, email: user.email }, { merge: true });
 
       navigate("/libros");
     } catch (error) {
-      setError("Error al iniciar sesión con Google: " + error.message);
+      setFormErrors({ general: "Error al iniciar sesión con Google: " + error.message });
     }
   };
 
   return (
-    <div>
+    <div className="">
+      <div className="">
       <form onSubmit={handleSubmit}>
         <button
           type="button"
           onClick={closeModal}
-          className="absolute top-2 right-2 text-gray-500"
+          className="absolute top-5 right-2 text-gray-500"
         >
           X
         </button>
 
-        {/* Logo */}
         <div className="flex flex-col items-center">
           <img src="logoS.svg" alt="Sportify logo" className="w-37 mb-4" />
         </div>
 
-        {/* Título */}
         <h2 className="text-2xl font-bold text-white text-left mb-6">Regístrate</h2>
 
-        {/* Campos de entrada y manejo de errores */}
         {formErrors.general && <p className="text-red-500">{formErrors.general}</p>}
         {successMessage && <p className="text-green-500">{successMessage}</p>}
 
         <div className="mb-4">
-          <label className="block font-semibold text-white mb-1">Nombre de usuario<span className="text-red-500"> *</span></label> <input
+          <label className="block font-semibold text-white mb-1">
+            Nombre de usuario<span className="text-red-500"> *</span>
+          </label>
+          <input
             type="text"
             name="username"
             maxLength={10}
@@ -130,7 +208,9 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block font-semibold text-white mb-1">Correo electrónico<span className="text-red-500"> *</span></label>
+          <label className="block font-semibold text-white mb-1">
+            Correo electrónico<span className="text-red-500"> *</span>
+          </label>
           <input
             type="email"
             name="email"
@@ -142,82 +222,76 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           />
         </div>
 
-        <div className="mb-4">
-          <label className="block text-white font-semibold mb-1">Contraseña<span className="text-red-500"> *</span></label>
+        <div className="mb-4 relative">
+          <label className="block text-white font-semibold mb-1">
+            Contraseña<span className="text-red-500"> *</span>
+          </label>
           <input
             type={showPassword ? "text" : "password"}
             name="password"
             placeholder="******"
             value={formData.password}
             onChange={handleChange}
-            className="w-full text-white focus:outline-none border-b-2 bg-transparent p-2"
+            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            required
           />
-          <button
-            className="absolute right-6 p-2"
-            onClick={(e) => {
-              e.preventDefault();
-              togglePasswordVisibility();
-            }}
-          >
-            <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className="text-white" />
+          <button type="button" onClick={togglePasswordVisibility} className="absolute right-2 top-1/2 transform -translate-y-1/2">
+            <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className="pb-6 text-white" />
           </button>
+          {formErrors.password && <p className="text-red-500">{formErrors.password}</p>}
         </div>
 
-        <div className="mb-4">
-          <label className="block text-white font-semibold mb-1">Confirmar contraseña<span className="text-red-500"> *</span></label>
+        <div className="mb-4 relative">
+          <label className="block text-white font-semibold mb-1">
+            Confirmar contraseña<span className="text-red-500"> *</span>
+          </label>
           <input
             type={showConfirmPassword ? "text" : "password"}
             name="confirmPassword"
             placeholder="******"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="w-full text-white focus:outline-none border-b-2 bg-transparent p-2"
+            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            required
           />
-          <button
-            className="absolute right-6 p-2"
-            onClick={(e) => {
-              e.preventDefault();
-              toggleConfirmPasswordVisibility();
-            }}
-          >
-            <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} className="text-white" />
+          <button type="button" onClick={toggleConfirmPasswordVisibility} className="absolute right-2 top-1/2 transform -translate-y-1/2">
+            <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} className="text-white pt-5" />
           </button>
+          {formErrors.confirmPassword && <p className="text-red-500 ">{formErrors.confirmPassword}</p>}
         </div>
 
-        {/* Botón de registro */}
+        {passwordMatchMessage && (
+          <p className={`text-${passwordMatchMessage.includes('no') ? 'red' : 'green'}-500`}>
+            {passwordMatchMessage}
+          </p>
+        )}
+
         <button
           type="submit"
-          className="w-full bg-gray-800 text-white p-3 rounded-md mb-4"
           disabled={isLoading}
+          className={`w-full bg-gray-800 text-white p-3 rounded-md mb-4 ${isLoading ? 'opacity-50' : ''}`}
         >
-          {isLoading ? "Registrando..." : "Registrarse"}
+          {isLoading ? "Cargando..." : "Registrarse"}
         </button>
 
-        {/* Enlace de inicio de sesión */}
-        <p className="text-white text-center mb-4">
-          ¿Ya tienes una cuenta?{" "}
-          <button className="font-bold bg-transparent" onClick={openLogin}>
-            Inicia sesión
-          </button>
-        </p>
-
-        {/* Separador */}
-        <div className="flex items-center mb-4">
-          <hr className="w-full border-white" />
-          <span className="px-3 text-white">O</span>
-          <hr className="w-full border-white" />
+        <div className="text-center my-4">
+          <p className="text-white">¿Ya tienes una cuenta? 
+            <button type="button" onClick={openLogin} className="text-blue-500 font-semibold"> Inicia sesión</button>
+          </p>
         </div>
 
-        {/* Botón de Google */}
-        <button
-          type="button"
-          onClick={handleGoogleSignin}
-          className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center"
-        >
+        <div className="flex items-center my-2">
+          <div className="flex-1 border-t border-white"></div>
+          <span className="mx-2 text-white">O</span>
+          <div className="flex-1 border-t border-white"></div>
+        </div>
+
+        <button onClick={handleGoogleSignin} className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
           <img src="google.svg" alt="Google icon" className="w-5 h-5 mr-2" />
-          Registrarse con Google
+          Iniciar sesión con Google
         </button>
       </form>
+    </div>
     </div>
   );
 };
