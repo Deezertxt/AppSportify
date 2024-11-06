@@ -277,10 +277,10 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           Inicia sesión con Google
         </button>
 
-        <p className="text-white text-xs mt-4 text-center">
+        <p className="text-white text-1g mt-4 text-center">
           ¿Ya tienes cuenta?{" "}
           <button type="button" onClick={openLogin} className="text-blue-500 underline  ">
-            Inicia sesión
+             <p className=" text-lg text-white font-bold "> Inicia sesión </p> 
           </button>
         </p>
       </form>
