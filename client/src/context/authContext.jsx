@@ -30,8 +30,16 @@ export function AuthProvider({ children }) {
     };
     
 
-    const loginWithGoogle = () => {
+    const loginWithGoogle = async () => {
         const googleProvider = new GoogleAuthProvider();
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user; // El usuario autenticado con Google
+            console.log('Usuario autenticado con Google:', user);
+            setUser(user); // Guarda el usuario en el estado
+        } catch (error) {
+            console.error('Error al iniciar sesión con Google:', error);
+        }
     };
 
     useEffect(() => {
