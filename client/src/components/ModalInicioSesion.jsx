@@ -49,8 +49,11 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
       navigate("/libros"); // Redirige si el inicio de sesión fue exitoso
       closeModal(); // Cierra el modal
     } catch (error) {
-      setError("Error al iniciar sesión"); // Muestra el mensaje de error
-      // setError("Error al iniciar sesión: " + error.message);
+      if (error.code === "auth/invalid-credential" || error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
+        setError("Credenciales inválidas");
+      } else {
+        setError("Error al iniciar sesión: " + error.message); // Muestra el mensaje de error
+      }
     } finally {
       setIsLoading(false);
     }
@@ -60,6 +63,7 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
     try {
       await loginWithGoogle();
       navigate("/libros");
+      closeModal();
     } catch (error) {
       setError("Error al iniciar sesión con Google: " + error.message);
     }
