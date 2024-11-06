@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-
+import { GoXCircleFill } from "react-icons/go";
 import { useAuth } from "../context/authContext";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../utils/firebase";
@@ -61,27 +61,21 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           delete errors.password;
         }
       }
-
-       
     }
-
-    
-     
 
     setFormErrors(errors);
   };
 
   useEffect(() => {
-     
     if (formData.password && formData.confirmPassword) {
       if (formData.password === formData.confirmPassword) {
         setPasswordMatchMessage("Las contraseñas coinciden.");
-        setFormErrors((prev) => ({ ...prev, confirmPassword: "" }));  
+        setFormErrors((prev) => ({ ...prev, confirmPassword: "" }));
       } else {
         setPasswordMatchMessage("Las contraseñas no coinciden.");
       }
     } else {
-      setPasswordMatchMessage("");  
+      setPasswordMatchMessage("");
     }
   }, [formData.password, formData.confirmPassword]);
 
@@ -170,28 +164,27 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
   };
 
   return (
-    <div className="">
-      <div className="">
+    <div className="p-2 max-w-sm mx-auto">
       <form onSubmit={handleSubmit}>
         <button
           type="button"
           onClick={closeModal}
-          className="absolute top-5 right-2 text-gray-500"
+          className="absolute top-2 m-4 right-2 text-gray-500"
         >
-          X
+         <GoXCircleFill className="text-white"/>
         </button>
 
-        <div className="flex flex-col items-center">
-          <img src="logoS.svg" alt="Sportify logo" className="w-37 mb-4" />
+        <div className="flex flex-col items-center mb-4">
+          <img src="logoS.svg" alt="Sportify logo" className="w-16 mb-2" />
         </div>
 
-        <h2 className="text-2xl font-bold text-white text-left mb-6">Regístrate</h2>
+        <h2 className="text-lg font-bold text-white text-left mb-3">Regístrate</h2>
 
-        {formErrors.general && <p className="text-red-500">{formErrors.general}</p>}
-        {successMessage && <p className="text-green-500">{successMessage}</p>}
+        {formErrors.general && <p className="text-red-500 text-xs">{formErrors.general}</p>}
+        {successMessage && <p className="text-green-500 text-xs">{successMessage}</p>}
 
-        <div className="mb-4">
-          <label className="block font-semibold text-white mb-1">
+        <div className="mb-2">
+          <label className="block font-semibold text-white mb-1 text-xs">
             Nombre de usuario<span className="text-red-500"> *</span>
           </label>
           <input
@@ -201,14 +194,14 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
             placeholder="Nombre de usuario"
             value={formData.username}
             onChange={handleChange}
-            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
             required
           />
-          {formErrors.username && <p className="text-red-500">{formErrors.username}</p>}
+          {formErrors.username && <p className="text-red-500 text-xs">{formErrors.username}</p>}
         </div>
 
-        <div className="mb-4">
-          <label className="block font-semibold text-white mb-1">
+        <div className="mb-2">
+          <label className="block font-semibold text-white mb-1 text-xs">
             Correo electrónico<span className="text-red-500"> *</span>
           </label>
           <input
@@ -217,81 +210,83 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
             placeholder="example@gmail.com"
             value={formData.email}
             onChange={handleChange}
-            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
             required
           />
         </div>
 
-        <div className="mb-4 relative">
-          <label className="block text-white font-semibold mb-1">
+        <div className="mb-2 relative">
+          <label className="block text-white font-semibold mb-1 text-xs">
             Contraseña<span className="text-red-500"> *</span>
           </label>
           <input
             type={showPassword ? "text" : "password"}
             name="password"
-            placeholder="******"
+            placeholder="**"
             value={formData.password}
             onChange={handleChange}
-            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
             required
           />
           <button type="button" onClick={togglePasswordVisibility} className="absolute right-2 top-1/2 transform -translate-y-1/2">
-            <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className="pb-6 text-white" />
+            <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className="text-white" />
           </button>
-          {formErrors.password && <p className="text-red-500">{formErrors.password}</p>}
+          {formErrors.password && <p className="text-red-500 text-xs">{formErrors.password}</p>}
         </div>
 
-        <div className="mb-4 relative">
-          <label className="block text-white font-semibold mb-1">
+        <div className="mb-2 relative">
+          <label className="block text-white font-semibold mb-1 text-xs">
             Confirmar contraseña<span className="text-red-500"> *</span>
           </label>
           <input
             type={showConfirmPassword ? "text" : "password"}
             name="confirmPassword"
-            placeholder="******"
+            placeholder="**"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
             required
           />
           <button type="button" onClick={toggleConfirmPasswordVisibility} className="absolute right-2 top-1/2 transform -translate-y-1/2">
-            <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} className="text-white pt-5" />
+            <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} className="text-white" />
           </button>
-          {formErrors.confirmPassword && <p className="text-red-500 ">{formErrors.confirmPassword}</p>}
+           {passwordMatchMessage && (
+                <p className={`text-xs ${formData.password === formData.confirmPassword ? 'text-green-500' : 'text-red-500'}`}>
+          {passwordMatchMessage}
+                </p>
+           )}
         </div>
-
-        {passwordMatchMessage && (
-          <p className={`text-${passwordMatchMessage.includes('no') ? 'red' : 'green'}-500`}>
-            {passwordMatchMessage}
-          </p>
-        )}
-
+        
         <button
           type="submit"
+          className={`w-full p-2 bg-gray-800 text-white rounded mt-3 ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
           disabled={isLoading}
-          className={`w-full bg-gray-800 text-white p-3 rounded-md mb-4 ${isLoading ? 'opacity-50' : ''}`}
         >
-          {isLoading ? "Cargando..." : "Registrarse"}
+          {isLoading ? "Cargando..." : "Registrar"}
         </button>
 
-        <div className="text-center my-4">
-          <p className="text-white">¿Ya tienes una cuenta? 
-            <button type="button" onClick={openLogin} className="text-blue-500 font-semibold"> Inicia sesión</button>
-          </p>
-        </div>
-
-        <div className="flex items-center my-2">
-          <div className="flex-1 border-t border-white"></div>
+        <div className="flex items-center my-3">
+          <hr className="flex-grow border-white" />
           <span className="mx-2 text-white">O</span>
-          <div className="flex-1 border-t border-white"></div>
+          <hr className="flex-grow border-white" />
         </div>
 
-        <button onClick={handleGoogleSignin} className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
-          <img src="google.svg" alt="Google icon" className="w-5 h-5 mr-2" />
-          Iniciar sesión con Google
+        <button
+          type="button"
+          onClick={handleGoogleSignin}
+          className="flex items-center justify-center w-full p-2 bg-blue-600 text-white rounded"
+        >
+          <img src="google.svg" alt="Google icon" className="w-4 h-4 mr-2" />
+          Inicia sesión con Google
         </button>
+
+        <p className="text-white text-1g mt-4 text-center">
+          ¿Ya tienes cuenta?{" "}
+          <button type="button" onClick={openLogin} className="text-blue-500 underline  ">
+             <p className=" text-lg text-white font-bold "> Inicia sesión </p> 
+          </button>
+        </p>
       </form>
-    </div>
     </div>
   );
 };
