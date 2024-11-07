@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require('uuid');
 const vision = require('@google-cloud/vision').v1;
 const textToSpeech = require('@google-cloud/text-to-speech');
 const { Storage } = require('@google-cloud/storage');
@@ -12,12 +13,16 @@ const storage = new Storage();
 
 const credentialsPath = path.join(__dirname, './google-key.json');
 process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
-const bucketName = 'sportify-1';
+const bucketName = 'sportify-2';
 const audioFolder = 'uploads/audio';
 const outputFolder = 'uploads/json';
 
 // Función para extraer texto de un PDF usando Vision API
 async function extractTextFromPDF(pdfGcsUrl) {
+  // Generar un ID único para esta ejecución
+  const uniqueId = uuidv4();
+  const uniqueOutputFolder = `${outputFolder}/${uniqueId}`;
+
   const request = {
     requests: [
       {
@@ -28,21 +33,22 @@ async function extractTextFromPDF(pdfGcsUrl) {
         features: [{ type: 'DOCUMENT_TEXT_DETECTION' }],
         outputConfig: {
           gcsDestination: {
-            uri: `gs://${bucketName}/${outputFolder}/`,
+            uri: `gs://${bucketName}/${uniqueOutputFolder}/`,
           },
-          batchSize: 8, // Adjust the batch size as needed
+          batchSize: 8, // Ajusta el tamaño según sea necesario
         },
       },
     ],
   };
 
+  // Ejecutar la operación
   const [operation] = await visionClient.asyncBatchAnnotateFiles(request);
   await operation.promise();
 
   console.log('Extrayendo texto del PDF...');
 
-  // Retrieve all JSON files from the output folder in GCS
-  const [files] = await storage.bucket(bucketName).getFiles({ prefix: outputFolder });
+  // Obtener solo los JSON generados en esta ejecución
+  const [files] = await storage.bucket(bucketName).getFiles({ prefix: uniqueOutputFolder });
   const jsonFiles = files.filter(file => file.name.endsWith('.json'));
 
   if (jsonFiles.length === 0) {
@@ -62,9 +68,8 @@ async function extractTextFromPDF(pdfGcsUrl) {
 
   console.log('Texto extraído del PDF:', extractedText);
 
-  return { extractedText }; // Retorna todo el texto
+  return { extractedText };
 }
-
 // Función para convertir texto a voz y guardar el archivo de audio en GCS
 async function convertirTextoAVoz(texto, title) {
   const request = {

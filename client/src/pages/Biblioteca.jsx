@@ -9,7 +9,6 @@ function Biblioteca() {
     const [audiobooks, setAudiobooks] = useState([]); // Estado para almacenar los audiolibros
     const navigate = useNavigate();
     
-    console.log(audiobooks.title)
     // Cargar los audiolibros cuando el componente se monta
     useEffect(() => {
         const fetchAudiobooks = async () => {
@@ -55,7 +54,7 @@ function Biblioteca() {
                             ))}
                         </div>
                     ) : (
-                        <p className="text-center">No se encontraron audiolibros.</p>
+                        <p className="text-center">Cargando...</p>
                     )}
                 </div>
             </div>
