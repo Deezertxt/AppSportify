@@ -63,21 +63,27 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           delete errors.password;
         }
       }
+
+       
     }
+
+    
+     
 
     setFormErrors(errors);
   };
 
   useEffect(() => {
+     
     if (formData.password && formData.confirmPassword) {
       if (formData.password === formData.confirmPassword) {
         setPasswordMatchMessage("Las contraseñas coinciden.");
-        setFormErrors((prev) => ({ ...prev, confirmPassword: "" }));
+        setFormErrors((prev) => ({ ...prev, confirmPassword: "" }));  
       } else {
         setPasswordMatchMessage("Las contraseñas no coinciden.");
       }
     } else {
-      setPasswordMatchMessage("");
+      setPasswordMatchMessage("");  
     }
   }, [formData.password, formData.confirmPassword]);
 
@@ -168,12 +174,13 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
   };
 
   return (
-    <div className="p-2 max-w-sm mx-auto">
+    <div className="">
+      <div className="">
       <form onSubmit={handleSubmit}>
         <button
           type="button"
           onClick={closeModal}
-          className="absolute top-2 m-4 right-2 text-gray-500"
+          className="absolute top-5 right-2 text-gray-500"
         >
          <GoXCircleFill className="text-white"/>
         </button>
@@ -226,14 +233,14 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           <input
             type={showPassword ? "text" : "password"}
             name="password"
-            placeholder="*****"
+            placeholder="******"
             value={formData.password}
             onChange={handleChange}
-            className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
+            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
             required
           />
           <button type="button" onClick={togglePasswordVisibility} className="absolute right-2 top-1/2 transform -translate-y-1/2">
-            <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className="text-white" />
+            <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className="pb-6 text-white" />
           </button>
           {formErrors.password && <p className="text-red-500 text-xs">{formErrors.password}</p>}
         </div>
@@ -248,41 +255,44 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
             placeholder="*****"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
+            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
             required
           />
           <button type="button" onClick={toggleConfirmPasswordVisibility} className="absolute right-2 top-1/2 transform -translate-y-1/2">
-            <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} className="text-white" />
+            <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} className="text-white pt-5" />
           </button>
-           {passwordMatchMessage && (
-                <p className={`text-xs ${formData.password === formData.confirmPassword ? 'text-green-500' : 'text-red-500'}`}>
-          {passwordMatchMessage}
-                </p>
-          )}
+          {formErrors.confirmPassword && <p className="text-red-500 ">{formErrors.confirmPassword}</p>}
         </div>
-        
+
+        {passwordMatchMessage && (
+          <p className={`text-${passwordMatchMessage.includes('no') ? 'red' : 'green'}-500`}>
+            {passwordMatchMessage}
+          </p>
+        )}
+
         <button
           type="submit"
-          className={`w-full p-2 bg-gray-800 text-white rounded mt-3 ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
           disabled={isLoading}
           className={`w-full bg-gray-800 text-white p-3 rounded-md mb-4 ${isLoading ? 'opacity-50' : ''}`}
         >
-          {isLoading ? "Cargando..." : "Registrar"}
+          {isLoading ? "Cargando..." : "Registrarse"}
         </button>
 
-        <div className="flex items-center my-3">
-          <hr className="flex-grow border-white" />
-          <span className="mx-2 text-white">O</span>
-          <hr className="flex-grow border-white" />
+        <div className="text-center my-4">
+          <p className="text-white">¿Ya tienes una cuenta? 
+            <button type="button" onClick={openLogin} className="text-blue-500 font-semibold"> Inicia sesión</button>
+          </p>
         </div>
 
-        <button
-          type="button"
-          onClick={handleGoogleSignin}
-          className="flex items-center justify-center w-full p-2 bg-blue-600 text-white rounded"
-        >
-          <img src="google.svg" alt="Google icon" className="w-4 h-4 mr-2" />
-          Inicia sesión con Google
+        <div className="flex items-center my-2">
+          <div className="flex-1 border-t border-white"></div>
+          <span className="mx-2 text-white">O</span>
+          <div className="flex-1 border-t border-white"></div>
+        </div>
+
+        <button onClick={handleGoogleSignin} className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
+          <img src="google.svg" alt="Google icon" className="w-5 h-5 mr-2" />
+          Iniciar sesión con Google
         </button>
 
         <p className="text-white text-1g mt-4 text-center">
@@ -293,7 +303,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
         </p>
       </form>
     </div>
-    
+    </div>
   );
 };
 

@@ -46,13 +46,11 @@ function SearchBar({aea}) {
     };
 
     const find = (entrada) => {
-        if (entrada === "") {
-            alert("Buscador vacio")
-        }else{
-            navigate("/buscar", { state: { input } });
-            setResults([]);
-        }
+        localStorage.setItem("searchQuery", input);
+        navigate("/buscar");
     };
+    
+    
 
     return (
         <div className="flex justify-end w-full px-4 flex-col md:flex-row md:justify-start">
