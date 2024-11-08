@@ -54,7 +54,7 @@ function HeroSection() {
                         Obtén las ideas clave de la cima <span className="highlight bg-blue-100 px-2 py-1 rounded">audiolibros</span>,
                         <span className="highlight bg-purple-100 px-2 py-1 rounded">resumenes</span>, y
                         <span className="highlight bg-green-100 px-2 py-1 rounded">deporte</span>
-                        en 15 minutos con la aplicación Sportify.
+                        en menos de 10 minutos con la aplicación Sportify.
                     </p>
                     <button onClick={openRegisterModal} className="bg-[#A8DADC] text-white px-4 py-2 rounded hover:bg-[#457B9D]">
                         Comenzar
