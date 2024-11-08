@@ -58,7 +58,7 @@ const SearchResults = () => {
         <div>
             <BarLoaderWrapper isLoading={isLoading} />
             <div className="px-20">
-                <SearchBar />
+                <SearchBar aea={entrada}/>
             </div>
             <div className="flex items-center pl-24">Filtrar por:</div>
             <div className="flex items-center mb-4 pl-24">

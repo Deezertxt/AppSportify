@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SearchResultsList } from "./SearchResultsList";
 
-function SearchBar() {
-    const [input, setInput] = useState("");
+function SearchBar({aea}) {
+    const [input, setInput] = useState(aea);
     const navigate = useNavigate();
     const [results, setResults] = useState([]);
     const [aparecer, setAparecer] = useState(false);
