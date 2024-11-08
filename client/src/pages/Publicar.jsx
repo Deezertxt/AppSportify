@@ -143,7 +143,7 @@ function Publicar() {
     // Función para manejar el cambio en el título
     const handleTitleChange = (e) => {
         const value = e.target.value;
-        if (value.length <= 20) {
+        if (value.length <= 35) {
             setFormData({
                 ...formData,
                 title: value
@@ -152,7 +152,7 @@ function Publicar() {
         } else {
             setErrors((prevErrors) => ({
                 ...prevErrors,
-                titleLength: "Has alcanzado el límite de 20 caracteres para el título."
+                titleLength: "Has alcanzado el límite de 35 caracteres para el título."
             }));
         }
     };
@@ -160,7 +160,7 @@ function Publicar() {
     // Función para manejar el cambio en el autor
     const handleAuthorChange = (e) => {
         const value = e.target.value;
-        if (value.length <= 20) {
+        if (value.length <= 35) {
             setFormData({
                 ...formData,
                 author: value
@@ -169,7 +169,7 @@ function Publicar() {
         } else {
             setErrors((prevErrors) => ({
                 ...prevErrors,
-                authorLength: "Has alcanzado el límite de 20 caracteres para el autor."
+                authorLength: "Has alcanzado el límite de 35 caracteres para el autor."
             }));
         }
     };
@@ -214,8 +214,8 @@ function Publicar() {
             formErrors.title = "El título contiene caracteres no permitidos.";
         } else if (formData.title.trim() === "") {
             formErrors.titleEmpty = "El título no puede estar vacío ni contener solo espacios.";
-        } else if (formData.title.length > 20) {
-            formErrors.titleLength = "El título no puede superar los 20 caracteres.";
+        } else if (formData.title.length > 35) {
+            formErrors.titleLength = "El título no puede superar los 35 caracteres.";
         }
 
         // Validar autor, caracteres especiales y espacios
@@ -223,8 +223,8 @@ function Publicar() {
             formErrors.author = "El autor contiene caracteres no permitidos.";
         } else if (formData.author.trim() === "") {
             formErrors.authorEmpty = "El autor no puede estar vacío ni contener solo espacios.";
-        } else if (formData.author.length > 20) {
-            formErrors.authorLength = "El autor no puede superar los 20 caracteres.";
+        } else if (formData.author.length > 35) {
+            formErrors.authorLength = "El autor no puede superar los 35 caracteres.";
         }
 
         // Validar descripción, espacios
