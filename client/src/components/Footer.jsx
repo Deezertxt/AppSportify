@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { FaDiscord, FaInstagram, FaTwitter } from 'react-icons/fa';
+import { FiFacebook, FiXOctagon } from "react-icons/fi";
 
 const Footer = () => {
     return (
@@ -20,8 +21,8 @@ const Footer = () => {
                     <a href="https://instagram.com" className="ml-3 text-gray-400" target="_blank" rel="noopener noreferrer">
                         <FaInstagram className="w-8 h-8" />
                     </a>
-                    <a href="https://twitter.com" className="ml-3 text-gray-400" target="_blank" rel="noopener noreferrer">
-                        <FaTwitter className="w-8 h-8" />
+                    <a href="https://facebook.com" className="ml-3 text-gray-400" target="_blank" rel="noopener noreferrer">
+                        <FiFacebook className="w-8 h-8" />
                     </a>
                 </span>
             </div>
