@@ -180,15 +180,10 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
   
   const handleGoogleSignin = async () => {
     try {
-      const result = await loginWithGoogle();
-      const user = result.user;
-
-      const userDoc = doc(db, "users", user.uid);
-      await setDoc(userDoc, { username: user.displayName, email: user.email }, { merge: true });
-
+      await loginWithGoogle();
       navigate("/libros");
     } catch (error) {
-      setFormErrors({ general: "Error al iniciar sesión con Google: " + error.message });
+      setError("Error al iniciar sesión con Google: " + error.message);
     }
   };
 
