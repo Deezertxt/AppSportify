@@ -52,12 +52,13 @@ const SearchResults = () => {
             </div>
             <div className="max-w-5xl mx-auto mt-8">
                 {/* Botones de filtro */}
+                Filtrar por:
                 <div className="flex justify-start mb-4">
                     <button
                         onClick={() => setFilter("Todo")}
                         className={`px-4 py-2 mr-2 ${filter === "Todo" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
                     >
-                        Todo
+                        Todos
                     </button>
                     <button
                         onClick={() => setFilter("Título")}
