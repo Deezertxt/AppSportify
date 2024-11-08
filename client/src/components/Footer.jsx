@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FaDiscord, FaInstagram, FaTwitter } from 'react-icons/fa';
+import { FaDiscord, FaInstagram, FaXTwitter } from "react-icons/fa6";
 
 const Footer = () => {
     return (
@@ -21,7 +21,7 @@ const Footer = () => {
                         <FaInstagram className="w-8 h-8" />
                     </a>
                     <a href="https://twitter.com" className="ml-3 text-gray-400" target="_blank" rel="noopener noreferrer">
-                        <FaTwitter className="w-8 h-8" />
+                        <FaXTwitter className="w-8 h-8" />
                     </a>
                 </span>
             </div>
