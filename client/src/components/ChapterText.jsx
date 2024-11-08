@@ -4,7 +4,7 @@ const ChapterText = ({ text, fontSize }) => {
     const [title, ...paragraphs] = text.split("\n").filter(line => line.trim() !== "");
 
     return (
-        <div style={{ fontSize }} className="text-gray-900 p-4 overflow-y-auto h-full">
+        <div style={{ fontSize: `${fontSize}px` }} className="text-gray-900 p-4 overflow-y-auto h-full">
             {/* Título */}
             <h1 className="text-2xl font-bold mb-4 text-gray-900">{title}</h1>
             

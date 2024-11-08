@@ -1,12 +1,10 @@
+const { v4: uuidv4 } = require('uuid');
+const vision = require('@google-cloud/vision').v1;
+const textToSpeech = require('@google-cloud/text-to-speech');
+const { Storage } = require('@google-cloud/storage');
 const { prisma } = require('../conf/db');
+const path = require('path');
 
-<<<<<<< HEAD
-
-const axios = require('axios');
-const pdf = require('pdf-parse');
-
-const extractTextFromPDF = async (pdfUrl) => {
-=======
 
 // Configuración de los clientes de Google Cloud
 const visionClient = new vision.ImageAnnotatorClient();
@@ -21,6 +19,10 @@ const outputFolder = 'uploads/json';
 
 // Función para extraer texto de un PDF usando Vision API
 async function extractTextFromPDF(pdfGcsUrl) {
+  // Generar un ID único para esta ejecución
+  const uniqueId = uuidv4();
+  const uniqueOutputFolder = `${outputFolder}/${uniqueId}`;
+
   const request = {
     requests: [
       {
@@ -31,21 +33,22 @@ async function extractTextFromPDF(pdfGcsUrl) {
         features: [{ type: 'DOCUMENT_TEXT_DETECTION' }],
         outputConfig: {
           gcsDestination: {
-            uri: `gs://${bucketName}/${outputFolder}/`,
+            uri: `gs://${bucketName}/${uniqueOutputFolder}/`,
           },
-          batchSize: 8, // Adjust the batch size as needed
+          batchSize: 8, // Ajusta el tamaño según sea necesario
         },
       },
     ],
   };
 
+  // Ejecutar la operación
   const [operation] = await visionClient.asyncBatchAnnotateFiles(request);
   await operation.promise();
 
   console.log('Extrayendo texto del PDF...');
 
-  // Retrieve all JSON files from the output folder in GCS
-  const [files] = await storage.bucket(bucketName).getFiles({ prefix: outputFolder });
+  // Obtener solo los JSON generados en esta ejecución
+  const [files] = await storage.bucket(bucketName).getFiles({ prefix: uniqueOutputFolder });
   const jsonFiles = files.filter(file => file.name.endsWith('.json'));
 
   if (jsonFiles.length === 0) {
@@ -65,9 +68,8 @@ async function extractTextFromPDF(pdfGcsUrl) {
 
   console.log('Texto extraído del PDF:', extractedText);
 
-  return { extractedText }; // Retorna todo el texto
+  return { extractedText };
 }
-
 // Función para convertir texto a voz y guardar el archivo de audio en GCS
 async function convertirTextoAVoz(texto, title) {
   const request = {
@@ -104,34 +106,29 @@ const convertDurationToMinutes = (durationInSeconds) => {
 
 // Función principal para crear un audiolibro a partir de URLs
 const createAudiobook = async (req, res) => {
->>>>>>> origin/main
   try {
-    // Asegúrate de que la URL comience con 'http' o 'https'
-    if (!/^https?:\/\//.test(pdfUrl)) {
-      throw new Error('Invalid URL');
+    const { title, categoryId, description, author, pdfUrl, coverUrl } = req.body;
+
+    // Validación de campos obligatorios
+    if (!title || !pdfUrl || !coverUrl) {
+      return res.status(400).json({ error: "Faltan el título, PDF URL o la URL de la portada." });
     }
 
-    // Hacer una solicitud GET para descargar el PDF
-    const response = await axios.get(pdfUrl, { responseType: 'arraybuffer' });
+    // Validación de unicidad para los campos antes de la inserción
+    const existingAudiobook = await prisma.audiobook.findFirst({
+      where: {
+        OR: [
+          { title: title },
+          { pdfUrl: pdfUrl },
+          { coverUrl: coverUrl }
+        ]
+      }
+    });
 
-    // Usar pdf-parse para extraer el texto del buffer del PDF
-    const data = await pdf(response.data);
-    return data.text; // Devolver solo el texto extraído
-  } catch (error) {
-    console.error('Error extracting text from PDF:', error);
-    throw new Error('Failed to extract text from PDF');
-  }
-};
+    if (existingAudiobook) {
+      return res.status(409).json({ error: "Ya existe un audiolibro con el mismo título, PDF URL o URL de portada." });
+    }
 
-<<<<<<< HEAD
-// Crear un nuevo libro
-const createAudiobook = async (req, res) => {
-  const { title, categoryId, description, author, pdfUrl, coverUrl } = req.body;
-
-  try {
-    const text = await extractTextFromPDF(pdfUrl);
-    // Crear el nuevo audiolibro en la base de datos
-=======
     const { extractedText } = await extractTextFromPDF(pdfUrl);
     const [titleLine, ...contentLines] = extractedText.split('\n');
     const contentText = contentLines.join('\n');
@@ -140,41 +137,29 @@ const createAudiobook = async (req, res) => {
     const { audioUrl, audioDuration } = await convertirTextoAVoz(contentText, title);
     const durationInMinutes = convertDurationToMinutes(audioDuration);
     // Guardar información en la base de datos
->>>>>>> origin/main
     const newAudiobook = await prisma.audiobook.create({
       data: {
         title,
         categoryId: parseInt(categoryId), // Asegurarse de que el valor sea un entero
         description,
         author,
-<<<<<<< HEAD
-        pdfUrl,     // Agregar URL del archivo PDF
-        coverUrl,   // Agregar URL de la portada
-        text, // Agregar el texto extraído del PDF
-=======
         pdfUrl,
         coverUrl,
         duration: durationInMinutes,
         audioUrl,
         text: extractedText,  // Guarda el texto completo, incluido el título
->>>>>>> origin/main
       },
     });
 
     // Responder con éxito
     res.status(201).json(newAudiobook);
   } catch (error) {
-<<<<<<< HEAD
-    console.error('Error creating Audiobook:', error);
-    res.status(500).json({ error: 'Error creating audiobook', details: error.message });
-=======
     if (error.code === 'P2002') {
       return res.status(409).json({ error: "Ya existe un audiolibro con un valor único duplicado en la base de datos." });
     }
 
     console.error('Error creando audiolibro:', error);
     res.status(500).json({ error: 'Error creando audiolibro', details: error.message });
->>>>>>> origin/main
   }
 };
 
