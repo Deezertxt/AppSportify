@@ -7,7 +7,7 @@ const AudioDetails = ({ title, author }) => (
             <h1 className="text-2xl font-semibold">{title}</h1>
             <p className="text-white">{author}</p>
         </div>
-        <FiBookmark className="text-2xl cursor-pointer hover:text-blue-500 transition" />
+        {/* <FiBookmark className="text-2xl cursor-pointer hover:text-blue-500 transition" /> */}
     </div>
 );
 

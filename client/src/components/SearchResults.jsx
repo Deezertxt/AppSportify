@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Card from "../components/Card";
 import { useLocation, useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
-import BarLoaderWrapper from "./BarLoader";
+import BarLoaderWrapper from './BarLoader';
 const SearchResults = () => {
     const [audiobooks, setAudiobooks] = useState([]);
     const [filter, setFilter] = useState("Todo"); // Estado para controlar el filtro seleccionado
@@ -56,7 +56,7 @@ const SearchResults = () => {
 
     return (
         <div>
-            <BarLoaderWrapper isLoading={isLoading} />
+            <BarLoaderWrapper isLoading={isLoading}/>
             <div className="px-20">
                 <SearchBar aea={entrada}/>
             </div>
@@ -96,6 +96,27 @@ const SearchResults = () => {
             </div>
             <div className="max-w-5xl mx-auto mt-8">
                 {/* Botones de filtro */}
+                <div className="flex justify-start mb-4">
+                    <button
+                        onClick={() => setFilter("Todo")}
+                        className={`px-4 py-2 mr-2 ${filter === "Todo" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                    >
+                        Todo
+                    </button>
+                    <button
+                        onClick={() => setFilter("Título")}
+                        className={`px-4 py-2 mr-2 ${filter === "Título" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                    >
+                        Título
+                    </button>
+                    <button
+                        onClick={() => setFilter("Autor")}
+                        className={`px-4 py-2 ${filter === "Autor" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                    >
+                        Autor
+                    </button>
+                </div>
+                
                 {Array.isArray(audiobooks) && audiobooks.length > 0 ? (
                     <div className="flex flex-wrap -m-4">
                         {audiobooks.map((audiobook) => (
@@ -110,7 +131,7 @@ const SearchResults = () => {
                     </div>
                 ) : (
                     <p className="text-center text-[30px] font-bold py-5">
-                        Cargando...
+                        No se encontraron coincidencias
                     </p>
                 )}
             </div>

@@ -46,6 +46,8 @@ function SearchBar({aea}) {
     };
 
     const find = (entrada) => {
+        navigate("/buscar", { state: { input } });
+        setResults([]);
         if (entrada === "") {
             alert("Buscador vacio")
         }else{
