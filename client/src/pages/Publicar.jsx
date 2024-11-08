@@ -143,7 +143,7 @@ function Publicar() {
     // Función para manejar el cambio en el título
     const handleTitleChange = (e) => {
         const value = e.target.value;
-        if (value.length <= 60) {
+        if (value.length <= 20) {
             setFormData({
                 ...formData,
                 title: value
@@ -160,7 +160,7 @@ function Publicar() {
     // Función para manejar el cambio en el autor
     const handleAuthorChange = (e) => {
         const value = e.target.value;
-        if (value.length <= 60) {
+        if (value.length <= 20) {
             setFormData({
                 ...formData,
                 author: value
@@ -214,7 +214,7 @@ function Publicar() {
             formErrors.title = "El título contiene caracteres no permitidos.";
         } else if (formData.title.trim() === "") {
             formErrors.titleEmpty = "El título no puede estar vacío ni contener solo espacios.";
-        } else if (formData.title.length > 60) {
+        } else if (formData.title.length > 20) {
             formErrors.titleLength = "El título no puede superar los 60 caracteres.";
         }
 
@@ -223,7 +223,7 @@ function Publicar() {
             formErrors.author = "El autor contiene caracteres no permitidos.";
         } else if (formData.author.trim() === "") {
             formErrors.authorEmpty = "El autor no puede estar vacío ni contener solo espacios.";
-        } else if (formData.author.length > 60) {
+        } else if (formData.author.length > 20) {
             formErrors.authorLength = "El autor no puede superar los 60 caracteres.";
         }
 
