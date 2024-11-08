@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-
-import { useAuth } from "../context/authContext";  // Asegúrate de importar la función de inicio de sesión con Google
+import { useAuth } from "../context/authContext";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../utils/firebase";
+import { FiXCircle } from "react-icons/fi";
 
 const RegistrationForm = ({ closeModal, openLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,6 +18,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
   });
   const [formErrors, setFormErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const [passwordMatchMessage, setPasswordMatchMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -26,44 +27,140 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
 
   const { signUp, loginWithGoogle } = useAuth();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleUsernameChange = (e) => {
+    const value = e.target.value;
+    setFormData((prev) => ({ ...prev, username: value }));
+  
+    const errors = { ...formErrors };
+  
+    // Validaciones de nombre de usuario
+    if (value.trim() === "") {
+      errors.username = "El nombre de usuario no puede estar vacío.";
+    } else if (!validateTextInput(value)) {
+      errors.username = "El nombre de usuario contiene caracteres no permitidos.";
+    } else if (value.length < 4) {
+      errors.username = "El nombre de usuario debe tener al menos 4 caracteres.";
+    } else {
+      delete errors.username; // Eliminar el error si el nombre de usuario es válido
+    }
+  
+    setFormErrors(errors);
   };
-
+  
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setFormData((prev) => ({ ...prev, email: value }));
+  
+    const errors = { ...formErrors };
+  
+    // Validaciones de correo electrónico
+    if (value.trim() === "") {
+      errors.email = "El correo electrónico no puede estar vacío.";
+    } else if (!/\S+@\S+\.\S+/.test(value)) {
+      errors.email = "Ingrese un correo electrónico válido.";
+    } else {
+      delete errors.email; // Eliminar el error si el correo electrónico es válido
+    }
+  
+    setFormErrors(errors);
+  };
+  
+  // Función de validación de caracteres para nombre de usuario
   const validateTextInput = (input) => /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s.,!?()\-:;]*$/.test(input);
+  
 
-  const validatePassword = (password, confirmPassword) => password === confirmPassword;
+  const handlePasswordChange = (e) => {
+  let value = e.target.value;
+  // Limitar la longitud a 12 caracteres
+  if (value.length > 12) {
+    value = value.slice(0, 12);
+  }
+  
+  setFormData((prev) => ({ ...prev, password: value }));
+  const errors = { ...formErrors };
+
+  // Validaciones de contraseña
+  if (value.length < 6) {
+    errors.password = "La contraseña debe tener al menos 6 caracteres.";
+  } else if (!/[A-Z]/.test(value)) {
+    errors.password = "La contraseña debe tener al menos una letra mayúscula.";
+  } else if (!/\d/.test(value)) {
+    errors.password = "La contraseña debe contener al menos un número.";
+  } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+    errors.password = "La contraseña debe contener al menos un carácter especial.";
+  } else {
+    delete errors.password;
+  }
+
+  setFormErrors(errors);
+};
+  const handleConfirmPasswordChange = (e) => {
+    let value = e.target.value;
+    // Limitar la longitud a 12 caracteres
+    if (value.length > 12) {
+      value = value.slice(0, 12);
+    }
+  
+    setFormData((prev) => ({ ...prev, confirmPassword: value }));
+    
+    // Actualizar el mensaje de coincidencia de contraseña
+    if (formData.password === value) {
+      setPasswordMatchMessage("Las contraseñas coinciden.");
+      setFormErrors((prev) => ({ ...prev, confirmPassword: "" }));
+    } else {
+      setPasswordMatchMessage("Las contraseñas no coinciden.");
+      setFormErrors((prev) => ({ ...prev, confirmPassword: "Las contraseñas no coinciden." }));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormErrors({});
     setSuccessMessage("");
     const errors = {};
-
-    // Validaciones
-    if (!validatePassword(formData.password, formData.confirmPassword)) {
-      errors.password = "Las contraseñas no coinciden.";
-    }
+  
+    // Validaciones de nombre de usuario
     if (!validateTextInput(formData.username)) {
       errors.username = "El nombre de usuario contiene caracteres no permitidos.";
     } else if (formData.username.trim() === "") {
-      errors.usernameEmpty = "El nombre de usuario no puede estar vacío.";
+      errors.username = "El nombre de usuario no puede estar vacío.";
+    } else if (formData.username.length < 4) {
+      errors.username = "El nombre de usuario debe tener al menos 4 caracteres.";
     }
-
+  
+    // Validaciones de correo electrónico
+    if (formData.email.trim() === "") {
+      errors.email = "El correo electrónico no puede estar vacío.";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Ingrese un correo electrónico válido.";
+    }
+  
+    // Validaciones de la contraseña
+    if (formData.password.length < 6) {
+      errors.password = "La contraseña debe tener al menos 6 caracteres.";
+    } else if (!/[A-Z]/.test(formData.password)) {
+      errors.password = "La contraseña debe tener al menos una letra mayúscula.";
+    } else if (!/\d/.test(formData.password)) {
+      errors.password = "La contraseña debe contener al menos un número.";
+    } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)) {
+      errors.password = "La contraseña debe contener al menos un carácter especial.";
+    }
+  
+    // Validaciones de confirmación de la contraseña
+    if (formData.password !== formData.confirmPassword) {
+      errors.confirmPassword = "Las contraseñas no coinciden.";
+    }
+  
+    // Si hay errores, no se envía el formulario
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
     }
-
+  
     setIsLoading(true);
     try {
       const userCredential = await signUp(formData.email, formData.password);
       const user = userCredential.user;
-      // Guardar `username` en Firestore
       await setDoc(doc(db, "users", user.uid), {
         username: formData.username,
         email: formData.email,
@@ -71,152 +168,159 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
       setSuccessMessage("Registro exitoso!");
       setFormData({ username: "", email: "", password: "", confirmPassword: "" });
     } catch (error) {
-      console.error("Error al registrar:", error);
-      setFormErrors({ general: error.message || "Error al registrar. Verifique los campos." });
+      if (error.code === "auth/email-already-in-use") {
+        setFormErrors({ email: "El correo electrónico ya está registrado. Intenta con otro." });
+      } else {
+        setFormErrors({ general: error.message || "Error al registrar. Verifique los campos." });
+      }
     } finally {
       setIsLoading(false);
     }
   };
-
+  
   const handleGoogleSignin = async () => {
     try {
       const result = await loginWithGoogle();
       const user = result.user;
 
       const userDoc = doc(db, "users", user.uid);
-      await setDoc(userDoc, {username: user.displayName, email: user.email}, {merge: true});
+      await setDoc(userDoc, { username: user.displayName, email: user.email }, { merge: true });
 
       navigate("/libros");
     } catch (error) {
-      setError("Error al iniciar sesión con Google: " + error.message);
+      setFormErrors({ general: "Error al iniciar sesión con Google: " + error.message });
     }
   };
 
   return (
-    <div>
+    <div className="p-2 max-w-sm mx-auto">
       <form onSubmit={handleSubmit}>
         <button
           type="button"
           onClick={closeModal}
-          className="absolute top-2 right-2 text-gray-500"
+          className="absolute top-2 m-4 right-2 text-gray-500"
         >
-          X
+         <FiXCircle className="text-white"/>
         </button>
 
-        {/* Logo */}
-        <div className="flex flex-col items-center">
-          <img src="logoS.svg" alt="Sportify logo" className="w-37 mb-4" />
+        <div className="flex flex-col items-center mb-4">
+          <img src="logoS.svg" alt="Sportify logo" className="w-16 mb-2" />
         </div>
 
-        {/* Título */}
-        <h2 className="text-2xl font-bold text-white text-left mb-6">Regístrate</h2>
+        <h2 className="text-lg font-bold text-white text-left mb-3">Regístrate</h2>
 
         {/* Campos de entrada y manejo de errores */}
         {formErrors.general && <p className="text-red-500">{formErrors.general}</p>}
         {successMessage && <p className="text-green-500">{successMessage}</p>}
 
-        <div className="mb-4">
-          <label className="block font-semibold text-white mb-1">Nombre de usuario<span className="text-red-500"> *</span></label> <input
+        <div className="mb-2">
+          <label className="block font-semibold text-white mb-1 text-xs">
+            Nombre de usuario<span className="text-red-500"> *</span>
+          </label>
+          <input
             type="text"
             name="username"
             maxLength={10}
             placeholder="Nombre de usuario"
             value={formData.username}
-            onChange={handleChange}
-            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            onChange={handleUsernameChange}
+            className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
             required
           />
-          {formErrors.username && <p className="text-red-500">{formErrors.username}</p>}
+          {formErrors.username && <p className="text-red-500 text-xs">{formErrors.username}</p>}
         </div>
 
-        <div className="mb-4">
-          <label className="block font-semibold text-white mb-1">Correo electrónico<span className="text-red-500"> *</span></label>
+        <div className="mb-2">
+          <label className="block font-semibold text-white mb-1 text-xs">
+            Correo electrónico<span className="text-red-500"> *</span>
+          </label>
           <input
-            type="email"
+            type="text"
             name="email"
             placeholder="example@gmail.com"
             value={formData.email}
-            onChange={handleChange}
-            className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            onChange={handleEmailChange}
+            className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
             required
           />
         </div>
+        {formErrors.email && <p className="text-red-500 text-xs">{formErrors.email}</p>}
 
-        <div className="mb-4">
-          <label className="block text-white font-semibold mb-1">Contraseña<span className="text-red-500"> *</span></label>
+        <div className="mb-2 relative">
+          <label className="block text-white font-semibold mb-1 text-xs">
+            Contraseña<span className="text-red-500"> *</span>
+          </label>
           <input
             type={showPassword ? "text" : "password"}
             name="password"
             placeholder="******"
             value={formData.password}
-            onChange={handleChange}
-            className="w-full text-white focus:outline-none border-b-2 bg-transparent p-2"
+            onChange={handlePasswordChange}
+            className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
+            required
           />
-          <button
-            className="absolute right-6 p-2"
-            onClick={(e) => {
-              e.preventDefault();
-              togglePasswordVisibility();
-            }}
-          >
+          <button type="button" onClick={togglePasswordVisibility} className="absolute right-2 top-1/2 transform -translate-y-1/2">
             <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className="text-white" />
           </button>
+          {formErrors.password && <p className="text-red-500 text-xs">{formErrors.password}</p>}
         </div>
 
-        <div className="mb-4">
-          <label className="block text-white font-semibold mb-1">Confirmar contraseña<span className="text-red-500"> *</span></label>
+        <div className="mb-2 relative">
+          <label className="block text-white font-semibold mb-1 text-xs">
+            Confirmar contraseña<span className="text-red-500"> *</span>
+          </label>
           <input
             type={showConfirmPassword ? "text" : "password"}
             name="confirmPassword"
             placeholder="******"
             value={formData.confirmPassword}
-            onChange={handleChange}
-            className="w-full text-white focus:outline-none border-b-2 bg-transparent p-2"
+            onChange={handleConfirmPasswordChange}
+            className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
+            required
           />
-          <button
-            className="absolute right-6 p-2"
-            onClick={(e) => {
-              e.preventDefault();
-              toggleConfirmPasswordVisibility();
-            }}
-          >
+          <button type="button" onClick={toggleConfirmPasswordVisibility} className="absolute right-2 top-1/2 transform -translate-y-1/2">
             <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} className="text-white" />
           </button>
+           {passwordMatchMessage && (
+                <p className={`text-xs ${formData.password === formData.confirmPassword ? 'text-green-500' : 'text-red-500'}`}>
+          {passwordMatchMessage}
+                </p>
+           )}
         </div>
 
+
+        {/* Botón de registro */}
+        
         {/* Botón de registro */}
         <button
           type="submit"
-          className="w-full bg-gray-800 text-white p-3 rounded-md mb-4"
+          className={`w-full p-2 bg-gray-800 text-white rounded mt-3 ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
           disabled={isLoading}
         >
-          {isLoading ? "Registrando..." : "Registrarse"}
+          {isLoading ? "Cargando..." : "Registrar"}
         </button>
 
-        {/* Enlace de inicio de sesión */}
-        <p className="text-white text-center mb-4">
-          ¿Ya tienes una cuenta?{" "}
-          <button className="font-bold bg-transparent" onClick={openLogin}>
-            Inicia sesión
-          </button>
-        </p>
-
-        {/* Separador */}
-        <div className="flex items-center mb-4">
-          <hr className="w-full border-white" />
-          <span className="px-3 text-white">O</span>
-          <hr className="w-full border-white" />
+        <div className="flex items-center my-3">
+          <hr className="flex-grow border-white" />
+          <span className="mx-2 text-white">O</span>
+          <hr className="flex-grow border-white" />
         </div>
 
-        {/* Botón de Google */}
         <button
           type="button"
           onClick={handleGoogleSignin}
-          className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center"
+          className="flex items-center justify-center w-full p-2 bg-blue-600 text-white rounded"
         >
-          <img src="google.svg" alt="Google icon" className="w-5 h-5 mr-2" />
-          Registrarse con Google
+          <img src="google.svg" alt="Google icon" className="w-4 h-4 mr-2" />
+          Inicia sesión con Google
         </button>
+
+        <p className="text-white text-1g mt-4 text-center">
+          ¿Ya tienes cuenta?{" "}
+          <button type="button" onClick={openLogin} className="text-blue-500">
+             <p className=" text-lg text-white font-bold "> Inicia sesión </p> 
+          </button>
+        </p>
       </form>
     </div>
   );

@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
+import { FiXCircle } from "react-icons/fi";
 
 const ModalInicioSesion = ({ closeModal, openRegister }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -40,7 +41,11 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
       navigate("/libros"); // Redirige si el inicio de sesión fue exitoso
       closeModal(); // Cierra el modal
     } catch (error) {
-      setError("Error al iniciar sesión: " + error.message); // Muestra el mensaje de error
+      if (error.code === "auth/invalid-credential" || error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
+        setError("Credenciales inválidas");
+      } else {
+        setError("Error al iniciar sesión: " + error.message); // Muestra el mensaje de error
+      }
     } finally {
       setIsLoading(false);
     }
@@ -58,8 +63,11 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <button type="button" onClick={closeModal} className="absolute top-2 right-2 text-gray-500">
-          X
+        <button 
+          type="button" 
+          onClick={closeModal} 
+          className="absolute top-2 right-2 text-gray-500 m-4">
+          <FiXCircle className="text-white"/>
         </button>
 
         <div className="flex flex-col items-center">
@@ -68,7 +76,7 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
 
         <h2 className="text-2xl font-bold text-white text-left mb-6">Inicio Sesión</h2>
 
-        {error && <p className="text-red-500">{error}</p>}
+        {error && <p className="text-red-500 mb-4">{error}</p>}
 
         <div className="mb-4">
           <label className="block text-white font-semibold mb-1">Correo electrónico</label>
@@ -79,7 +87,6 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Correo electrónico"
             className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
-            required
           />
         </div>
 

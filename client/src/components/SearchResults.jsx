@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Card from "../components/Card";
 import { useLocation, useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
+import BarLoaderWrapper from './BarLoader';
 
 const SearchResults = () => {
     const [audiobooks, setAudiobooks] = useState([]);
@@ -9,9 +10,11 @@ const SearchResults = () => {
     const location = useLocation();
     const entrada = location.state?.input || ""; 
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const fetchAudiobooks = async () => {
+            setIsLoading(true);
             try {
                 const response = await fetch("http://localhost:3000/api/audiobook/get/");
                 const json = await response.json();
@@ -32,6 +35,7 @@ const SearchResults = () => {
             } catch (error) {
                 console.error("Error al obtener audiolibros:", error);
             }
+            setIsLoading(false);
         };
 
         fetchAudiobooks();
@@ -43,12 +47,13 @@ const SearchResults = () => {
 
     return (
         <div>
+            <BarLoaderWrapper isLoading={isLoading}/>
             <div className="px-20">
                 <SearchBar />
             </div>
             <div className="max-w-5xl mx-auto mt-8">
                 {/* Botones de filtro */}
-                <div className="flex justify-end mb-4">
+                <div className="flex justify-start mb-4">
                     <button
                         onClick={() => setFilter("Todo")}
                         className={`px-4 py-2 mr-2 ${filter === "Todo" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
@@ -83,7 +88,7 @@ const SearchResults = () => {
                     </div>
                 ) : (
                     <p className="text-center text-[30px] font-bold py-5">
-                        Cargando...
+                        No se encontraron coincidencias
                     </p>
                 )}
             </div>

@@ -48,15 +48,21 @@ function SearchBar() {
     const find = (entrada) => {
         navigate("/buscar", { state: { input } });
         setResults([]);
+        if (entrada === "") {
+            alert("Buscador vacio")
+        }else{
+            navigate("/buscar", { state: { input } });
+            setResults([]);
+        }
     };
 
     return (
-        <div className="flex justify-end w-full px-4">
+        <div className="flex justify-end w-full px-4 flex-col md:flex-row md:justify-start">
             <div className="mb-3 w-full max-w-xs sm:max-w-sm md:max-w-md">
                 <div className="relative flex items-center">
                     <input
                         type="search"
-                        className="w-full rounded-l border border-solid border-gray-300 bg-white px-2 py-1 text-sm font-normal text-gray-700 placeholder-gray-400 transition duration-200 ease-in-out focus:z-[3] focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                        className="h-[38px] w-full rounded-l border border-solid border-gray-300 bg-white px-2 py-1 text-sm font-normal text-gray-700 placeholder-gray-400 transition duration-200 ease-in-out focus:z-[3] focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
                         placeholder="Buscar por titulo, autor o categoria"
                         aria-label="Buscar por titulo, autor o categoria"
                         value={input}
