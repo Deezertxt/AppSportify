@@ -152,7 +152,7 @@ function Publicar() {
         } else {
             setErrors((prevErrors) => ({
                 ...prevErrors,
-                titleLength: "Has alcanzado el límite de 60 caracteres para el título."
+                titleLength: "Has alcanzado el límite de 20 caracteres para el título."
             }));
         }
     };
@@ -169,7 +169,7 @@ function Publicar() {
         } else {
             setErrors((prevErrors) => ({
                 ...prevErrors,
-                authorLength: "Has alcanzado el límite de 60 caracteres para el autor."
+                authorLength: "Has alcanzado el límite de 20 caracteres para el autor."
             }));
         }
     };
@@ -215,7 +215,7 @@ function Publicar() {
         } else if (formData.title.trim() === "") {
             formErrors.titleEmpty = "El título no puede estar vacío ni contener solo espacios.";
         } else if (formData.title.length > 20) {
-            formErrors.titleLength = "El título no puede superar los 60 caracteres.";
+            formErrors.titleLength = "El título no puede superar los 20 caracteres.";
         }
 
         // Validar autor, caracteres especiales y espacios
@@ -224,7 +224,7 @@ function Publicar() {
         } else if (formData.author.trim() === "") {
             formErrors.authorEmpty = "El autor no puede estar vacío ni contener solo espacios.";
         } else if (formData.author.length > 20) {
-            formErrors.authorLength = "El autor no puede superar los 60 caracteres.";
+            formErrors.authorLength = "El autor no puede superar los 20 caracteres.";
         }
 
         // Validar descripción, espacios
