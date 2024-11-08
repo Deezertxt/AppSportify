@@ -77,6 +77,7 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
     try {
       await loginWithGoogle();
       navigate("/libros");
+      closeModal();
     } catch (error) {
       setError("Error al iniciar sesión con Google: " + error.message);
     }
@@ -101,18 +102,19 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
 
         <h2 className="text-2xl font-bold text-white text-left mb-6">Inicio Sesión</h2>
 
-        {error && <p className="text-red-500">{error}</p>}
+        {error && <p className="text-red-500 mb-4">{error}</p>}
 
         <div className="mb-4">
           <label className="block text-white font-semibold mb-1">Correo electrónico</label>
           <input
             type="text"
             name="email"
+            spellcheck="false"
             value={email}
             onChange={handleEmailChange}
             placeholder="Correo electrónico"
+            onBlur={handleBlur}
             className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
-            required
           />
           {emailHint && <p className="text-red-500">{emailHint}</p>}
         </div>
@@ -152,7 +154,9 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
 
         <p className="text-white text-center mb-4">
           ¿Aún no estás en Sportify?{" "}
-          <button className="font-bold bg-transparent" onClick={(e) => { e.preventDefault(); openRegister(); }}>
+          <button 
+            className="font-bold bg-transparent" 
+            onClick={(e) => { e.preventDefault(); openRegister(); }}>
             Regístrate
           </button>
         </p>
@@ -163,7 +167,9 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
           <hr className="w-full border-white" />
         </div>
 
-        <button onClick={handleGoogleSignin} className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
+        <button 
+          onClick={handleGoogleSignin} 
+          className="w-full bg-blue-600 text-white p-3 rounded-md flex items-center justify-center">
           <img src="google.svg" alt="Google icon" className="w-5 h-5 mr-2" />
           Iniciar sesión con Google
         </button>

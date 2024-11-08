@@ -4,7 +4,7 @@ export const SearchResultsList = ({ results, setInput, setResults }) => {
     const navigate = useNavigate();
     const handleCardClick = (id) => {
         navigate(`/Preview/${id}`); // Redirigir al reproductor del audiolibro
-        setInput(""); //despues de dar click al libro limpio input y lista de coincidencias
+        //setInput(""); //despues de dar click al libro limpio input y lista de coincidencias
         setResults([]);
     };
     return (
