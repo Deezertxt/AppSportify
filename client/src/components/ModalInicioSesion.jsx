@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
@@ -11,16 +11,45 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [emailHint, setEmailHint] = useState(""); // Mensaje para el formato de email
   const navigate = useNavigate();
-  const { login, loginWithGoogle } = useAuth(); // Extrae login desde el contexto
+  const { login, loginWithGoogle } = useAuth();
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
+
+  // Función para manejar cambios en el email y dar feedback sobre el formato
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+      const missing = value.includes("@") ? ".com o .net" : " @dominio.com";
+      setEmailHint(`El correo debe tener el formato example${missing}`);
+    } else {
+      setEmailHint("");
+    }
+  };
+
+
+  const useEnterSubmit = (email, password, handleSubmit) => {
+    useEffect(() => {
+      const handleKeyDown = (e) => {
+        if (e.key === "Enter" && email && password) {
+          e.preventDefault();
+          handleSubmit();
+        }
+      };
+  
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [email, password, handleSubmit]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError(""); // Limpia el error previo
-
 
     // Validación de email y contraseña
     if (!email || !password) {
@@ -29,13 +58,6 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
       return;
     }
 
-    // Email formato simple
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError("Por favor ingresa un email válido");
-      setIsLoading(false);
-      return;
-    }
     try {
       await login(email, password);
       navigate("/libros"); // Redirige si el inicio de sesión fue exitoso
@@ -43,8 +65,8 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
     } catch (error) {
       if (error.code === "auth/invalid-credential" || error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
         setError("Credenciales inválidas");
-      } else {
-        setError("Error al iniciar sesión: " + error.message); // Muestra el mensaje de error
+      } else if (error.code === "auth/too-many-requests") {
+        setError("Por favor intente más tarde"); // Muestra el mensaje de error
       }
     } finally {
       setIsLoading(false);
@@ -59,6 +81,9 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
       setError("Error al iniciar sesión con Google: " + error.message);
     }
   };
+
+  const isButtonDisabled = !email || !password || isLoading || emailHint;
+  useEnterSubmit(email, password, handleSubmit);
 
   return (
     <div>
@@ -76,18 +101,20 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
 
         <h2 className="text-2xl font-bold text-white text-left mb-6">Inicio Sesión</h2>
 
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+        {error && <p className="text-red-500">{error}</p>}
 
         <div className="mb-4">
           <label className="block text-white font-semibold mb-1">Correo electrónico</label>
           <input
-            type="email"
+            type="text"
             name="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleEmailChange}
             placeholder="Correo electrónico"
             className="w-full p-2 border-b-2 border-white bg-transparent focus:outline-none text-white"
+            required
           />
+          {emailHint && <p className="text-red-500">{emailHint}</p>}
         </div>
 
         <div className="mb-4">
@@ -111,7 +138,15 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
           </button>
         </div>
 
-        <button type="submit" className="w-full bg-gray-800 text-white p-3 rounded-md mb-4" disabled={isLoading}>
+        <button
+          type="submit"
+          className={`w-full p-3 rounded-md mb-4 ${
+            isButtonDisabled
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-gray-800 text-white hover:bg-gray-700"
+          }`}
+          disabled={isButtonDisabled}
+        >
           {isLoading ? "Iniciando..." : "Iniciar Sesión"}
         </button>
 
