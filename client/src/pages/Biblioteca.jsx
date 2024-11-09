@@ -35,9 +35,9 @@ function Biblioteca() {
 
     return (
         <>
-            <div className="">
+            <div>
                 <div className="px-20">
-                    <SearchBar/>
+                    <SearchBar setInput={""}/>
                 </div>
                 <div className="max-w-5xl mx-auto mt-8">
                     {Array.isArray(audiobooks) && audiobooks.length > 0 ? (

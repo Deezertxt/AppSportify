@@ -26,7 +26,6 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
 
   const { signUp, loginWithGoogle } = useAuth();
-
   const handleUsernameChange = (e) => {
     const value = e.target.value;
     setFormData((prev) => ({ ...prev, username: value }));
@@ -66,6 +65,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
   };
   
   // Función de validación de caracteres para nombre de usuario
+
   const validateTextInput = (input) => /^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s.,!?()\-:;]*$/.test(input);
   
 
@@ -79,7 +79,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
   setFormData((prev) => ({ ...prev, password: value }));
   const errors = { ...formErrors };
 
-  // Validaciones de contraseña
+  // Validacionelans de contraseña
   if (value.length < 6) {
     errors.password = "La contraseña debe tener al menos 6 caracteres.";
   } else if (!/[A-Z]/.test(value)) {
@@ -183,7 +183,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
       await loginWithGoogle();
       navigate("/libros");
     } catch (error) {
-      setError("Error al iniciar sesión con Google: " + error.message);
+      setFormErrors({ general: "Error al iniciar sesión con Google: " + error.message });
     }
   };
 
@@ -204,9 +204,8 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
 
         <h2 className="text-lg font-bold text-white text-left mb-3">Regístrate</h2>
 
-        {/* Campos de entrada y manejo de errores */}
-        {formErrors.general && <p className="text-red-500">{formErrors.general}</p>}
-        {successMessage && <p className="text-green-500">{successMessage}</p>}
+        {formErrors.general && <p className="text-red-500 text-xs">{formErrors.general}</p>}
+        {successMessage && <p className="text-green-500 text-xs">{successMessage}</p>}
 
         <div className="mb-2">
           <label className="block font-semibold text-white mb-1 text-xs">
@@ -248,7 +247,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           <input
             type={showPassword ? "text" : "password"}
             name="password"
-            placeholder="******"
+            placeholder="*****"
             value={formData.password}
             onChange={handlePasswordChange}
             className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
@@ -267,7 +266,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           <input
             type={showConfirmPassword ? "text" : "password"}
             name="confirmPassword"
-            placeholder="******"
+            placeholder="*****"
             value={formData.confirmPassword}
             onChange={handleConfirmPasswordChange}
             className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
@@ -283,9 +282,6 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
            )}
         </div>
 
-
-        {/* Botón de registro */}
-        
         {/* Botón de registro */}
         <button
           type="submit"

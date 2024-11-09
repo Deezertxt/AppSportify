@@ -77,6 +77,7 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
     try {
       await loginWithGoogle();
       navigate("/libros");
+      closeModal();
     } catch (error) {
       setError("Error al iniciar sesión con Google: " + error.message);
     }
@@ -109,6 +110,7 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
           <input
             type="text"
             name="email"
+            spellcheck="false"
             value={email}
             onChange={handleEmailChange}
             placeholder="Correo electrónico"
