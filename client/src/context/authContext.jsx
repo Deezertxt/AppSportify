@@ -1,6 +1,6 @@
 // context/authContext.js
 import { createContext, useContext, useEffect, useState } from "react";
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../utils/firebase";
 
 export const authContext = createContext();
@@ -28,6 +28,15 @@ export function AuthProvider({ children }) {
         await signOut(auth); // Cierra sesión
         setUser(null); // Actualiza el estado de user a null después de hacer logout
     };
+
+    const resetPassword = async (email) => {    
+        try {
+            await sendPasswordResetEmail(auth, email);
+            console.log('Correo de recuperación de contraseña enviado');
+        } catch (error) {
+            console.error('Error al enviar el correo de recuperación de contraseña:', error);
+        }
+    }
     
 
     const loginWithGoogle = async () => {
@@ -53,7 +62,7 @@ export function AuthProvider({ children }) {
     
 
     return (
-        <authContext.Provider value={{ login, signUp, user, logout, loading, loginWithGoogle }}>
+        <authContext.Provider value={{ login, signUp, user, logout, loading, loginWithGoogle, resetPassword }}>
             {children}
         </authContext.Provider>
     );
