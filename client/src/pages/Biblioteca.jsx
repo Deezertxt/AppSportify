@@ -54,7 +54,7 @@ function Biblioteca() {
                             ))}
                         </div>
                     ) : (
-                        <p className="text-center">No se encontraron audiolibros.</p>
+                        <p className="text-center">Cargando...</p>
                     )}
                 </div>
             </div>

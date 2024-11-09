@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-
+import { GoXCircleFill } from "react-icons/go";
 import { useAuth } from "../context/authContext";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../utils/firebase";
@@ -53,7 +53,9 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
     if (name === "password") {
       if (value.length < 6) {
         errors.password = "La contraseña debe tener al menos 6 caracteres.";
-      } else {
+      } else if (value.length >= 12) {
+        errors.password = "La contraseña debe ser menor a 12 caracteres.";
+      }else{
         const passwordError = validatePassword(value);
         if (passwordError) {
           errors.password = passwordError;
@@ -107,7 +109,9 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
     // Validación de la contraseña
     if (formData.password.length < 6) {
       errors.password = "La contraseña debe tener al menos 6 caracteres.";
-    } else {
+    } else if (formData.password.length < 6) {
+      errors.password = "La contraseña debe ser menor a 12 caracteres.";
+    }else{
       const passwordError = validatePassword(formData.password);
       if (passwordError) {
         errors.password = passwordError;
@@ -169,9 +173,9 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
         <button
           type="button"
           onClick={closeModal}
-          className="absolute top-5 right-2 text-gray-500"
+          className="absolute top-2 m-4 right-2 text-gray-500"
         >
-          X
+         <GoXCircleFill className="text-white"/>
         </button>
 
         <div className="flex flex-col items-center mb-4">
@@ -222,7 +226,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           <input
             type={showPassword ? "text" : "password"}
             name="password"
-            placeholder="**"
+            placeholder="*****"
             value={formData.password}
             onChange={handleChange}
             className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
@@ -241,7 +245,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           <input
             type={showConfirmPassword ? "text" : "password"}
             name="confirmPassword"
-            placeholder="**"
+            placeholder="*****"
             value={formData.confirmPassword}
             onChange={handleChange}
             className="w-full p-1 border-b-2 border-white bg-transparent focus:outline-none text-white text-sm"
@@ -250,10 +254,13 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           <button type="button" onClick={toggleConfirmPasswordVisibility} className="absolute right-2 top-1/2 transform -translate-y-1/2">
             <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} className="text-white" />
           </button>
-          {formErrors.confirmPassword && <p className="text-red-500 text-xs">{formErrors.confirmPassword}</p>}
-          {passwordMatchMessage && <p className="text-green-500 text-xs">{passwordMatchMessage}</p>}
+           {passwordMatchMessage && (
+                <p className={`text-xs ${formData.password === formData.confirmPassword ? 'text-green-500' : 'text-red-500'}`}>
+          {passwordMatchMessage}
+                </p>
+           )}
         </div>
-
+        
         <button
           type="submit"
           className={`w-full p-2 bg-gray-800 text-white rounded mt-3 ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -279,7 +286,7 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
 
         <p className="text-white text-1g mt-4 text-center">
           ¿Ya tienes cuenta?{" "}
-          <button type="button" onClick={openLogin} className="text-blue-500 underline  ">
+          <button type="button" onClick={openLogin} className="text-blue-500">
              <p className=" text-lg text-white font-bold "> Inicia sesión </p> 
           </button>
         </p>
