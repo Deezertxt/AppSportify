@@ -16,6 +16,7 @@ process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
 const bucketName = 'sportify-2';
 const audioFolder = 'uploads/audio';
 const outputFolder = 'uploads/json';
+const DEFAULT_BITRATE = 64000; 
 
 // Función para extraer texto de un PDF usando Vision API
 async function extractTextFromPDF(pdfGcsUrl) {
@@ -84,8 +85,6 @@ async function convertirTextoAVoz(texto, title) {
   };
 
   const [response] = await ttsClient.synthesizeSpeech(request);
-
-  const audioDuration = response.audioContent.length / 16000;
   const audioFileName = `${title}-audio.mp3`;
   const file = storage.bucket(bucketName).file(`${audioFolder}/${audioFileName}`);
 
@@ -94,15 +93,19 @@ async function convertirTextoAVoz(texto, title) {
     resumable: false,
   });
   console.log(`Audio subido a GCS en la ruta: gs://${bucketName}/${audioFolder}/${audioFileName}`);
+
+  // Obtener el tamaño del archivo para estimar la duración
+  const [metadata] = await file.getMetadata();
+  const fileSizeInBytes = metadata.size;
+  const durationInSeconds = (fileSizeInBytes * 8) / DEFAULT_BITRATE;
+  const durationInMinutes = Math.round((durationInSeconds / 60) * 10) / 10; // Redondea a 2 decimales
+
+
   // Generar la URL HTTP del archivo de audio
   const audioUrl = `https://storage.googleapis.com/${bucketName}/${audioFolder}/${audioFileName}`;
 
-  return {audioUrl, audioDuration};
+  return {audioUrl, audioDuration:durationInMinutes};
 }
-const convertDurationToMinutes = (durationInSeconds) => {
-  const minutes = Math.ceil(durationInSeconds / 60);
-  return `${minutes} min`;
-};
 
 // Función principal para crear un audiolibro a partir de URLs
 const createAudiobook = async (req, res) => {
@@ -135,7 +138,6 @@ const createAudiobook = async (req, res) => {
 
     // Convertir el texto a voz y obtener URL y duración
     const { audioUrl, audioDuration } = await convertirTextoAVoz(contentText, title);
-    const durationInMinutes = convertDurationToMinutes(audioDuration);
     // Guardar información en la base de datos
     const newAudiobook = await prisma.audiobook.create({
       data: {
@@ -145,7 +147,7 @@ const createAudiobook = async (req, res) => {
         author,
         pdfUrl,
         coverUrl,
-        duration: durationInMinutes,
+        duration: `${audioDuration} min`,
         audioUrl,
         text: extractedText,  // Guarda el texto completo, incluido el título
       },

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { isValidCover } from "../utils/fileCoverValidator";
 import { isValidPdf } from "../utils/fileValidator";
-import { createAudiobook, getCategories, uploadFilesToGCS} from '../api/api';
+import { createAudiobook, getCategories, uploadFilesToGCS } from '../api/api';
 import { FaTrashAlt, FaFilePdf, FaImage, FaPaperPlane, FaTimes, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 import BarLoaderWrapper from "../components/BarLoader";
@@ -140,6 +140,39 @@ function Publicar() {
         document.getElementById("portadaFile").value = ""; // Restablecer el input file a vacío
     };
 
+    // Función para manejar el cambio en el título
+    const handleTitleChange = (e) => {
+        const value = e.target.value;
+        if (value.length <= 35) {
+            setFormData({
+                ...formData,
+                title: value
+            });
+            setErrors((prevErrors) => ({ ...prevErrors, titleLength: "" })); // Limpiar el mensaje de error si es válido
+        } else {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                titleLength: "Has alcanzado el límite de 35 caracteres para el título."
+            }));
+        }
+    };
+
+    // Función para manejar el cambio en el autor
+    const handleAuthorChange = (e) => {
+        const value = e.target.value;
+        if (value.length <= 35) {
+            setFormData({
+                ...formData,
+                author: value
+            });
+            setErrors((prevErrors) => ({ ...prevErrors, authorLength: "" })); // Limpiar el mensaje de error si es válido
+        } else {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                authorLength: "Has alcanzado el límite de 35 caracteres para el autor."
+            }));
+        }
+    };
     // Función para manejar el cambio en la descripción
     const handleDescriptionChange = (e) => {
         const value = e.target.value;
@@ -181,6 +214,8 @@ function Publicar() {
             formErrors.title = "El título contiene caracteres no permitidos.";
         } else if (formData.title.trim() === "") {
             formErrors.titleEmpty = "El título no puede estar vacío ni contener solo espacios.";
+        } else if (formData.title.length > 35) {
+            formErrors.titleLength = "El título no puede superar los 35 caracteres.";
         }
 
         // Validar autor, caracteres especiales y espacios
@@ -188,6 +223,8 @@ function Publicar() {
             formErrors.author = "El autor contiene caracteres no permitidos.";
         } else if (formData.author.trim() === "") {
             formErrors.authorEmpty = "El autor no puede estar vacío ni contener solo espacios.";
+        } else if (formData.author.length > 35) {
+            formErrors.authorLength = "El autor no puede superar los 35 caracteres.";
         }
 
         // Validar descripción, espacios
@@ -198,7 +235,7 @@ function Publicar() {
         }
 
         if (!formData.pdfFile) {
-            formErrors.pdfFile = "Por favor, sube un archivo PDF o DOCX.";
+            formErrors.pdfFile = "Por favor, sube un archivo PDF";
         }
 
         // Validar portada
@@ -281,11 +318,11 @@ function Publicar() {
             <div className="max-w-screen-xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-8">
                     <button
-                    
-                       onClick={() => setIsModalOpen(true)} // Abre el modal
+
+                        onClick={() => setIsModalOpen(true)} // Abre el modal
                         className="mb-4 text-[#0B6477] flex items-center"
                     >
-        
+
                         <FaArrowLeft className="mr-2" /> Volver al inicio
                     </button>
                     <div className="text-center flex-grow">
@@ -306,7 +343,7 @@ function Publicar() {
                                     id="titulo"
                                     name="titulo"
                                     value={formData.title}
-                                    onChange={e => setFormData({ ...formData, title: e.target.value })}
+                                    onChange={handleTitleChange}
                                     className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     placeholder="Título del audiolibro"
                                     required
@@ -316,6 +353,9 @@ function Publicar() {
                                 )}
                                 {errors.titleEmpty && (
                                     <p className="text-red-500 text-sm">{errors.titleEmpty}</p>
+                                )}
+                                {errors.titleLength && (
+                                    <p className="text-red-500 text-sm">{errors.titleLength}</p>
                                 )}
                             </div>
 
@@ -328,7 +368,7 @@ function Publicar() {
                                     id="autor"
                                     name="autor"
                                     value={formData.author}
-                                    onChange={e => setFormData({ ...formData, author: e.target.value })}
+                                    onChange={handleAuthorChange}
                                     className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     placeholder="Nombre del Autor"
                                     required
@@ -338,6 +378,9 @@ function Publicar() {
                                 )}
                                 {errors.authorEmpty && (
                                     <p className="text-red-500 text-sm">{errors.authorEmpty}</p>
+                                )}
+                                {errors.authorLength && (
+                                    <p className="text-red-500 text-sm">{errors.authorLength}</p>
                                 )}
                             </div>
 

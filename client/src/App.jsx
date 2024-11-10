@@ -7,6 +7,7 @@ import Publicar from './pages/Publicar';
 import PanelAdmin from "./pages/PanelAdmin";
 import Actualizar from "./pages/Actualizar";
 import InicioSesion from './pages/InicioSesion';
+import Registro from './components/ModalRegistro';
 import TasksPage from './pages/Taskpage';
 import HeroSection from './pages/HeroSection';
 import Preview from './pages/Preview';
@@ -23,6 +24,7 @@ function App() {
         <Routes>
             <Route path="/" element={<HeroSection />} />
             <Route path="/login" element={<InicioSesion />} />
+            <Route path="/registro" element={<Registro />} />
             {/* <Route path="/registro" element={<Registro/>}/> */}
             <Route path="/libros" element={<ProtectedRoutes><MainLayout><Biblioteca /></MainLayout></ProtectedRoutes>} />
             <Route path="/reproductor/:id" element={<AudioLibroReproductor />} />

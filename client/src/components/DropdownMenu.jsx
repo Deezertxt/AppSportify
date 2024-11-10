@@ -50,7 +50,7 @@ const handleLogout = async () => {
       layout
       className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-first p-2"
       style={{
-        width: open ? "225px" : "fit-content",
+        width: open ? "200px" : "fit-content",
       }}
     >
       <TitleSection open={open} />
@@ -91,7 +91,7 @@ const handleLogout = async () => {
         <button
           type="button"
           onClick={handleLogout}
-          className="flex items-center space-x-2 w-full justify-start text-gray-50 hover:bg-gray-800 p-2 rounded-md"
+          className="flex items-center space-x-2 w-full justify-center text-gray-50 hover:bg-gray-800 p-2 rounded-md"
         >
           <FiLogOut className="text-xl" />
           {open && (
@@ -125,7 +125,7 @@ const handleLogout = async () => {
 
           <motion.div
             layout
-            className="grid h-full w-10 place-content-center text-xl"
+            className="grid h-full w-16 place-content-center text-xl"
           >
             <Icon />
           </motion.div>
@@ -181,10 +181,10 @@ const handleLogout = async () => {
     return (
       <motion.div
         layout
-        className="grid size-20 shrink-0 place-content-center rounded-md  "
+        className="grid size-16 shrink-0 place-content-center rounded-md  "
       >
 
-        <Link to="/">{ }
+        <Link to="/libros">{ }
           <img className="block lg:hidden h-20 w-18" src="/logoS.svg" alt="Logo" />
           <img className="hidden lg:block h-20 w-auto" src="/logoS.svg" alt="Logo" />
         </Link>

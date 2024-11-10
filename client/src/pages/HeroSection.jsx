@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Carousel from '../components/Carousel';
+import Modal from '../components/Modal';
+import ModalInicioSesion from '../components/ModalInicioSesion';
+import ModalRegistro from '../components/ModalRegistro';
 import { Navigate } from 'react-router-dom';
 function HeroSection() {
     const [isLoginModalOpen, setLoginModalOpen] = useState(false);
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [isLogin, setIsLogin] = useState(false);
 
     const openLoginModal = () => {
         Navigate('/login');
@@ -14,6 +19,17 @@ function HeroSection() {
 
         setLoginModalOpen(false);
     };
+
+    const openRegisterModal = () => {
+        setIsLogin(false); // Asegura que esté en el formulario de registro
+        setModalOpen(true); // Abre el modal
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
+
+    const toggleForm = () => setIsLogin(!isLogin); // Alterna entre login y registro
 
     const images = [
         "https://firebasestorage.googleapis.com/v0/b/sportify-198e3.appspot.com/o/uploads%2Fcovers%2Faaaaddddddddddddd.jpg?alt=media&token=66fe8acc-013d-473f-93a7-88fb1d200f87",
@@ -38,9 +54,9 @@ function HeroSection() {
                         Obtén las ideas clave de la cima <span className="highlight bg-blue-100 px-2 py-1 rounded">audiolibros</span>,
                         <span className="highlight bg-purple-100 px-2 py-1 rounded">resumenes</span>, y
                         <span className="highlight bg-green-100 px-2 py-1 rounded">deporte</span>
-                        en 15 minutos con la aplicación Sportify.
+                        en menos de 10 minutos con la aplicación Sportify.
                     </p>
-                    <button className="bg-[#A8DADC] text-white px-4 py-2 rounded hover:bg-[#457B9D]">
+                    <button onClick={openRegisterModal} className="bg-[#A8DADC] text-white px-4 py-2 rounded hover:bg-[#457B9D]">
                         Comenzar
                     </button>
                 </div>
@@ -52,8 +68,15 @@ function HeroSection() {
 
             </div>
 
-
-            {isLoginModalOpen && <LoginModal closeModal={closeLoginModal} />}
+            {isModalOpen && (
+                <Modal isOpen={isModalOpen} closeModal={closeModal}>
+                    {isLogin ? (
+                        <ModalInicioSesion closeModal={closeModal} openRegister={toggleForm} />
+                    ) : (
+                        <ModalRegistro closeModal={closeModal} openLogin={toggleForm} />
+                    )}
+                </Modal>
+            )}
         </div>
     );
 }
