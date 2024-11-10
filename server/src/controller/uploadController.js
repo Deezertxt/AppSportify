@@ -8,7 +8,7 @@ const gcsClient = new Storage(); // Inicializa el cliente de GCS
 
 // Función para subir archivos a Google Cloud Storage
 const uploadToGCS = async (fileBuffer, filename, folder) => {
-    const bucketName = process.env.GCS_BUCKET_NAME; // Cambia esto por tu nombre de bucket
+    const bucketName = 'sportify-2'; // Cambia esto por tu nombre de bucket
     const bucket = gcsClient.bucket(bucketName);
     const file = bucket.file(`${folder}/${filename}`);
 
@@ -18,7 +18,7 @@ const uploadToGCS = async (fileBuffer, filename, folder) => {
 
 // Función para subir la portada y devolver una URL pública en formato HTTP
 const uploadCoverToGCS = async (fileBuffer, filename) => {
-    const bucketName = process.env.GCS_BUCKET_NAME; // Cambia esto por tu nombre de bucket
+    const bucketName = 'sportify-2'// Cambia esto por tu nombre de bucket
     const bucket = gcsClient.bucket(bucketName);
     const file = bucket.file(`uploads/covers/${filename}`);
 
