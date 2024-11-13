@@ -1,4 +1,4 @@
-import { Route, Routes} from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import MainLayout from './pages/MainLayout';
 import Biblioteca from './pages/Biblioteca';
@@ -16,29 +16,29 @@ import SearchResults from './components/SearchResults';
 import { AuthProvider } from './context/authContext';
 import { ProtectedRoutes } from './context/ProtectedRoutes';
 
-
 function App() {
-
     return (
         <AuthProvider>
-        <Routes>
-            <Route path="/" element={<HeroSection />} />
-            <Route path="/login" element={<InicioSesion />} />
-            <Route path="/registro" element={<Registro />} />
-            {/* <Route path="/registro" element={<Registro/>}/> */}
-            <Route path="/libros" element={<ProtectedRoutes><MainLayout><Biblioteca /></MainLayout></ProtectedRoutes>} />
-            <Route path="/reproductor/:id" element={<AudioLibroReproductor />} />
-            <Route path="/escuchar/:id" element={<MainLayout><Reproductor /></MainLayout>} />
-            <Route path="/panelAdmin" element={<MainLayout><PanelAdmin /></MainLayout>} />
-            <Route path="/publicar" element={<MainLayout><Publicar /></MainLayout>} />
-            <Route path="/actualizar/:id" element={<MainLayout><Actualizar /></MainLayout>} />
-            
-            <Route path="/taskpage" element={<TasksPage />} />
-            <Route path="/preview/:id" element={<MainLayout><Preview /></MainLayout>} />
-
-            <Route path="/buscar" element={<MainLayout><SearchResults/></MainLayout> } />
-        </Routes>
+            <Routes>
+                <Route path="/" element={<HeroSection />} />
+                <Route path="/login" element={<InicioSesion />} />
+                <Route path="/registro" element={<Registro />} />
+                
+                {/* MainLayout envuelve las rutas protegidas */}
+                <Route element={<MainLayout />}>
+                    <Route path="/libros" element={<ProtectedRoutes><Biblioteca /></ProtectedRoutes>} />
+                    <Route path="/reproductor/:id" element={<AudioLibroReproductor />} />
+                    <Route path="/escuchar/:id" element={<Reproductor />} />
+                    <Route path="/panelAdmin" element={<PanelAdmin />} />
+                    <Route path="/publicar" element={<Publicar />} />
+                    <Route path="/actualizar/:id" element={<Actualizar />} />
+                    <Route path="/taskpage" element={<TasksPage />} />
+                    <Route path="/preview/:id" element={<Preview />} />
+                    <Route path="/buscar" element={<SearchResults />} />
+                </Route>
+            </Routes>
         </AuthProvider>
     );
 }
+
 export default App;

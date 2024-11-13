@@ -1,58 +1,70 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { SearchResultsList } from "./SearchResultsList";
+import { getAudiobooks } from "../api/api";
+import debounce from "lodash.debounce"; // Asegúrate de tener lodash instalado para el debounce
 
 function SearchBar() {
     const [input, setInput] = useState("");
-    const navigate = useNavigate();
+    const [audiobooks, setAudiobooks] = useState([]);
     const [results, setResults] = useState([]);
     const [aparecer, setAparecer] = useState(false);
+    const navigate = useNavigate();
 
-    const fetchData = (value) => {
-        fetch("http://localhost:3000/api/audiobook/get/")
-            .then((response) => response.json())
-            .then((json) => {
-                const results = json.filter((audiobook) => {
-                    return (
-                        (value &&
-                            audiobook &&
-                            audiobook.title &&
-                            audiobook.title
-                                .toLowerCase()
-                                .includes(value.toLowerCase())) ||
-                        (audiobook.author &&
-                            audiobook.author
-                                .toLowerCase()
-                                .includes(value.toLowerCase()))
-                    );
-                });
-                setResults(results.slice(0, 4));
-            });
-    };
+    // Llamada inicial a la API para obtener todos los audiolibros
+    useEffect(() => {
+        const fetchAudiobooks = async () => {
+            try {
+                const response = await getAudiobooks(); // Llamada a la API
+                if (Array.isArray(response.data)) {
+                    setAudiobooks(response.data); // Guardamos los audiolibros
+                } else {
+                    console.error("La respuesta no es un array:", response.data);
+                    setAudiobooks([]); // Estado vacío en caso de error
+                }
+            } catch (error) {
+                console.error("Error fetching audiobooks:", error);
+                setAudiobooks([]); // Estado vacío en caso de error
+            }
+        };
 
-    const handlechange = (value) => {
+        fetchAudiobooks();
+    }, []);
+
+    // Lógica de búsqueda
+    const filterResults = useCallback(
+        debounce((value) => {
+            if (value) {
+                const filteredResults = audiobooks.filter(
+                    (audiobook) =>
+                        audiobook.title.toLowerCase().includes(value.toLowerCase()) ||
+                        audiobook.author.toLowerCase().includes(value.toLowerCase())
+                );
+                setResults(filteredResults.slice(0, 4));
+            } else {
+                setResults([]);
+            }
+        }, 300), // 300ms de retraso
+        [audiobooks]
+    );
+
+    const handleInputChange = (value) => {
         if (value.length < 100) {
             setInput(value);
             setAparecer(true);
-            if (value === "") {
-                setResults([]);
-                setAparecer(false);
-            } else {
-                fetchData(value);
-            }
+            filterResults(value); // Aplicamos el debounce
         } else {
-            alert("menos de 100 caracteres");
+            alert("Por favor, usa menos de 100 caracteres");
         }
     };
 
-    const find = (entrada) => {
-        navigate("/buscar", { state: { input } });
-        setResults([]);
-        if (entrada === "") {
-            alert("Buscador vacio")
-        }else{
-            navigate("/buscar", { state: { input } });
+    const handleSearch = () => {
+        if (input.trim()) {
+            navigate("/buscar", { state: { input, results } });
             setResults([]);
+            setAparecer(false);
+        } else {
+            alert("El campo de búsqueda está vacío");
         }
     };
 
@@ -63,19 +75,15 @@ function SearchBar() {
                     <input
                         type="search"
                         className="h-[38px] w-full rounded-l border border-solid border-gray-300 bg-white px-2 py-1 text-sm font-normal text-gray-700 placeholder-gray-400 transition duration-200 ease-in-out focus:z-[3] focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                        placeholder="Buscar por titulo, autor o categoria"
-                        aria-label="Buscar por titulo, autor o categoria"
+                        placeholder="Buscar por título, autor o categoría"
+                        aria-label="Buscar por título, autor o categoría"
                         value={input}
-                        onChange={(e) => handlechange(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                find(input);
-                            }
-                        }}
+                        onChange={(e) => handleInputChange(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                     />
                     <button
                         className="h-[38px] flex items-center justify-center bg-orange-500 rounded-r px-2 py-1 text-white cursor-pointer hover:bg-orange-600 transition duration-200 ease-in-out"
-                        onClick={() => find(input)}
+                        onClick={handleSearch}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -91,15 +99,15 @@ function SearchBar() {
                         </svg>
                     </button>
                 </div>
-                {aparecer && (
+                {aparecer && results.length > 0 && (
                     <div
                         id="lista-de-resultados"
                         className="absolute w-full bg-white text-black flex-col shadow-md rounded-lg max-h-[300px] overflow-y-scroll z-50 mt-1"
                     >
-                        {results.map((results, id) => (
+                        {results.map((result, id) => (
                             <SearchResultsList
-                                results={results}
                                 key={id}
+                                results={result}
                                 setInput={setInput}
                                 setResults={setResults}
                             />
@@ -107,7 +115,7 @@ function SearchBar() {
                         {results.length === 4 && (
                             <div
                                 className="font-bold hover:underline pl-4 cursor-pointer"
-                                onClick={() => find(input)}
+                                onClick={handleSearch}
                             >
                                 Ver todos los resultados...
                             </div>

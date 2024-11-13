@@ -33,7 +33,11 @@ export const SearchResultsList = ({ results, setInput, setResults }) => {
                                 <div className="text-base">
                                     Autor: {results.author}
                                 </div>
+                                <div className="text-base">
+                                    {results.duration}
+                                </div>
                             </div>
+
                         </div>
                     </div>
                 )}

@@ -6,6 +6,7 @@ import AudioDetails from "../components/AudioDetails";
 import ControlButtons from "../components/ControlButtons";
 import PlayerControls from "../components/PlayerControls";
 import { getAudiobookById } from "../api/api";
+import { FiArrowLeft } from "react-icons/fi";
 
 const AudioLibroReproductor = () => {
     const { id } = useParams();
@@ -113,72 +114,72 @@ const AudioLibroReproductor = () => {
     }
 
     const [title, ...paragraphs] = audiobook.text.split("\n").filter(line => line.trim() !== "");
-
     return (
-        <div className="flex flex-col h-screen bg-white">
-            <div className="fixed top-0 left-0 h-full w-12 bg-gray-100 flex flex-col items-center pt-4 space-y-4">
-                <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={() => navigate(-2)}>🏠</button>
-                <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300">⚙️</button>
-                <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={increaseFontSize}>A+</button>
-                <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={decreaseFontSize}>A-</button>
+        <div className="flex flex-col flex-grow ">
+            {/* Botón de regreso */}
+            <div className="p-4">
+                <button onClick={() => navigate(-1)} className="text-black flex items-center mb-4">
+                    <FiArrowLeft className="mr-2" />
+                    Volver
+                </button>
             </div>
-
-            <div className="flex-wrap-reverse justify-items-center overflow-y-auto p-4 ml-12 h-[calc(100vh-120px)]">
-                <div className="text-gray-900 p-4 overflow-y-auto h-full" style={{ fontSize: `${fontSize}px` }}>
-                    <h1 className="text-2xl font-bold mb-4 text-gray-900">{title}</h1>
-                    {paragraphs.map((paragraph, index) => (
-                        <p key={index} className="mb-4 text-lg leading-relaxed text-gray-800">
-                            {paragraph}
-                        </p>
-                    ))}
-                </div>
+    
+            {/* Contenido del audiolibro */}
+            <div className="overflow-y-auto p-4 flex-grow place-items-center">
+                <h1 className="text-2xl font-bold mb-4 text-gray-900">{title}</h1>
+                {paragraphs.map((paragraph, index) => (
+                    <p key={index} className="mb-4 text-lg leading-relaxed text-gray-800">
+                        {paragraph}
+                    </p>
+                ))}
             </div>
-
-            <div className="fixed bottom-0 w-full bg-first text-white p-4 flex flex-col space-y-4 md:space-y-6">
+    
+            {/* Controles de audio y detalles */}
+            <div className="w-full bg-first text-white p-4 space-y-4">
                 <ProgressBar
                     progress={progress}
                     totalDuration={totalDuration}
                     onProgressChange={handleProgressChange}
                     className="w-full"
                 />
-
+    
                 <div className="flex flex-col md:flex-row justify-between items-center w-full space-y-4 md:space-y-0">
                     <div className="flex items-start">
-                        <AudiobookCover coverUrl={audiobook.coverUrl} className="w-20 h-20 md:w-25 md:h-25 object-cover rounded-md" />
+                        <AudiobookCover coverUrl={audiobook.coverUrl} className="w-20 h-20 object-cover rounded-md" />
                         <div className="ml-4">
-                            <AudioDetails title={audiobook.title} author={audiobook.author} className="text-sm md:text-base" />
+                            <AudioDetails title={audiobook.title} author={audiobook.author} />
                         </div>
                     </div>
-
+    
                     <ControlButtons
                         isPlaying={isPlaying}
                         togglePlay={togglePlayPause}
                         handleBackward={handleBackward}
                         handleForward={handleForward}
-                        handleRestart={handleRestart} // Pasar la función handleRestart
-                        hasEnded={hasEnded} // Pasar estado de fin de audio
+                        handleRestart={handleRestart}
+                        hasEnded={hasEnded}
                         className="flex justify-center space-x-2 md:space-x-4"
                     />
-
+    
                     <PlayerControls
                         speed={speed}
                         setSpeed={setSpeed}
                         volume={volume}
                         setVolume={setVolume}
-                        className="flex items-center space-x-2 md:space-x-4"
                     />
                 </div>
-
+    
                 <audio
                     ref={audioRef}
                     src={audiobook.audioUrl}
                     onTimeUpdate={handleProgress}
                     onLoadedMetadata={handleLoadedMetadata}
-                    onEnded={handleAudioEnded} // Marcar como terminado
+                    onEnded={handleAudioEnded}
                 />
             </div>
         </div>
     );
+    
 };
 
 export default AudioLibroReproductor;
