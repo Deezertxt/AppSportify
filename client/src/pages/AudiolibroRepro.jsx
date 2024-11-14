@@ -134,7 +134,7 @@ const AudioLibroReproductor = () => {
                     ))}
                     
                     <div className="mt-20 mb-16">
-                       <button className="bg-blue-500 text-white px-10 py-3 rounded hover:bg-blue-600 w-full sm:w-auto">
+                       <button className="bg-[#16697A] text-white px-14 py-3 rounded hover:bg-teal-800	 w-full sm:w-auto">
                              <p className="text-center" style={{ fontFamily: 'Times New Roman', serif: 'serif' }}>
                                    <FontAwesomeIcon icon={faCheck} className="text-white" /> Marcar como terminado
                             </p>
