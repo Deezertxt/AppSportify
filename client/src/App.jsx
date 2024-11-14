@@ -16,6 +16,7 @@ import SearchResults from './components/SearchResults';
 import { AuthProvider } from './context/authContext';
 import { ProtectedRoutes } from './context/ProtectedRoutes';
 import RecuperarPassword from './pages/RecuperarPassword'
+import VerificarEmail from './components/VerificarEmail';
 
 function App() {
 
