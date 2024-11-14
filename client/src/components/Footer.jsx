@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { FaDiscord, FaInstagram, FaXTwitter } from "react-icons/fa6";
+import { FaDiscord, FaInstagram, FaXTwitter } from 'react-icons/fa6';
+
 
 const Footer = () => {
     return (

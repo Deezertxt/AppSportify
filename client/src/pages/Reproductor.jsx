@@ -4,7 +4,7 @@ import ProgressBar from "../components/ProgressBar";
 import ControlButtons from "../components/ControlButtons";
 import PlayerControls from "../components/PlayerControls";
 import { FiArrowLeft } from "react-icons/fi";
-import { getAudiobooks } from '../api/api';
+import { getAudiobookById } from '../api/api';
 
 const Reproductor = () => {
     const { id } = useParams();
@@ -12,6 +12,7 @@ const Reproductor = () => {
     const [bookData, setBookData] = useState(null);
     const audioRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [hasEnded, setHasEnded] = useState(false);
     const [speed, setSpeed] = useState(1.0);
     const [volume, setVolume] = useState(100);
     const [progress, setProgress] = useState(0);
@@ -20,24 +21,15 @@ const Reproductor = () => {
     useEffect(() => {
         const fetchBookData = async () => {
             try {
-                const response = await getAudiobooks();
-                if (Array.isArray(response.data)) {
-                    const foundBook = response.data.find(book => book.id === parseInt(id, 10));
-                    if (foundBook) {
-                        setBookData(foundBook);
-                    } else {
-                        console.error(`No se encontró un libro con el id: ${id}`);
-                    }
-                } else {
-                    console.error("La respuesta no es un array:", response.data);
-                }
+                const response = await getAudiobookById(id);
+                setBookData(response.data);
             } catch (error) {
-                console.error("Error fetching audiobooks:", error);
+                console.error("Error fetching audiobook:", error);
             }
         };
-
         fetchBookData();
     }, [id]);
+    
 
     const togglePlayPause = () => {
         if (isPlaying) {
@@ -46,6 +38,21 @@ const Reproductor = () => {
             audioRef.current.play();
         }
         setIsPlaying(!isPlaying);
+        setHasEnded(false);
+    };
+
+    const handleRestart = () => {
+        if (audioRef.current) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play();
+            setIsPlaying(true);
+            setHasEnded(false);
+        }
+    };
+
+    const handleAudioEnded = () => {
+        setIsPlaying(false);
+        setHasEnded(true); // Marcar que el audio ha terminado
     };
 
     const handleProgress = () => {
@@ -66,18 +73,21 @@ const Reproductor = () => {
             const newTime = (newProgress / 100) * totalDuration;
             audioRef.current.currentTime = newTime;
             setProgress(newProgress);
+            setHasEnded(false);
         }
     };
 
     const handleBackward = () => {
         if (audioRef.current) {
             audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 10);
+            setHasEnded(false);
         }
     };
 
     const handleForward = () => {
         if (audioRef.current) {
             audioRef.current.currentTime = Math.min(audioRef.current.duration, audioRef.current.currentTime + 10);
+            setHasEnded(false);
         }
     };
 
@@ -139,6 +149,9 @@ const Reproductor = () => {
                         togglePlay={togglePlayPause}
                         handleBackward={handleBackward}
                         handleForward={handleForward}
+                        handleRestart={handleRestart} // Pasar la función handleRestart
+                        hasEnded={hasEnded} // Pasar estado de fin de audio
+                        className="flex justify-center space-x-2 md:space-x-4"
                     />
                 </div>
 
@@ -152,6 +165,7 @@ const Reproductor = () => {
                     src={audioUrl}
                     onTimeUpdate={handleProgress}
                     onLoadedMetadata={handleLoadedMetadata}
+                    onEnded={handleAudioEnded}
                 />
             </main>
         </div>
