@@ -6,7 +6,8 @@ import AudioDetails from "../components/AudioDetails";
 import ControlButtons from "../components/ControlButtons";
 import PlayerControls from "../components/PlayerControls";
 import { getAudiobookById } from "../api/api";
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 const AudioLibroReproductor = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -131,7 +132,19 @@ const AudioLibroReproductor = () => {
                             {paragraph}
                         </p>
                     ))}
+                    
+                <div className="mt-20 mb-16">
+                <button className="bg-blue-500 text-white px-14 py-3 rounded hover:bg-blue-600">
+                   <p style={{ fontFamily: 'Times New Roman', serif: 'serif' }}> 
+                         <FontAwesomeIcon icon={faCheck} className="text-white" /> Marcar como terminado
+                   </p>
+                </button>
+
                 </div>
+                
+
+             </div>
+                
             </div>
 
             <div className="fixed bottom-0 w-full bg-first text-white p-4 flex flex-col space-y-4 md:space-y-6">
@@ -140,7 +153,9 @@ const AudioLibroReproductor = () => {
                     totalDuration={totalDuration}
                     onProgressChange={handleProgressChange}
                     className="w-full"
-                />
+                    
+                /> 
+                
 
                 <div className="flex flex-col md:flex-row justify-between items-center w-full space-y-4 md:space-y-0">
                     <div className="flex items-start">
@@ -148,6 +163,7 @@ const AudioLibroReproductor = () => {
                         <div className="ml-4">
                             <AudioDetails title={audiobook.title} author={audiobook.author} className="text-sm md:text-base" />
                         </div>
+                       
                     </div>
 
                     <ControlButtons
@@ -167,6 +183,7 @@ const AudioLibroReproductor = () => {
                         setVolume={setVolume}
                         className="flex items-center space-x-2 md:space-x-4"
                     />
+                    
                 </div>
 
                 <audio
