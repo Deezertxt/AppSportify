@@ -82,7 +82,7 @@ const Reseña = () => {
                   onClick={() => handleFeedbackSelection(feedback)}
                   className={`px-4 py-2 rounded-md text-center ${
                     selectedFeedback.includes(feedback)
-                      ? 'border-2 border-blue-700 text-gray-700' // Borde azul oscuro cuando está seleccionado
+                      ? 'border-2 border-blue-700 text-gray-700'
                       : 'bg-gray-200 text-gray-700'
                   }`}
                 >
