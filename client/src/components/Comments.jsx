@@ -25,9 +25,11 @@ export const Comments = ({ currentUserId }) => {
             className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white rounded-lg"
         >
             <div id="comment-form-title" className="font-bold text-xl">Escribe una reseña:</div>
+
             <div>
                 <CommentsForm submitLabel="Comentar" handleSubmit="addComment" />
             </div>
+            
             <div id="comments-container" className="h-auto rounded-xl">
                 <div className="text-xl font-bold">Reseñas: </div>
                 {rootComments.map((rootComment) => (

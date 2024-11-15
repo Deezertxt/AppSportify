@@ -6,7 +6,7 @@ export const Comment = ({ comment }) => {
             <div id="comment-image-container">
                 <img
                     src="../public/diavlo.jpg"
-                    className="h-[50px] w-[50px] rounded-full mx-2 my-6"
+                    className="size-[50px] rounded-full mx-2 my-6"
                 />
             </div>
             <div id="comment-rigth-apart" className=" my-4 w-full mx-4">
