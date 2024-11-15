@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import { getAudiobooks } from '../api/api';
+import { Comments } from '../components/Comments';
 
 function Preview() {
   const { id } = useParams(); // Obtener el id desde la URL
@@ -99,6 +100,9 @@ function Preview() {
           </div>
         </section>
       </main>
+      <div id='commentsSection'>
+          <Comments/>
+      </div>
     </div>
   );
 }
