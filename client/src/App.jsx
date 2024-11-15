@@ -21,7 +21,7 @@ import VerificarEmail from './components/VerificarEmail';
 function App() {
 
     return (
-        <RecuperarPassword/>
+        <VerificarEmail/>
 
         // <AuthProvider>
         // <Routes>

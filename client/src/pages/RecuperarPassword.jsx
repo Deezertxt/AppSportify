@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const ResetPassword = () => {
   return (
-    <div className='fixed inset-0 justify-center flex items-center'>
+    <div className='fixed inset-0 justify-center flex items-center p-4'>
         <div className='bg-[#ABDADC] w-full max-w-xl p-8 space-y-4 shadow-md rounded-lg'>
             <div>
                 <div className="flex flex-col items-center">
