@@ -1,11 +1,43 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState ,useEffect} from 'react';
+import { useParams,useNavigate } from 'react-router-dom';
+import { getAudiobooks } from '../api/api';
 
 const Reseña = () => {
+  const { id } = useParams(); 
   const [rating, setRating] = useState(null);
   const [hoverRating, setHoverRating] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
+  const [bookData, setBookData] = useState(null);
+  const [audiobooks, setAudiobooks] = useState([]);
+  
+  useEffect(() => {
+    const fetchBookData = async () => {
+      try {
+        const response = await getAudiobooks();
+        if (Array.isArray(response.data)) {
+          setAudiobooks(response.data);
+
+          const foundBook = response.data.find(book => book.id === parseInt(id, 10));
+          if (foundBook) {
+            setBookData(foundBook);
+          } else {
+            console.error(`No se encontró un libro con el id: ${id}`);
+          }
+        } else {
+          console.error("La respuesta no es un array:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching audiobooks:", error);
+      }
+    };
+
+    fetchBookData();
+  }, [id]);
+  if (!bookData) {
+    return <div className="flex items-center justify-center h-screen">Cargando...</div>;
+  }
+
 
   const handleRating = (rate) => {
     setRating(rate);
@@ -29,29 +61,30 @@ const Reseña = () => {
   };
 
   const labels = ["Horrible", "Malo", "Bueno", "Bien", "Excelente"];
+  const { title, author , coverUrl,  } = bookData;
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center">
-      {/* Encabezado */}
+     
       <div className="bg-[#ABDADC] w-full py-10 px-4 flex flex-col md:flex-row items-center justify-between">
         <div className="text-center md:text-left md:w-2/3">
           <h2 className="text-2xl md:text-3xl font-bold text-blue-900">
-            Cuéntanos qué piensas de
+            Cuéntanos qué piensas de 
           </h2>
           <p className="italic text-lg md:text-xl text-blue-700 mt-2">
-            Purpose Mindset de Akhtar Badshah
+            {title} de {author}  {rating}
           </p>
         </div>
         <div className="mt-4 md:mt-0 md:w-1/3 flex justify-center">
           <img
-            src="https://firebasestorage.googleapis.com/v0/b/sportify-198e3.appspot.com/o/uploads%2Fcovers%2Fholis.jpg?alt=media&token=fec38952-f2eb-416b-9cc6-fd3de2375d64"
+            src=  {coverUrl}
             alt="Conversación"
             className="w-24 h-24 md:w-32 md:h-32"
           />
         </div>
       </div>
 
-      {/* Contenido principal */}
+      
       <div className="w-full max-w-xl bg-white px-6 py-8 mt-1   rounded-md">
         <h3 className="text-xl font-semibold mb-6 text-center text-blue-900">
           ¿Cómo lo calificarías?
@@ -66,15 +99,15 @@ const Reseña = () => {
                 onMouseLeave={handleMouseLeave}
                 className={`text-6xl ${
                   hoverRating >= index + 1
-                    ? 'text-blue-700'
+                    ? 'text-yellow-500'
                     : rating >= index + 1
-                    ? 'text-blue-500'
+                    ? 'text-yellow-300'
                     : 'text-gray-300'
                 } transition-colors duration-200`}
               >
                 ★
               </button>
-              {/* Etiqueta visible solo cuando se selecciona */}
+             
               {rating === index + 1 && (
                 <span className="text-sm mt-2 text-gray-700">{label}</span>
               )}
@@ -85,12 +118,13 @@ const Reseña = () => {
         {rating && rating <= 5 && (
           <>
             <h3 className="text-lg font-semibold mb-2 text-center text-blue-900">
-              ¿Algo más que quieras compartir?
-            </h3>
+              ¿Algo más que quieras compartir ? 
+            </h3> 
             <textarea
+             
               className="w-full p-3 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Comparte tus pensamientos..."
-              rows="3" // Mayor altura
+              rows="3" 
             ></textarea>
 
             <h3 className="text-lg font-semibold mt-6 mb-2 text-center text-blue-900">

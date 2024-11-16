@@ -34,7 +34,7 @@ function App() {
            
             <Route path="/taskpage" element={<TasksPage />} />
             <Route path="/preview/:id" element={<MainLayout><Preview /></MainLayout>} />
-            <Route path="/Reseña" element={<Resenia/>} />
+            <Route path="/Reseña/:id" element={<Resenia/>} />
             <Route path="/buscar" element={<MainLayout><SearchResults/></MainLayout> } />
         </Routes>
         </AuthProvider>

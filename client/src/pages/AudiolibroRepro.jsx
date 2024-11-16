@@ -22,8 +22,7 @@ const AudioLibroReproductor = () => {
     const [totalDuration, setTotalDuration] = useState(0);
     
     const redirigirResenia =  ()=>{
-          navigate(`/Reseña`);
-
+          navigate(`/Reseña/${id}`);
     }
 
     useEffect(() => {
