@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import { getAudiobooks } from '../api/api';
+import { SlEarphonesAlt ,SlBookOpen } from "react-icons/sl";
 
 function Preview() {
   const { id } = useParams(); // Obtener el id desde la URL
@@ -80,16 +81,19 @@ function Preview() {
             <div className="flex space-x-4 mt-4">
               <button
                 onClick={(handleViewDetails)}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-300"
+                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-300 flex items-center space-x-2"
               >
-                Ver
+                <SlBookOpen />
+                <span>Ver</span>
               </button>
               <button
                 onClick={(handleListen)}
-                className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-300"
-              >
-                Escuchar
-              </button>
+                className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-300 flex items-center space-x-2"
+>
+                <SlEarphonesAlt />
+                <span>Escuchar</span>
+                </button>
+
             </div>
             <div> {/* Descripción */}
               <section className="mt-6">

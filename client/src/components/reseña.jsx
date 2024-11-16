@@ -1,6 +1,7 @@
 import React, { useState ,useEffect} from 'react';
 import { useParams,useNavigate } from 'react-router-dom';
 import { getAudiobooks } from '../api/api';
+import { BiSolidDislike ,BiSolidLike    } from "react-icons/bi";
 
 const Reseña = () => {
   const { id } = useParams(); 
@@ -132,10 +133,13 @@ const Reseña = () => {
             </h3>
             <div className="flex justify-center space-x-4 mb-6">
               <button className="text-2xl text-gray-500 hover:text-blue-700">
-                👎
+              <BiSolidDislike />
+
+
               </button>
               <button className="text-2xl text-gray-500 hover:text-blue-700">
-                👍
+              <BiSolidLike />
+
               </button>
             </div>
           </>
