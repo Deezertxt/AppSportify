@@ -20,6 +20,11 @@ const AudioLibroReproductor = () => {
     const [volume, setVolume] = useState(100);
     const [progress, setProgress] = useState(0);
     const [totalDuration, setTotalDuration] = useState(0);
+    
+    const redirigirResenia =  ()=>{
+          navigate(`/Reseña`);
+
+    }
 
     useEffect(() => {
         const fetchAudiobook = async () => {
@@ -133,7 +138,8 @@ const AudioLibroReproductor = () => {
                         </p>
                     ))}
                     <div className="mt-20 mb-16">
-                       <button className="bg-[#16697A] text-white px-14 py-3 rounded hover:bg-teal-800	 w-full sm:w-auto">
+                       <button  onClick={(redirigirResenia)}   
+                       className="bg-[#16697A] text-white px-14 py-3 rounded hover:bg-teal-800	 w-full sm:w-auto">
                              <p className="text-center" style={{ fontFamily: 'Times New Roman', serif: 'serif' }}>
                                    <FontAwesomeIcon icon={faCheck} className="text-white" /> Marcar como terminado
                             </p>

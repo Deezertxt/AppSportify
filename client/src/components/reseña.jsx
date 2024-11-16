@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-
+import { useParams, useNavigate } from 'react-router-dom';
 const Reseña = () => {
   const [rating, setRating] = useState(null);
   const [hoverRating, setHoverRating] = useState(null);
   const [submitted, setSubmitted] = useState(false);
-
+  const navigate = useNavigate();
   const handleRating = (rate) => {
     setRating(rate);
   };
-
+  const RedirigirInicio = () =>{
+    navigate(`/libros`);
+  }
   const handleMouseEnter = (rate) => {
     setHoverRating(rate);
   };
@@ -87,7 +89,8 @@ const Reseña = () => {
           <div className="mt-4 text-center text-green-500">¡Reseña enviada exitosamente!</div>
         )}
 
-        <button className="mt-4 text-gray-500 underline text-sm" onClick={() => setRating(null)}>
+        <button onClick= {(RedirigirInicio)}
+        className="mt-4 text-gray-500 underline text-sm" >
           Saltar
         </button>
       </div>
