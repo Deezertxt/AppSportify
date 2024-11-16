@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 const Reseña = () => {
   const [rating, setRating] = useState(null);
   const [hoverRating, setHoverRating] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
+
   const handleRating = (rate) => {
     setRating(rate);
   };
-  const RedirigirInicio = () =>{
+
+  const RedirigirInicio = () => {
     navigate(`/libros`);
-  }
+  };
+
   const handleMouseEnter = (rate) => {
     setHoverRating(rate);
   };
@@ -19,43 +23,60 @@ const Reseña = () => {
     setHoverRating(null);
   };
 
- 
-
   const handleSubmit = () => {
     setSubmitted(true);
     setTimeout(() => setSubmitted(false), 3000);
   };
 
   const labels = ["Horrible", "Malo", "Bueno", "Bien", "Excelente"];
+
   return (
-    <div className="bg-blue-100 min-h-screen flex items-center justify-center">
-      <div className="bg-white p-8 rounded-md w-full max-w-3xl mx-auto">
-        <h2 className="text-2xl font-bold mb-2 text-center text-blue-900">Cuéntanos qué piensas de</h2>
-        <p className="italic text-lg mb-6 text-center text-gray-700">Conviértete en lo que eres de Alan Watts</p>
-        
-        <div className="flex justify-center items-center mb-4">
+    <div className="min-h-screen bg-white flex flex-col items-center">
+      {/* Encabezado */}
+      <div className="bg-blue-100 w-full py-10 px-4 flex flex-col md:flex-row items-center justify-between">
+        <div className="text-center md:text-left md:w-2/3">
+          <h2 className="text-2xl md:text-3xl font-bold text-blue-900">
+            Cuéntanos qué piensas de
+          </h2>
+          <p className="italic text-lg md:text-xl text-blue-700 mt-2">
+            Purpose Mindset de Akhtar Badshah
+          </p>
+        </div>
+        <div className="mt-4 md:mt-0 md:w-1/3 flex justify-center">
           <img
-            src="https://storage.googleapis.com/sportify-2/uploads/covers/imagen_2024-11-14_141600748.png" 
+            src="https://via.placeholder.com/150"
             alt="Conversación"
-            className="h-24 w-24"
+            className="w-24 h-24 md:w-32 md:h-32"
           />
         </div>
+      </div>
 
-        <h3 className="text-xl font-semibold mb-4 text-center">¿Cómo lo calificarías?</h3>
+      {/* Contenido principal */}
+      <div className="w-full max-w-xl bg-white px-6 py-8 mt-1   rounded-md">
+        <h3 className="text-xl font-semibold mb-6 text-center text-blue-900">
+          ¿Cómo lo calificarías?
+        </h3>
 
-        <div className="flex justify-center mb-4 space-x-4">
+        <div className="flex justify-center mb-4 space-x-6">
           {labels.map((label, index) => (
             <div key={index} className="flex flex-col items-center">
               <button
                 onClick={() => handleRating(index + 1)}
                 onMouseEnter={() => handleMouseEnter(index + 1)}
                 onMouseLeave={handleMouseLeave}
-                className={`text-6xl ${hoverRating >= index + 1 ? 'text-blue-700' : rating >= index + 1 ? 'text-blue-500' : 'text-gray-400'} transition-colors duration-200`}
+                className={`text-6xl ${
+                  hoverRating >= index + 1
+                    ? 'text-blue-600'
+                    : rating >= index + 1
+                    ? 'text-blue-500'
+                    : 'text-gray-300'
+                } transition-colors duration-200`}
               >
                 ★
               </button>
+              {/* Etiqueta visible solo cuando se selecciona */}
               {rating === index + 1 && (
-                <span className="text-sm mt-2 text-gray-500">{label}</span>
+                <span className="text-sm mt-2 text-gray-700">{label}</span>
               )}
             </div>
           ))}
@@ -63,34 +84,49 @@ const Reseña = () => {
 
         {rating && rating <= 5 && (
           <>
-            <h3 className="text-lg font-semibold mb-2 text-center">¿Algo más que quieras compartir?</h3>
+            <h3 className="text-lg font-semibold mb-2 text-center text-blue-900">
+              ¿Algo más que quieras compartir?
+            </h3>
             <textarea
-              className="w-full p-2 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Comparte tus pensamientos..."
+              rows="3" // Mayor altura
             ></textarea>
 
-            <h3 className="text-lg font-semibold mt-4 mb-2 text-center">¿Aprendiste algo nuevo?</h3>
+            <h3 className="text-lg font-semibold mt-6 mb-2 text-center text-blue-900">
+              ¿Aprendiste algo nuevo?
+            </h3>
             <div className="flex justify-center space-x-4 mb-6">
-              <button className="text-2xl text-gray-500 hover:text-blue-700">👎</button>
-              <button className="text-2xl text-gray-500 hover:text-blue-700">👍</button>
+              <button className="text-2xl text-gray-500 hover:text-blue-700">
+                👎
+              </button>
+              <button className="text-2xl text-gray-500 hover:text-blue-700">
+                👍
+              </button>
             </div>
           </>
         )}
 
         <button
           onClick={handleSubmit}
-          className={`w-full py-2 rounded-md ${rating ? 'bg-blue-500 text-white' : 'bg-gray-300 cursor-not-allowed'}`}
+          className={`w-full py-2 px-8 text-lg rounded-md mt-2 ${
+            rating ? 'bg-blue-500 text-white' : 'bg-gray-300 cursor-not-allowed'
+          }`}
           disabled={!rating}
         >
           Enviar comentarios
         </button>
 
         {submitted && (
-          <div className="mt-4 text-center text-green-500">¡Reseña enviada exitosamente!</div>
+          <div className="mt-4 text-center text-green-500">
+            ¡Reseña enviada exitosamente!
+          </div>
         )}
 
-        <button onClick= {(RedirigirInicio)}
-        className="mt-4 text-gray-500 underline text-sm" >
+        <button
+          onClick={RedirigirInicio}
+          className="mt-4 text-blue-500 underline text-sm block text-center py-3 px-8 text-lg"
+        >
           Saltar
         </button>
       </div>
