@@ -132,7 +132,6 @@ const AudioLibroReproductor = () => {
                             {paragraph}
                         </p>
                     ))}
-                    
                     <div className="mt-20 mb-16">
                        <button className="bg-[#16697A] text-white px-14 py-3 rounded hover:bg-teal-800	 w-full sm:w-auto">
                              <p className="text-center" style={{ fontFamily: 'Times New Roman', serif: 'serif' }}>
@@ -140,9 +139,7 @@ const AudioLibroReproductor = () => {
                             </p>
                       </button>
                     </div>
-
-             </div>
-                
+                </div>
             </div>
 
             <div className="fixed bottom-0 w-full bg-first text-white p-4 flex flex-col space-y-4 md:space-y-6">
@@ -151,9 +148,7 @@ const AudioLibroReproductor = () => {
                     totalDuration={totalDuration}
                     onProgressChange={handleProgressChange}
                     className="w-full"
-                    
-                /> 
-                
+                />
 
                 <div className="flex flex-col md:flex-row justify-between items-center w-full space-y-4 md:space-y-0">
                     <div className="flex items-start">
@@ -161,7 +156,6 @@ const AudioLibroReproductor = () => {
                         <div className="ml-4">
                             <AudioDetails title={audiobook.title} author={audiobook.author} className="text-sm md:text-base" />
                         </div>
-                       
                     </div>
 
                     <ControlButtons
@@ -181,7 +175,6 @@ const AudioLibroReproductor = () => {
                         setVolume={setVolume}
                         className="flex items-center space-x-2 md:space-x-4"
                     />
-                    
                 </div>
 
                 <audio

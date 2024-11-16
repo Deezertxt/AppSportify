@@ -4,7 +4,6 @@ const Reseña = () => {
   const [rating, setRating] = useState(null);
   const [hoverRating, setHoverRating] = useState(null);
   const [submitted, setSubmitted] = useState(false);
-  const [selectedFeedback, setSelectedFeedback] = useState([]);
 
   const handleRating = (rate) => {
     setRating(rate);
@@ -18,13 +17,7 @@ const Reseña = () => {
     setHoverRating(null);
   };
 
-  const handleFeedbackSelection = (feedback) => {
-    setSelectedFeedback((prevSelected) =>
-      prevSelected.includes(feedback)
-        ? prevSelected.filter((item) => item !== feedback)
-        : [...prevSelected, feedback]
-    );
-  };
+ 
 
   const handleSubmit = () => {
     setSubmitted(true);
@@ -32,12 +25,6 @@ const Reseña = () => {
   };
 
   const labels = ["Horrible", "Malo", "Bueno", "Bien", "Excelente"];
-  const negativeFeedback = [
-    "Demasiado corto", "Aburrido/ Perdí el interés", "Difícil de seguir",
-    "Puntos de vista sesgados", "No refleja el libro", "Mala narración",
-    "Puntos clave/mensaje poco claros", "Otro"
-  ];
-
   return (
     <div className="bg-blue-100 min-h-screen flex items-center justify-center">
       <div className="bg-white p-8 rounded-md w-full max-w-3xl mx-auto">
@@ -72,25 +59,8 @@ const Reseña = () => {
           ))}
         </div>
 
-        {rating && rating <= 3 && (
+        {rating && rating <= 5 && (
           <>
-            <h3 className="text-lg font-semibold mb-4 text-center">Cuéntanos más, ¿qué no te gustó?</h3>
-            <div className="grid grid-cols-2 gap-2 mb-6">
-              {negativeFeedback.map((feedback, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleFeedbackSelection(feedback)}
-                  className={`px-4 py-2 rounded-md text-center ${
-                    selectedFeedback.includes(feedback)
-                      ? 'border-2 border-blue-700 text-gray-700'
-                      : 'bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  {feedback}
-                </button>
-              ))}
-            </div>
-
             <h3 className="text-lg font-semibold mb-2 text-center">¿Algo más que quieras compartir?</h3>
             <textarea
               className="w-full p-2 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
