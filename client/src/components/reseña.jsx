@@ -33,7 +33,7 @@ const Reseña = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center">
       {/* Encabezado */}
-      <div className="bg-blue-100 w-full py-10 px-4 flex flex-col md:flex-row items-center justify-between">
+      <div className="bg-[#ABDADC] w-full py-10 px-4 flex flex-col md:flex-row items-center justify-between">
         <div className="text-center md:text-left md:w-2/3">
           <h2 className="text-2xl md:text-3xl font-bold text-blue-900">
             Cuéntanos qué piensas de
@@ -44,7 +44,7 @@ const Reseña = () => {
         </div>
         <div className="mt-4 md:mt-0 md:w-1/3 flex justify-center">
           <img
-            src="https://via.placeholder.com/150"
+            src="https://firebasestorage.googleapis.com/v0/b/sportify-198e3.appspot.com/o/uploads%2Fcovers%2Fholis.jpg?alt=media&token=fec38952-f2eb-416b-9cc6-fd3de2375d64"
             alt="Conversación"
             className="w-24 h-24 md:w-32 md:h-32"
           />
@@ -66,7 +66,7 @@ const Reseña = () => {
                 onMouseLeave={handleMouseLeave}
                 className={`text-6xl ${
                   hoverRating >= index + 1
-                    ? 'text-blue-600'
+                    ? 'text-blue-700'
                     : rating >= index + 1
                     ? 'text-blue-500'
                     : 'text-gray-300'
@@ -110,7 +110,7 @@ const Reseña = () => {
         <button
           onClick={handleSubmit}
           className={`w-full py-2 px-8 text-lg rounded-md mt-2 ${
-            rating ? 'bg-blue-500 text-white' : 'bg-gray-300 cursor-not-allowed'
+            rating ? 'bg-[#16697A] text-white' : 'bg-gray-300 cursor-not-allowed'
           }`}
           disabled={!rating}
         >
