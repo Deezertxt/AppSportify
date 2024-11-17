@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 
-import { FiBarChart, FiChevronsRight, FiFolderMinus, FiHome, FiLogOut } from "react-icons/fi";
+import { FiBarChart, FiBookmark, FiChevronsRight, FiFolderMinus, FiHome, FiLogOut, FiSearch } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
@@ -21,29 +21,16 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  console.log(user);
-
-  useEffect(() => {
-    if (!user) {
-        // Si el usuario es null después de hacer logout, redirige
-        navigate("/"); // O redirige a cualquier página que desees
-    }
-}, [user, navigate]); // Dependiendo de 'user' y 'navigate'
-
-
-
 const handleLogout = async () => {
   try {
       await logout(); // Cierra sesión y actualiza el estado
       console.log("Usuario cerrado sesión, redirigiendo...");
-      navigate("/", { replace: true }); // Redirige sin recargar la página
+      navigate("/", { replace: true, state: { loggedOut: true } }); // Redirige sin recargar la página
   } catch (error) {
       console.error("Error al cerrar sesión:", error);
   }
 };
 
-
-  
 
     return (
       <motion.nav
@@ -62,6 +49,22 @@ const handleLogout = async () => {
           setSelected={setSelected}
           open={open}
           to="/libros"
+        />
+        <Option
+          Icon={FiSearch}
+          title="Explorar"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+          to="/explorar"
+        />
+        <Option
+          Icon={FiBookmark}
+          title="Mi biblioteca"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+          to="/biblioteca"
         />
 
         {user?.email === "yalasoft@gmail.com" && (

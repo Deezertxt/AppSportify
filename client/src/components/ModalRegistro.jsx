@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../context/authContext";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "../utils/firebase";
 import { FiXCircle } from "react-icons/fi";
+import { registerUser } from "../api/api";
 
 const RegistrationForm = ({ closeModal, openLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -161,10 +160,13 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
     try {
       const userCredential = await signUp(formData.email, formData.password);
       const user = userCredential.user;
-      await setDoc(doc(db, "users", user.uid), {
+     
+      await registerUser({
+        firebaseUserId: user.uid,
         username: formData.username,
-        email: formData.email,
+        email: formData.email
       });
+
       setSuccessMessage("Registro exitoso!");
       setFormData({ username: "", email: "", password: "", confirmPassword: "" });
     } catch (error) {
