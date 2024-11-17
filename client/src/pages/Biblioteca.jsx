@@ -1,65 +1,103 @@
 import React, { useState, useEffect } from "react";
-import { getAudiobooks } from "../api/api";
-import Card from "../components/Card"; // Importar el componente Card
-import {useNavigate} from 'react-router-dom';
-import SearchBar from "../components/SearchBar";
+import { useNavigate } from "react-router-dom";
+import Card from "../components/cards/Card";
+import SkeletonCard from "../components/skeletons/SkeletonCard";
+import { getUserLibraryCategory } from "../api/api";
+import { useAuth } from "../context/authContext";
+import { FiBookmark, FiCheckCircle, FiChevronRight } from "react-icons/fi";
 
+const Biblioteca = () => {
+    const { user } = useAuth();
+    const userId = user.userId;
 
-function Biblioteca() {
-    const [audiobooks, setAudiobooks] = useState([]); // Estado para almacenar los audiolibros
+    const [savedCount, setSavedCount] = useState(0);
+    const [finishedCount, setFinishedCount] = useState(0);
+    const [savedAudiobooks, setSavedAudiobooks] = useState([]);
+    const [finishedAudiobooks, setFinishedAudiobooks] = useState([]);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    
-    // Cargar los audiolibros cuando el componente se monta
+
+    const handleViewAll = (category) => {
+        navigate(`/libros?filter=${category}`);
+    };
+
     useEffect(() => {
-        const fetchAudiobooks = async () => {
+        const fetchLibraryData = async () => {
+            setLoading(true);
             try {
-                const response = await getAudiobooks(); // Llamada a la API
-                if (Array.isArray(response.data)) { // Verificar si la respuesta contiene un array
-                    setAudiobooks(response.data); // Asignar los audiolibros
-                } else {
-                    console.error("La respuesta no es un array:", response.data);
-                    setAudiobooks([]); // En caso de error, asegurar que el estado sea un array vacío
-                }
+                const savedResponse = await getUserLibraryCategory(userId, 'saved');
+                const savedData = savedResponse?.data?.saved || {};  // Acceso correcto
+                setSavedAudiobooks(savedData.audiobooks || []);
+                setSavedCount(savedData.count || 0);
+
+                const finishedResponse = await getUserLibraryCategory(userId, 'finished');
+                const finishedData = finishedResponse?.data?.finished || {};  // Acceso correcto
+                setFinishedAudiobooks(finishedData.audiobooks || []);
+                setFinishedCount(finishedData.count || 0);
             } catch (error) {
-                console.error("Error fetching audiobooks:", error);
-                setAudiobooks([]); // En caso de error, asegurar que el estado sea un array vacío
+                console.error("Error al cargar los audiolibros:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchAudiobooks();
-    }, []);
 
-    const handleCardClick = (id) => {
-        navigate(`/preview/${id}`); // Redirigir al reproductor del audiolibro
-    };
+        fetchLibraryData();
+    }, [userId]);
+
+    const renderAudiobookSection = (title, icon, audiobooks, category, count) => (
+        <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                    {icon}
+                    <div>
+                        <h2 className="text-3xl font-bold">{title}</h2>
+                        <div className="text-sm text-gray-500">{audiobooks.length} items</div>
+                    </div>
+                </div>
+                <button
+                    onClick={() => handleViewAll(category)}
+                    className="text-blue-500 hover:text-blue-900 text-sm flex items-center gap-1"
+                >
+                    Ver todos <FiChevronRight />
+                </button>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {loading
+                    ? [...Array(5)].map((_, index) => <SkeletonCard key={index} />)
+                    : audiobooks.slice(0, 5).map((audiobook) => (
+                        <Card
+                            key={audiobook.id}
+                            id={audiobook.id}
+                            title={audiobook.title}
+                            author={audiobook.author}
+                            coverUrl={audiobook.coverUrl}
+                            duration={audiobook.duration}
+                            averagerating={audiobook.averageRating}
+                        />
+                    ))}
+            </div>
+        </div>
+    );
 
     return (
-        <>
-            <div>
-                <div className="px-20">
-                    <SearchBar setInput={""}/>
-                </div>
-                <div className="max-w-5xl mx-auto mt-8">
-                    {Array.isArray(audiobooks) && audiobooks.length > 0 ? (
-                        <div className="flex flex-wrap -m-4">
-                            {audiobooks.map((audiobook) => (
-                                <Card 
-                                    key={audiobook.id}
-                                    title={audiobook.title}
-                                    author={audiobook.author}
-                                    coverUrl={audiobook.coverUrl}
-                                    duration={audiobook.duration} // Suponiendo que tienes una propiedad 'coverImage' para la URL de la portada
-                                    onClick={() => handleCardClick(audiobook.id)} // Pasar la función onClick
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-center">Cargando...</p>
-                    )}
-                </div>
-            </div>
-        </>
+        <div className="p-6 text-black min-h-screen">
+            {renderAudiobookSection(
+                "Guardados",
+                <FiBookmark />,
+                savedAudiobooks,
+                "saved",
+                savedCount
+            )}
+            {renderAudiobookSection(
+                "Terminados",
+                <FiCheckCircle />,
+                finishedAudiobooks,
+                "finished",
+                finishedCount
+            )}
+        </div>
     );
-}
+};
 
 export default Biblioteca;
