@@ -9,6 +9,7 @@ const VerificarEmail = () => {
     const [isResendDisabled, setIsResendDisabled] = useState(true);
     const [timer, setTimer] = useState(60);
 
+
     useEffect(() => {
         let interval;
         if (isResendDisabled && timer > 0) {
@@ -16,7 +17,7 @@ const VerificarEmail = () => {
                 setTimer((prevTimer) => prevTimer - 1);
             }, 1000);
         } else if (timer === 0) {
-            setIsResendDisabled(false); // Habilita el botón cuando el tiempo llega a 0
+            setIsResendDisabled(false);
             clearInterval(interval);
         }
         return () => clearInterval(interval);
@@ -31,8 +32,8 @@ const VerificarEmail = () => {
             await resetPassword(email);
             setSuccessMessage("Correo de recuperación enviado. Por favor revisa tu bandeja de entrada.");
             setError(""); 
-            setIsResendDisabled(true); // Deshabilita el botón nuevamente
-            setTimer(60); // Reinicia el temporizador a 60 segundos
+            setIsResendDisabled(true);
+            setTimer(60);
         } catch (error) {
             setError("Error al enviar el correo de recuperación: " + error.message);
             setSuccessMessage(""); 
@@ -48,8 +49,8 @@ const VerificarEmail = () => {
             await resetPassword(email);
             setSuccessMessage("Correo reenviado. Por favor revisa tu bandeja de entrada.");
             setError("");
-            setIsResendDisabled(true); // Deshabilita el botón nuevamente
-            setTimer(60); // Reinicia el temporizador a 60 segundos
+            setIsResendDisabled(true);
+            setTimer(60);
         } catch (error) {
             setError("Error al reenviar el correo: " + error.message);
             setSuccessMessage("");
@@ -94,23 +95,25 @@ const VerificarEmail = () => {
                     </button>
                 </div>
 
-                <p className="text-white text-center mb-4">
-                Aun no te llego el email?{" "}
-                <button
-                    onClick={handleResend}
-                    disabled={isResendDisabled}
-                    className={`font-bold bg-transparent ${
-                        isResendDisabled
-                        ? "text-gray-500 cursor-not-allowed"
-                        : "tetx-while hover:underline"
-                    }`}
-                >
-                    {isResendDisabled ? `Reenviar (${timer}s)` : "Reenviar"}
-                </button>
-                </p>
-                
+                {successMessage && ( 
+                    <p className="text-white text-center mt-4">
+                        ¿Aún no te llegó el email?{" "}
+                        <button
+                            onClick={handleResend}
+                            disabled={isResendDisabled} 
+                            className={`font-bold bg-transparent ${
+                                isResendDisabled
+                                    ? "text-gray-500 cursor-not-allowed"
+                                    : "text-white hover:underline"
+                            }`}
+                        >
+                            {isResendDisabled ? `Reenviar (${timer}s)` : "Reenviar"}
+                        </button>
+                    </p>
+                )}
             </div>
         </div>
+
     );
 };
 
