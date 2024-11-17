@@ -54,7 +54,9 @@ function Biblioteca() {
                             ))}
                         </div>
                     ) : (
-                        <p className="text-center">Cargando...</p>
+                        <div className="flex items-center justify-center h-screen">
+                        <div className="border-t-4 border-teal-600 border-solid w-16 h-16 rounded-full animate-spin"></div>
+                      </div>
                     )}
                 </div>
             </div>

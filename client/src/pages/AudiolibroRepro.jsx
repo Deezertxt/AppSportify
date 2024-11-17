@@ -20,9 +20,9 @@ const AudioLibroReproductor = () => {
     const [volume, setVolume] = useState(100);
     const [progress, setProgress] = useState(0);
     const [totalDuration, setTotalDuration] = useState(0);
-    
+    const idUser=20 ;
     const redirigirResenia =  ()=>{
-          navigate(`/Reseña/${id}`);
+          navigate(`/Reseña/${id}/${idUser}`);
     }
 
     useEffect(() => {

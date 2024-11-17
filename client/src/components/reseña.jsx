@@ -2,15 +2,18 @@ import React, { useState ,useEffect} from 'react';
 import { useParams,useNavigate } from 'react-router-dom';
 import { getAudiobooks } from '../api/api';
 import { BiSolidDislike ,BiSolidLike    } from "react-icons/bi";
-
+import Modal from '../pages/Modal';
 const Reseña = () => {
-  const { id } = useParams(); 
+  const { id ,idUser} = useParams(); 
   const [rating, setRating] = useState(null);
   const [hoverRating, setHoverRating] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
   const [bookData, setBookData] = useState(null);
   const [audiobooks, setAudiobooks] = useState([]);
+  
+
+  const [showModal, setShowModal] = useState(false);
   
   useEffect(() => {
     const fetchBookData = async () => {
@@ -36,9 +39,13 @@ const Reseña = () => {
     fetchBookData();
   }, [id]);
   if (!bookData) {
-    return <div className="flex items-center justify-center h-screen">Cargando...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="border-t-4 border-teal-600 border-solid w-16 h-16 rounded-full animate-spin"></div>
+      </div>
+    );
   }
-
+  
 
   const handleRating = (rate) => {
     setRating(rate);
@@ -58,7 +65,11 @@ const Reseña = () => {
 
   const handleSubmit = () => {
     setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
+    setShowModal(true); 
+    setTimeout(() => {
+      setSubmitted(false);
+      setShowModal(false); 
+    }, 5000);
   };
 
   const labels = ["Horrible", "Malo", "Bueno", "Bien", "Excelente"];
@@ -73,7 +84,7 @@ const Reseña = () => {
             Cuéntanos qué piensas de 
           </h2>
           <p className="italic text-lg md:text-xl text-blue-700 mt-2">
-            {title} de {author}  {rating}
+            {title} de {author}  {rating}   idAudilibro = {id}  idUSUARIO = {idUser}
           </p>
         </div>
         <div className="mt-4 md:mt-0 md:w-1/3 flex justify-center">
@@ -145,21 +156,23 @@ const Reseña = () => {
           </>
         )}
 
-        <button
-          onClick={handleSubmit}
-          className={`w-full py-2 px-8 text-lg rounded-md mt-2 ${
-            rating ? 'bg-[#16697A] text-white' : 'bg-gray-300 cursor-not-allowed'
-          }`}
-          disabled={!rating}
-        >
-          Enviar comentarios
-        </button>
+<button
+        onClick={handleSubmit}
+        className={`w-full py-2 px-8 text-lg rounded-md mt-2 ${
+          rating ? 'bg-[#16697A] text-white' : 'bg-gray-300 cursor-not-allowed'
+        }`}
+        disabled={!rating}
+      >
+        Enviar comentarios
+      </button>
 
-        {submitted && (
-          <div className="mt-4 text-center text-green-500">
-            ¡Reseña enviada exitosamente!
-          </div>
-        )}
+      {submitted && (
+        <Modal onClose={() => setSubmitted(false)}
+        title="¡Reseña enviada exitosamente!"
+          message="Tu opinión ha sido registrada. ¡Gracias por tus comentarios!"
+        />
+      )}
+
 
         <button
           onClick={RedirigirInicio}
