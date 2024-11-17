@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/authContext";
 
 const VerificarEmail = () => {
@@ -6,6 +6,21 @@ const VerificarEmail = () => {
     const [error, setError] = useState(""); 
     const [successMessage, setSuccessMessage] = useState(""); 
     const { resetPassword } = useAuth();
+    const [isResendDisabled, setIsResendDisabled] = useState(true);
+    const [timer, setTimer] = useState(60);
+
+    useEffect(() => {
+        let interval;
+        if (isResendDisabled && timer > 0) {
+            interval = setInterval(() => {
+                setTimer((prevTimer) => prevTimer - 1);
+            }, 1000);
+        } else if (timer === 0) {
+            setIsResendDisabled(false); // Habilita el botón cuando el tiempo llega a 0
+            clearInterval(interval);
+        }
+        return () => clearInterval(interval);
+    }, [isResendDisabled, timer]);
 
     const handleResetPassword = async () => {
         if (!email) {
@@ -13,13 +28,31 @@ const VerificarEmail = () => {
             return;
         }
         try {
-            // Llama a la función para enviar el correo de verificación
             await resetPassword(email);
             setSuccessMessage("Correo de recuperación enviado. Por favor revisa tu bandeja de entrada.");
-            setError(""); // Limpia errores anteriores
+            setError(""); 
+            setIsResendDisabled(true); // Deshabilita el botón nuevamente
+            setTimer(60); // Reinicia el temporizador a 60 segundos
         } catch (error) {
             setError("Error al enviar el correo de recuperación: " + error.message);
-            setSuccessMessage(""); // Limpia mensajes de éxito anteriores
+            setSuccessMessage(""); 
+        }
+    };
+
+    const handleResend = async () => {
+        if (!email) {
+            setError("Por favor, ingrese su correo electrónico.");
+            return;
+        }
+        try {
+            await resetPassword(email);
+            setSuccessMessage("Correo reenviado. Por favor revisa tu bandeja de entrada.");
+            setError("");
+            setIsResendDisabled(true); // Deshabilita el botón nuevamente
+            setTimer(60); // Reinicia el temporizador a 60 segundos
+        } catch (error) {
+            setError("Error al reenviar el correo: " + error.message);
+            setSuccessMessage("");
         }
     };
 
@@ -33,13 +66,11 @@ const VerificarEmail = () => {
                     </h2>
                 </div>
 
-                {/* Mensajes de error o éxito */}
                 {error && <p className="text-red-500 bg-red-100 p-2 rounded-md">{error}</p>}
                 {successMessage && (
                     <p className="text-green-500 bg-green-100 p-2 rounded-md">{successMessage}</p>
                 )}
 
-                {/* Input para ingresar el correo */}
                 <div className="mb-4 relative">
                     <label className="text-white text-lg font-semibold block mb-2">
                         Ingrese su correo electrónico
@@ -48,13 +79,12 @@ const VerificarEmail = () => {
                         placeholder="example@gmail.com"
                         type="email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)} // Actualiza el estado del email
+                        onChange={(e) => setEmail(e.target.value)}
                         className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                         required
                     />
                 </div>
 
-                {/* Botón para enviar el correo */}
                 <div className="flex justify-center mt-8">
                     <button
                         className="w-full bg-[#0B6477] text-white py-2 sm:py-3 rounded-lg hover:bg-[#14919B] transition-all duration-300 ease-in-out transform hover:scale-105"
@@ -63,6 +93,21 @@ const VerificarEmail = () => {
                         Enviar correo
                     </button>
                 </div>
+
+                <p className="text-white text-center mb-4">
+                Aun no te llego el email?{" "}
+                <button
+                    onClick={handleResend}
+                    disabled={isResendDisabled}
+                    className={`font-bold bg-transparent ${
+                        isResendDisabled
+                        ? "text-gray-500 cursor-not-allowed"
+                        : "tetx-while hover:underline"
+                    }`}
+                >
+                    {isResendDisabled ? `Reenviar (${timer}s)` : "Reenviar"}
+                </button>
+                </p>
                 
             </div>
         </div>
@@ -70,4 +115,3 @@ const VerificarEmail = () => {
 };
 
 export default VerificarEmail;
-
