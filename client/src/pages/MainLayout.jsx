@@ -10,9 +10,9 @@ const MainLayout = () => {
       <DropdownMenu />
 
       {/* Page Content */}
-      <div className="flex-grow flex flex-col">
+      <div className="flex-grow flex flex-col min-h-screen">
         {/* Main content */}
-        <main className="flex-grow p-4 bg-second">
+        <main className="flex-grow p-7 bg-second">
           <Outlet /> {/* Renderiza las rutas hijas aquí */}
         </main>
 
