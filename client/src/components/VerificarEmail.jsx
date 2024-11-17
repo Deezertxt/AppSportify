@@ -1,65 +1,73 @@
-import React, { useRef } from "react";
+import React, { useState } from "react";
+import { useAuth } from "../context/authContext";
 
 const VerificarEmail = () => {
-    const inputRefs = useRef([]);
+    const [email, setEmail] = useState("");
+    const [error, setError] = useState(""); 
+    const [successMessage, setSuccessMessage] = useState(""); 
+    const { resetPassword } = useAuth();
 
-    const handleKeyDown = (e, index) => {
-        if (e.key === "Backspace" && !e.target.value && index > 0) {
-            inputRefs.current[index - 1].focus();
-        } else if (e.key === "ArrowRight" && index < inputRefs.current.length - 1) {
-            inputRefs.current[index + 1].focus();
-        } else if (e.key === "ArrowLeft" && index > 0) {
-            inputRefs.current[index - 1].focus();
+    const handleResetPassword = async () => {
+        if (!email) {
+            setError("Por favor, ingrese su correo electrónico.");
+            return;
+        }
+        try {
+            // Llama a la función para enviar el correo de verificación
+            await resetPassword(email);
+            setSuccessMessage("Correo de recuperación enviado. Por favor revisa tu bandeja de entrada.");
+            setError(""); // Limpia errores anteriores
+        } catch (error) {
+            setError("Error al enviar el correo de recuperación: " + error.message);
+            setSuccessMessage(""); // Limpia mensajes de éxito anteriores
         }
     };
 
     return (
-        <div className='fixed inset-0 justify-center flex items-center p-4 bg-[#F0F9F9]'>
-            <div className='bg-[#ABDADC] w-full max-w-xl p-8 space-y-4 shadow-md rounded-lg'>
+        <div className="flex flex-col justify-center items-center min-h-screen p-4 bg-[#F1FAEE]">
+            <div className="bg-[#ABDADC] w-full max-w-xl p-8 space-y-4 shadow-md rounded-lg">
                 <div className="flex flex-col items-center">
                     <img src="./logoS.svg" alt="Sportify logo" className="w-24 sm:w-32 mb-4" />
-                    <h2 className="text-xl sm:text-2xl font-bold text-white text-center mb-4 sm:mb-6">VERIFICACIÓN DE EMAIL</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-white text-center mb-2">
+                        VERIFICACIÓN DE EMAIL
+                    </h2>
+                </div>
+
+                {/* Mensajes de error o éxito */}
+                {error && <p className="text-red-500 bg-red-100 p-2 rounded-md">{error}</p>}
+                {successMessage && (
+                    <p className="text-green-500 bg-green-100 p-2 rounded-md">{successMessage}</p>
+                )}
+
+                {/* Input para ingresar el correo */}
+                <div className="mb-4 relative">
+                    <label className="text-white text-lg font-semibold block mb-2">
+                        Ingrese su correo electrónico
+                    </label>
+                    <input
+                        placeholder="example@gmail.com"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)} // Actualiza el estado del email
+                        className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                        required
+                    />
+                </div>
+
+                {/* Botón para enviar el correo */}
+                <div className="flex justify-center mt-8">
+                    <button
+                        className="w-full bg-[#0B6477] text-white py-2 sm:py-3 rounded-lg hover:bg-[#14919B] transition-all duration-300 ease-in-out transform hover:scale-105"
+                        onClick={handleResetPassword}
+                    >
+                        Enviar correo
+                    </button>
                 </div>
                 
-                <div className="flex flex-col items-center p-3 sm:p-5">
-                    <h1 className="font-bold text-center text-sm sm:text-base">
-                        Te enviamos un código a tu email example@gmail.com
-                    </h1>
-                </div>
-
-                <div className="flex-col flex space-y-8 sm:space-y-16">
-                    <div className="flex items-center justify-center mx-auto space-x-3 sm:space-x-4">
-                        {[...Array(4)].map((_, i) => (
-                            <input 
-                                key={i} 
-                                ref={(el) => (inputRefs.current[i] = el)}
-                                maxLength="1"
-                                onKeyDown={(e) => handleKeyDown(e, i)}
-                                className="w-12 h-12 sm:w-16 sm:h-16 text-center rounded-xl border-2 border-[#45DFB1] text-lg bg-white outline-first px-3 sm:px-5 focus:bg-gray-50 focus:ring-1 ring-first" 
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                <div className="place-items-center">
-                    <div className="flex justify-center w-40">
-                        <button className="w-full bg-[#0B6477] text-white py-2 sm:py-3 rounded-lg hover:bg-[#14919B] transition-all duration-300 ease-in-out transform hover:scale-105">
-                            Verificar cuenta
-                        </button>
-                    </div>
-                </div>
-
-                <div>
-                    <h1 className="font-semibold text-center text-sm sm:text-base">
-                        ¿No recibiste el código? 
-                        <button className="text-[#0B6477] bg-transparent font-bold cursor-pointer p-1">
-                            Reenviar código
-                        </button>
-                    </h1>
-                </div>
             </div>
         </div>
     );
 };
 
 export default VerificarEmail;
+

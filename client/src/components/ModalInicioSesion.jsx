@@ -14,7 +14,7 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
   const [emailHint, setEmailHint] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
-  const { login, loginWithGoogle, resetPassword } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
@@ -29,6 +29,10 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
     } else {
       setEmailHint("");
     }
+  };
+
+  const handleForgotPassword = () => {
+    navigate("/verificar");
   };
 
   const handleSubmit = async (e) => {
@@ -60,16 +64,6 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
       }
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleResetPassword = async () => {
-    if (!email) return setError("Por favor ingrese su correo electrónico");
-    try {
-      await resetPassword(email);
-      setSuccessMessage("Correo de recuperación enviado, por favor revisa tu bandeja de entrada.");
-    } catch (error) {
-      setError("Error al enviar el correo de recuperación: " + error.message);
     }
   };
 
@@ -158,13 +152,13 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
         </button>
 
         <div className="text-center mb-4">
-          <a
+          <button
             href="#!"
-            className="font-bold text-sm text-white"
-            onClick={handleResetPassword}
+            className="font-bold text-sm text-white bg-transparent"
+            onClick={handleForgotPassword}
           >
             ¿Olvidaste tu contraseña?
-          </a>
+          </button>
         </div>
 
         <p className="text-white text-center mb-4">
@@ -197,5 +191,4 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
     </div>
   );
 };
-
 export default ModalInicioSesion;

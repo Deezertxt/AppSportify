@@ -21,27 +21,30 @@ import VerificarEmail from './components/VerificarEmail';
 function App() {
 
     return (
-        <VerificarEmail/>
+        // <VerificarEmail/>
 
-        // <AuthProvider>
-        // <Routes>
-        //     <Route path="/" element={<HeroSection />} />
-        //     <Route path="/login" element={<InicioSesion />} />
-        //     <Route path="/registro" element={<Registro />} />
-        //     {/* <Route path="/registro" element={<Registro/>}/> */}
-        //     <Route path="/libros" element={<ProtectedRoutes><MainLayout><Biblioteca /></MainLayout></ProtectedRoutes>} />
-        //     <Route path="/reproductor/:id" element={<AudioLibroReproductor />} />
-        //     <Route path="/escuchar/:id" element={<MainLayout><Reproductor /></MainLayout>} />
-        //     <Route path="/panelAdmin" element={<MainLayout><PanelAdmin /></MainLayout>} />
-        //     <Route path="/publicar" element={<MainLayout><Publicar /></MainLayout>} />
-        //     <Route path="/actualizar/:id" element={<MainLayout><Actualizar /></MainLayout>} />
-            
-        //     <Route path="/taskpage" element={<TasksPage />} />
-        //     <Route path="/preview/:id" element={<MainLayout><Preview /></MainLayout>} />
+        <AuthProvider>
+        <Routes>
+            <Route path="/" element={<HeroSection />} />
+            <Route path="/login" element={<InicioSesion />} />
+            <Route path="/registro" element={<Registro />} />
+            {/* <Route path="/registro" element={<Registro/>}/> */}
+            <Route path="/libros" element={<ProtectedRoutes><MainLayout><Biblioteca /></MainLayout></ProtectedRoutes>} />
+            <Route path="/reproductor/:id" element={<AudioLibroReproductor />} />
+            <Route path="/escuchar/:id" element={<MainLayout><Reproductor /></MainLayout>} />
+            <Route path="/panelAdmin" element={<MainLayout><PanelAdmin /></MainLayout>} />
+            <Route path="/publicar" element={<MainLayout><Publicar /></MainLayout>} />
+            <Route path="/actualizar/:id" element={<MainLayout><Actualizar /></MainLayout>} />
 
-        //     <Route path="/buscar" element={<MainLayout><SearchResults/></MainLayout> } />
-        // </Routes>
-        // </AuthProvider>
+            <Route path="/verificar" element={<VerificarEmail />} />
+            <Route path="/recuperar" element={<RecuperarPassword/>} />
+
+            <Route path="/taskpage" element={<TasksPage />} />
+            <Route path="/preview/:id" element={<MainLayout><Preview /></MainLayout>} />
+
+            <Route path="/buscar" element={<MainLayout><SearchResults/></MainLayout> } />
+        </Routes>
+        </AuthProvider>
     );
 }
 export default App;
