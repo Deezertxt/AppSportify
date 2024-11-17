@@ -7,6 +7,7 @@ const VerificarEmail = () => {
     const [successMessage, setSuccessMessage] = useState(""); 
     const { resetPassword } = useAuth();
     const [isResendDisabled, setIsResendDisabled] = useState(true);
+    const [isSendDisabled, setIsSendDisabled] = useState(false);
     const [timer, setTimer] = useState(60);
 
 
@@ -29,6 +30,7 @@ const VerificarEmail = () => {
             return;
         }
         try {
+            setIsSendDisabled(true);
             await resetPassword(email);
             setSuccessMessage("Correo de recuperación enviado. Por favor revisa tu bandeja de entrada.");
             setError(""); 
@@ -37,6 +39,7 @@ const VerificarEmail = () => {
         } catch (error) {
             setError("Error al enviar el correo de recuperación: " + error.message);
             setSuccessMessage(""); 
+            setIsSendDisabled(false);
         }
     };
 
@@ -46,10 +49,10 @@ const VerificarEmail = () => {
             return;
         }
         try {
+            setIsResendDisabled(true);
             await resetPassword(email);
             setSuccessMessage("Correo reenviado. Por favor revisa tu bandeja de entrada.");
             setError("");
-            setIsResendDisabled(true);
             setTimer(60);
         } catch (error) {
             setError("Error al reenviar el correo: " + error.message);
@@ -83,24 +86,28 @@ const VerificarEmail = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                         required
+                        disabled={isSendDisabled}
                     />
                 </div>
 
                 <div className="flex justify-center mt-8">
                     <button
-                        className="w-full bg-[#0B6477] text-white py-2 sm:py-3 rounded-lg hover:bg-[#14919B] transition-all duration-300 ease-in-out transform hover:scale-105"
+                        className={`w-full bg-[#0B6477] text-white py-2 sm:py-3 rounded-lg hover:bg-[#14919B] transition-all duration-300 ease-in-out transform hover:scale-105 ${
+                            isSendDisabled ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                         onClick={handleResetPassword}
+                        disabled={isSendDisabled}
                     >
                         Enviar correo
                     </button>
                 </div>
 
-                {successMessage && ( 
+                {successMessage && (
                     <p className="text-white text-center mt-4">
                         ¿Aún no te llegó el email?{" "}
                         <button
                             onClick={handleResend}
-                            disabled={isResendDisabled} 
+                            disabled={isResendDisabled}
                             className={`font-bold bg-transparent ${
                                 isResendDisabled
                                     ? "text-gray-500 cursor-not-allowed"
@@ -113,7 +120,6 @@ const VerificarEmail = () => {
                 )}
             </div>
         </div>
-
     );
 };
 
