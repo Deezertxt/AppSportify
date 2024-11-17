@@ -84,7 +84,7 @@ const Reseña = () => {
             Cuéntanos qué piensas de 
           </h2>
           <p className="italic text-lg md:text-xl text-blue-700 mt-2">
-            {title} de {author}  {rating}   idAudilibro = {id}  idUSUARIO = {idUser}
+            {title} de {author}    
           </p>
         </div>
         <div className="mt-4 md:mt-0 md:w-1/3 flex justify-center">
