@@ -1,19 +1,19 @@
-// MainLayout.jsx
 import React from "react";
+import { Outlet } from "react-router-dom";
 import DropdownMenu from "../components/DropdownMenu";
 import Footer from "../components/Footer";
 
-const MainLayout = ({ children }) => {
+const MainLayout = () => {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
       <DropdownMenu />
 
       {/* Page Content */}
-      <div className="flex-grow flex flex-col">
+      <div className="flex-grow flex flex-col min-h-screen">
         {/* Main content */}
-        <main className="flex-grow p-4 bg-second">
-          {children}
+        <main className="flex-grow p-7 bg-second">
+          <Outlet /> {/* Renderiza las rutas hijas aquí */}
         </main>
 
         {/* Footer */}

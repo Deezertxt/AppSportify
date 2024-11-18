@@ -1,15 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import AudiobookCover from "../components/AudiobookCover";
-import ProgressBar from "../components/ProgressBar";
-import AudioDetails from "../components/AudioDetails";
-import ControlButtons from "../components/ControlButtons";
-import PlayerControls from "../components/PlayerControls";
-import { getAudiobookById } from "../api/api";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import AudiobookCover from "../components/reproductor/AudiobookCover";
+import ProgressBar from "../components/reproductor/ProgressBar";
+import AudioDetails from "../components/reproductor/AudioDetails";
+import ControlButtons from "../components/reproductor/ControlButtons";
+import PlayerControls from "../components/reproductor/PlayerControls";
+import { getAudiobookById, addBookToLibraryCategory } from "../api/api";
+import { FiArrowLeft, FiCheck } from "react-icons/fi";
+
+
+import { useAuth } from "../context/authContext";
+import { useLibrary } from '../context/libraryContext';
+
+
 const AudioLibroReproductor = () => {
+
     const { id } = useParams();
+    const { user } = useAuth();
     const navigate = useNavigate();
     const [audiobook, setAudiobook] = useState(null);
     const [fontSize, setFontSize] = useState(16);
@@ -20,6 +27,57 @@ const AudioLibroReproductor = () => {
     const [volume, setVolume] = useState(100);
     const [progress, setProgress] = useState(0);
     const [totalDuration, setTotalDuration] = useState(0);
+    const {
+        isBookSaved,
+        isBookFinished,
+        addToSaved,
+        addToFinished,
+    } = useLibrary();
+
+
+    const handleFinishedToLibrary = async () => {
+        if (isBookFinished(parseInt(id, 10))) return;
+
+        try {
+            navigate(`/resenia/${id}`);
+
+            const response = await addBookToLibraryCategory({
+                firebaseUserId: user.userId,
+                audiobookId: parseInt(id, 10),
+                category: "finished",
+            });
+            if (response.status === 200) {
+                addToFinished(parseInt(id, 10)); // Actualiza el estado global
+                alert("Audiolibro marcado como terminado.");
+            } else {
+                alert("Error al marcar el audiolibro.");
+            }
+        } catch (error) {
+            console.error("Error al marcar el audiolibro:", error);
+            alert("Error al marcar el audiolibro.");
+        }
+    };
+
+    const handleSaveToLibrary = async () => {
+        if (isBookSaved(parseInt(id, 10))) return;
+
+        try {
+            const response = await addBookToLibraryCategory({
+                firebaseUserId: user.userId,
+                audiobookId: parseInt(id, 10),
+                category: "saved",
+            });
+            if (response.status === 200) {
+                addToSaved(parseInt(id, 10)); // Actualiza el estado global
+                alert("Audiolibro guardado en la biblioteca.");
+            } else {
+                alert("Error al guardar el audiolibro.");
+            }
+        } catch (error) {
+            console.error("Error al guardar el audiolibro:", error);
+            alert("Error al guardar el audiolibro.");
+        }
+    };
 
     useEffect(() => {
         const fetchAudiobook = async () => {
@@ -114,38 +172,41 @@ const AudioLibroReproductor = () => {
     }
 
     const [title, ...paragraphs] = audiobook.text.split("\n").filter(line => line.trim() !== "");
-
     return (
-        <div className="flex flex-col h-screen bg-white">
-            <div className="fixed top-0 left-0 h-full w-12 bg-gray-100 flex flex-col items-center pt-4 space-y-4">
-                <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={() => navigate(-2)}>🏠</button>
-                <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300">⚙️</button>
-                <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={increaseFontSize}>A+</button>
-                <button className="p-2 rounded-full bg-gray-200 hover:bg-gray-300" onClick={decreaseFontSize}>A-</button>
+        <div className="flex flex-col flex-grow ">
+            {/* Botón de regreso */}
+            <div className="p-4">
+                <button onClick={() => navigate(-1)} className="text-black flex items-center mb-4">
+                    <FiArrowLeft className="mr-2" />
+                    Volver
+                </button>
             </div>
 
-            <div className="flex-wrap-reverse justify-items-center overflow-y-auto p-4 ml-12 h-[calc(100vh-120px)]">
-                <div className="text-gray-900 p-4 overflow-y-auto h-full" style={{ fontSize: `${fontSize}px` }}>
-                    <h1 className="text-2xl font-bold mb-4 text-gray-900">{title}</h1>
-                    {paragraphs.map((paragraph, index) => (
-                        <p key={index} className="mb-4 text-lg leading-relaxed text-gray-800">
-                            {paragraph}
-                        </p>
-                    ))}
-                    
-                    <div className="mt-20 mb-16">
-                       <button className="bg-blue-500 text-white px-10 py-3 rounded hover:bg-blue-600 w-full sm:w-auto">
-                             <p className="text-center" style={{ fontFamily: 'Times New Roman', serif: 'serif' }}>
-                                   <FontAwesomeIcon icon={faCheck} className="text-white" /> Marcar como terminado
-                            </p>
-                      </button>
-                    </div>
-
-             </div>
-                
+            {/* Contenido del audiolibro */}
+            <div className="overflow-y-auto p-4 flex-grow place-items-center">
+                <h1 className="text-2xl font-bold mb-4 text-gray-900">{title}</h1>
+                {paragraphs.map((paragraph, index) => (
+                    <p key={index} className="mb-4 text-lg leading-normal text-gray-800">
+                        {paragraph}
+                    </p>
+                ))}
+                <div className="mt-20 mb-16">
+                    <button
+                        onClick={handleFinishedToLibrary}
+                        className={`flex items-center mt-6 ${isBookFinished(parseInt(id, 10))
+                            ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                            : "bg-first text-white hover:bg-first-dark"
+                            } font-semibold py-2 px-4 transition-colors duration-300`}
+                        disabled={isBookFinished(parseInt(id, 10))} // Deshabilitar si ya está guardado
+                    >
+                        <FiCheck className="mr-2" />
+                        {isBookFinished(parseInt(id, 10)) ? "Terminado" : "Marcar como terminado"}
+                    </button>
+                </div>
             </div>
 
-            <div className="fixed bottom-0 w-full bg-first text-white p-4 flex flex-col space-y-4 md:space-y-6">
+            {/* Controles de audio y detalles */}
+            <div className="w-full bg-first text-white p-4 space-y-4">
                 <ProgressBar
                     progress={progress}
                     totalDuration={totalDuration}
@@ -157,9 +218,13 @@ const AudioLibroReproductor = () => {
 
                 <div className="flex flex-col md:flex-row justify-between items-center w-full space-y-4 md:space-y-0">
                     <div className="flex items-start">
-                        <AudiobookCover coverUrl={audiobook.coverUrl} className="w-20 h-20 md:w-25 md:h-25 object-cover rounded-md" />
+                        <AudiobookCover coverUrl={audiobook.coverUrl} className="w-20 h-20 object-cover rounded-md" />
                         <div className="ml-4">
-                            <AudioDetails title={audiobook.title} author={audiobook.author} className="text-sm md:text-base" />
+                            <AudioDetails title={audiobook.title}
+                                author={audiobook.author}
+                                isSaved={isBookSaved(parseInt(id, 10))}
+                                onSave={handleSaveToLibrary}
+                            />
                         </div>
                        
                     </div>
@@ -169,8 +234,8 @@ const AudioLibroReproductor = () => {
                         togglePlay={togglePlayPause}
                         handleBackward={handleBackward}
                         handleForward={handleForward}
-                        handleRestart={handleRestart} // Pasar la función handleRestart
-                        hasEnded={hasEnded} // Pasar estado de fin de audio
+                        handleRestart={handleRestart}
+                        hasEnded={hasEnded}
                         className="flex justify-center space-x-2 md:space-x-4"
                     />
 
@@ -179,7 +244,6 @@ const AudioLibroReproductor = () => {
                         setSpeed={setSpeed}
                         volume={volume}
                         setVolume={setVolume}
-                        className="flex items-center space-x-2 md:space-x-4"
                     />
                     
                 </div>
@@ -189,11 +253,12 @@ const AudioLibroReproductor = () => {
                     src={audiobook.audioUrl}
                     onTimeUpdate={handleProgress}
                     onLoadedMetadata={handleLoadedMetadata}
-                    onEnded={handleAudioEnded} // Marcar como terminado
+                    onEnded={handleAudioEnded}
                 />
             </div>
         </div>
     );
+
 };
 
 export default AudioLibroReproductor;
