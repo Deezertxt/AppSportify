@@ -41,7 +41,7 @@ function Actualizar() {
     useEffect(() => {
         const fetchCategoriesAndAudiobook = async () => {
             try {
-                
+               
     
                 setFormData({
                     title: audiobookData.title,
@@ -52,6 +52,8 @@ function Actualizar() {
                     portadaFile: audiobookData.coverUrl ? audiobookData.coverUrl : null // Asigna portadaFile si hay coverUrl
                 });
     
+                setPreview(audiobookData.coverUrl);
+                setCoverFileName(audiobookData.coverUrl ? 'Portada Actual' : '');
             } catch (error) {
                 console.error("Error al obtener categorías o audiolibro:", error);
             }
