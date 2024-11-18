@@ -2,7 +2,7 @@ import React from 'react';
 
 const ModalReu = ({ onClose, title, message }) => {
   return (
-    <div className="fixed top-5 right-5 bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 w-[400px]">
+    <div className="fixed top-5 right-5 bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 max-w-full sm:max-w-md w-[90%] sm:w-[400px]">
       <button
         className="absolute top-2 right-2 text-green-600 hover:text-green-800"
         onClick={onClose}
@@ -20,8 +20,8 @@ const ModalReu = ({ onClose, title, message }) => {
             className="w-6 h-6 text-green-600"
           >
             <path
-               strokeLinecap="round"
-             strokeLinejoin="round"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               d="M5 13l4 4L19 7"
             />
           </svg>
