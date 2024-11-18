@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { createUser, deleteUser, getUserById, updateUser } = require("../controller/userController");
+const { registerOrLoginWithGoogle,createUser, deleteUser, getUserById, updateUser } = require("../controller/userController");
 
+router.post('/registergoogle', registerOrLoginWithGoogle);
 router.post('/register', createUser);
 router.delete('/delete/:id', deleteUser);
 router.get('/get/:id',getUserById);

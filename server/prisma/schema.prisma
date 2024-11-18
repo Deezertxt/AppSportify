@@ -12,45 +12,67 @@ datasource db {
 
 // Definición de la tabla User para gestionar el registro de usuarios
 model User {
-  id          Int      @id @default(autoincrement())  // Campo ID autoincremental
-  username        String   @db.VarChar(10)               // Nombre del usuario, máximo 100 caracteres
-  email       String   @unique                        // Email único
-  password    String   @db.VarChar(15)               // Contraseña cifrada
-  createdAt   DateTime @default(now())                // Fecha de creación
-  updatedAt   DateTime @updatedAt                     // Fecha de actualización automática
-  library     Library[]                               // Relación con la tabla Library (1-n)
+  id            String       @id @default(uuid())  // Campo ID autoincremental
+  username      String                    // Nombre de usuario, máximo 10 caracteres
+  email         String    @unique                        // Email único
+  fullName      String?    @db.VarChar(100)               // Nombre completo, máximo 100 caracteres
+  language      String    @default("Español")            // Idioma con valor predeterminado en español
+  theme         String?   @db.VarChar(50)                // Tema personalizado, máximo 50 caracteres
+  bio           String?   @db.VarChar(180)               // Biografía con un máximo de 180 caracteres
+  profilePicUrl String?   @db.Text                       // URL de la foto de perfil
+  createdAt     DateTime  @default(now())                // Fecha de creación
+  updatedAt     DateTime  @updatedAt                     // Fecha de actualización automática
+  library       Library[]                               // Relación con la tabla Library (1-n)
+  feedbacks     Feedback[]                              // Relación con los comentarios y calificaciones (1-n)
 }
 
 model Audiobook {
-  id          Int       @id @default(autoincrement())  // Campo ID autoincremental
-  title       String    @db.VarChar(255)@unique             // Título del audiolibro, máximo 255 caracteres
-  categoryId  Int                                      // Relación con la tabla Category
-  category    Category  @relation(fields: [categoryId], references: [id]) // Clave foránea a Category
-  description String?   @db.Text                       // Descripción opcional (usar Text para textos largos)
-  author      String    @db.VarChar(100)               // Autor del audiolibro, máximo 100 caracteres
-  duration    String    @db.VarChar(10)                // Duración del audiolibro, máximo 10 caracteres
-  pdfUrl      String?   @db.Text      @unique          // URL del archivo PDF
-  coverUrl    String?   @db.Text      @unique         // URL de la portada
-  audioUrl    String?   @db.Text      @unique        // URL del archivo de audio
-  text     String?   @db.Text      @unique         // URL para un archivo JSON
-  createdAt   DateTime  @default(now())                // Fecha de creación
-  updatedAt   DateTime  @updatedAt                     // Fecha de actualización automática
-  library     Library[]                               // Relación con la tabla Library (1-n)
+  id             Int         @id @default(autoincrement()) 
+  title          String      @db.Char(35) @unique
+  categoryId     Int
+  category       Category    @relation(fields: [categoryId], references: [id])
+  description    String?     @db.Text
+  author         String      @db.Char(35)
+  duration       String      @db.VarChar(10)
+  pdfUrl         String?     @db.Text @unique
+  coverUrl       String?     @db.Text @unique
+  audioUrl       String?     @db.Text @unique
+  text           String?     @db.Text @unique
+  averageRating  Float?      @default(0) // Campo para almacenar el promedio de calificaciones
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  library        Library[]
+  feedbacks      Feedback[]
+}
+
+
+// Nueva tabla para gestionar comentarios, calificaciones y likes de otros usuarios
+model Feedback {
+  id            Int       @id @default(autoincrement())  // Campo ID autoincremental
+  userId        String                                       // Relación con la tabla User
+  audiobookId   Int                                       // Relación con la tabla Audiobook
+  comment       String?   @db.Text                        // Comentario opcional
+  rating        Int       @default(0)                     // Calificación, 0-5 (5 estrellas como máximo)
+  likes         Int       @default(0)                     // Número de likes que otros usuarios han dado al comentario
+  createdAt     DateTime  @default(now())                 // Fecha de creación del comentario
+  audiobook     Audiobook @relation(fields: [audiobookId], references: [id]) // Clave foránea a Audiobook
+  user          User      @relation(fields: [userId], references: [id])      // Clave foránea a User
 }
 
 model Library {
-  id           Int       @id @default(autoincrement())  // Campo ID autoincremental
-  userId       Int                                      // Relación con la tabla User
-  audiobookId  Int                                      // Relación con la tabla Audiobook
-  audiobook    Audiobook @relation(fields: [audiobookId], references: [id]) // Clave foránea a Audiobook
-  user         User      @relation(fields: [userId], references: [id])      // Clave foránea a User
+  id           Int       @id @default(autoincrement())
+  userId       String
+  audiobookId  Int
+  audiobook    Audiobook @relation(fields: [audiobookId], references: [id])
+  user         User      @relation(fields: [userId], references: [id])
+  saved        Boolean   @default(false)                // Si el audiolibro ha sido guardado en la biblioteca
   favorite     Boolean   @default(false)                // Si el audiolibro es marcado como favorito
   played       Boolean   @default(false)                // Si el audiolibro ha sido reproducido
+  finished     Boolean   @default(false)                // Si el audiolibro ha sido marcado como terminado
 }
 
 model Category {
-  id         Int        @id @default(autoincrement())  // Campo ID autoincremental
-  name       String     @unique @db.VarChar(100)       // Nombre de la categoría, máximo 100 caracteres
-  audiobooks Audiobook[]                              // Relación con la tabla Audiobook (1-n)
+  id         Int         @id @default(autoincrement())  // Campo ID autoincremental
+  name       String      @unique @db.VarChar(100)       // Nombre de la categoría
+  audiobooks Audiobook[]                               // Relación con la tabla Audiobook (1-n)
 }
-

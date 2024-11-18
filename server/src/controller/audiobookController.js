@@ -189,7 +189,7 @@ const deleteAudioBook = async (req, res) => {
 // Obtener todos los audiolibros
 const getAudiobooks = async (req, res) => {
   try {
-    const audiobooks = await prisma.audiobook.findMany(); // Obtiene todos los registros de audiolibros
+    const audiobooks = await prisma.audiobook.findMany();
     res.status(200).json(audiobooks);
   } catch (error) {
     console.error('Error fetching audiobooks:', error);
@@ -226,6 +226,30 @@ const getAudioBookById = async (req, res) => {
   }
 };
 
+const getAudiobooksByCategory = async (req, res) => {
+  const { categoryId } = req.params;
+
+  // Convertimos el categoryId a número
+  const categoryIdNumber = Number(categoryId);
+  
+  if (isNaN(categoryIdNumber)) {
+    return res.status(400).json({ error: 'Invalid categoryId' });
+  }
+
+  try {
+    // Realizamos la consulta con categoryId directamente
+    const audiobooks = await prisma.audiobook.findMany({
+      where: {
+        categoryId: categoryIdNumber, // Pasamos el valor directamente
+      },
+    });
+
+    res.status(200).json(audiobooks);
+  } catch (error) {
+    console.error('Error fetching audiobooks by category:', error);
+    res.status(500).json({ error: 'Error fetching audiobooks by category', details: error.message });
+  }
+};
 
 const updateAudiobook = async (req, res) => {
   const { id } = req.params;
@@ -285,5 +309,6 @@ module.exports = {
   getAudioBookById,
   updateAudiobook,
   getAudiobooks,
+  getAudiobooksByCategory,
 };
 

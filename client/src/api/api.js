@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL =  "http://localhost:3000"
+const baseURL = "http://localhost:3000"
 
 const api = axios.create({
     baseURL: baseURL,
@@ -13,27 +13,32 @@ const api = axios.create({
 
 export default api;
 
-export const getTasks = (id) => api.get(`/api/user/get/${id}`);
-export const getTask = (id) => api.get(`/api/task/get/${id}`);
-export const createTask = (data) => api.post("/api/task/create", data);
-export const updateTask = (id, data) => api.put(`/api/task/update/${id}`, data);
-export const deleteTask = (id) => api.delete(`/api/task/delete/${id}`);
-export const login = (data) => api.post("/api/user/login", data);
-export const register = (data) => api.post("/api/user/register", data);
-export const logout = () => api.get("/api/user/logout");
-export const getUser = () => api.get("/api/user/get");
+export const registerOrLoginWithGoogle = (data) => api.post("/api/user/registergoogle", data);
+export const registerUser = (data) => api.post("/api/user/register", data);
+export const getUserById = (id) => api.get(`/api/user/get/${id}`);
+export const updateUser = (id, data) => api.put(`/api/user/update/${id}`, data);
+export const deleteUser = (id) => api.delete(`/api/user/delete/${id}`);
+
 export const uploadFilesToGCS = (data) => api.post("/api/uploads/upload", data);
+
 export const getCategories = () => api.get("/api/category/get");
 export const createCategory = (data) => api.post("/api/category/create", data);
 export const updateCategory = (id, data) => api.put(`/api/category/update/${id}`, data);
 export const deleteCategory = (id) => api.delete(`/api/category/delete/${id}`);
+
 export const getAudiobooks = () => api.get("/api/audiobook/get");
 export const getAudiobookById = (id) => api.get(`/api/audiobook/get/${id}`);
+export const getAudiobooksByCategory = (id) => api.get(`/api/audiobook/get/category/${id}`);
 export const createAudiobook = (data) => api.post("/api/audiobook/register", data);
 export const updateAudiobook = (id, data) => api.put(`/api/audiobook/update/${id}`, data);
 export const deleteAudiobook = (id) => api.delete(`/api/audiobook/delete/${id}`);
-export const getAudiobooksByCategory = (id) => api.get(`/api/audiobook/get/category/${id}`);
-export const getAudiobooksByUser = (id) => api.get(`/api/audiobook/get/user/${id}`);
-export const getAudiobooksByTitle = (title) => api.get(`/api/audiobook/get/title/${title}`);
-export const getAudiobooksByAuthor = (author) => api.get(`/api/audiobook/get/author/${author}`);    
-export const getAudiobooksByDescription = (description) => api.get(`/api/audiobook/get/description/${description}`);
+
+export const getFeedbacks = (id) => api.get(`/api/feedback/get/${id}`);
+export const createFeedback = (data) => api.post("/api/feedback/subir", data);
+export const likeFeedback = (id) => api.put(`/api/feedback/like/${id}`);
+export const deleteFeedback = (id) => api.delete(`/api/feedback/delete/${id}`);
+
+export const getLibrary = (userId) => api.get(`/api/library/fetch/${userId}`);
+export const getUserLibraryCategory = (userId, category) => api.get(`/api/library/get/${userId}/${category}`);
+export const addBookToLibraryCategory = (data) => api.post("/api/library/add", data);
+export const deleteBookFromLibraryCategory = (userId, audiobookId, category) => api.delete(`/api/library/delete/${userId}/${audiobookId}/${category}`);

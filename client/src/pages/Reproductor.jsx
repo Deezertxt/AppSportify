@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import ProgressBar from "../components/ProgressBar";
-import ControlButtons from "../components/ControlButtons";
-import PlayerControls from "../components/PlayerControls";
+import ProgressBar from "../components/reproductor/ProgressBar";
+import ControlButtons from "../components/reproductor/ControlButtons";
+import PlayerControls from "../components/reproductor/PlayerControls";
 import { FiArrowLeft } from "react-icons/fi";
 import { getAudiobookById } from '../api/api';
 
@@ -29,7 +29,7 @@ const Reproductor = () => {
         };
         fetchBookData();
     }, [id]);
-    
+
 
     const togglePlayPause = () => {
         if (isPlaying) {
