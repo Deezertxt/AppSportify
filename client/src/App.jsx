@@ -15,11 +15,12 @@ import SearchResults from './components/search/SearchResults';
 import Explorar from './pages/Explorar';
 import Categorias from './pages/Categorias';
 import Reseña from './pages/Reseña';
-
+import EditarPerfil from './pages/EditarPerfil';
 import { AuthProvider } from './context/authContext';
 import { ProtectedRoutes } from './context/ProtectedRoutes';
 import { LibraryProvider } from './context/libraryContext';
 
+ 
 function App() {
     return (
         <AuthProvider>
@@ -41,6 +42,7 @@ function App() {
                         <Route path="/buscar" element={<ProtectedRoutes><SearchResults /></ProtectedRoutes>} />
                         <Route path="/explorar" element={<ProtectedRoutes><Explorar /></ProtectedRoutes>} />
                         <Route path="/categorias/:id" element={<ProtectedRoutes><Categorias /></ProtectedRoutes>} />
+                        <Route path="/editarPerfil/:id" element={<ProtectedRoutes><EditarPerfil /></ProtectedRoutes>} />
                         <Route path="/resenia/:id" element={<ProtectedRoutes><Reseña /></ProtectedRoutes>} />
                     </Route>
                 </Routes>
