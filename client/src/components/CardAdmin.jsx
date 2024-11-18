@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from 'react-router-dom';
+import { FaRegEdit } from "react-icons/fa";
 
 function CardRow({ id, title, author, description, coverUrl, category, onDelete }) {
     return (
@@ -41,10 +42,8 @@ function CardRow({ id, title, author, description, coverUrl, category, onDelete 
             <div className="flex items-center  mb-4 ml-14">
                 <div className="mb-1 justify-center">
                 <Link to={`/Actualizar/${id}`}>
-                        <button className="text-red-500 hover:text-red-700">
-                            <img src="lapiz.svg">
-
-                            </img>
+                        <button className="text-red-500 hover:text-red-700 text-white">
+                        <FaRegEdit className="text-black" />
                         </button>
                     </Link>
                 </div>
