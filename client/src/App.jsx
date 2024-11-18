@@ -15,7 +15,7 @@ import Reproductor from './pages/Reproductor';
 import SearchResults from './components/SearchResults';
 import { AuthProvider } from './context/authContext';
 import { ProtectedRoutes } from './context/ProtectedRoutes';
-
+import EditarPerfil from './pages/EditarPerfil';
 
 function App() {
 
@@ -32,7 +32,7 @@ function App() {
             <Route path="/panelAdmin" element={<MainLayout><PanelAdmin /></MainLayout>} />
             <Route path="/publicar" element={<MainLayout><Publicar /></MainLayout>} />
             <Route path="/actualizar/:id" element={<MainLayout><Actualizar /></MainLayout>} />
-            
+            <Route path="/editarPerfil" element={<ProtectedRoutes><MainLayout><EditarPerfil /></MainLayout></ProtectedRoutes>} />
             <Route path="/taskpage" element={<TasksPage />} />
             <Route path="/preview/:id" element={<MainLayout><Preview /></MainLayout>} />
 
