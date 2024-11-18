@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 
-import { FiBarChart, FiBookmark, FiChevronsRight, FiFolderMinus, FiHome, FiLogOut, FiSearch } from "react-icons/fi";
+import { FiBarChart, FiBookmark, FiChevronsRight, FiFolderMinus, FiHome, FiLogOut, FiSearch, FiUser } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
@@ -67,6 +67,15 @@ const handleLogout = async () => {
           to="/biblioteca"
         />
 
+        <Option
+          Icon={FiUser}
+          title="Perfil"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+          to={`/editarPerfil/${user?.id}`}
+        />
+
         {user?.email === "yalasoft@gmail.com" && (
           <>
             <Option
@@ -87,7 +96,10 @@ const handleLogout = async () => {
             />
           </>
         )}
+        
       </div>
+
+      
 
       {/* Botón de Cerrar Sesión con icono */}
       <div className="mt-auto mb-3">
