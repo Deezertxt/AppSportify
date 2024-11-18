@@ -32,44 +32,41 @@ function Actualizar() {
     const [isLoading, setIsLoading] = useState(false); // Estado para controlar la carga
 
     const [isModalOpen, setIsModalOpen] = useState(false); //Estado para el modal
+    
     const handleNavigateHome = () => {
     setIsModalOpen(false); 
     navigate('/PanelAdmin'); 
     };
 
     useEffect(() => {
-    const fetchCategories = async () => {
-        try {
-            const response = await getCategories(); // Obtener categorías
-            setCategories(response.data);
-        } catch (error) {
-            console.error("Error al obtener las categorías:", error);
-        }
-    };
+        const fetchCategoriesAndAudiobook = async () => {
+            try {
+                
+    
+                setFormData({
+                    title: audiobookData.title,
+                    author: audiobookData.author,
+                    category: audiobookData.categoryId, // ID de la categoría
+                    description: audiobookData.description,
+                    pdfFile: null,
+                    portadaFile: audiobookData.coverUrl ? audiobookData.coverUrl : null // Asigna portadaFile si hay coverUrl
+                });
+    
+            } catch (error) {
+                console.error("Error al obtener categorías o audiolibro:", error);
+            }
+        };
+    
+        fetchCategoriesAndAudiobook();
+    }, [id]);
+    
 
-    fetchCategories();
-}, []);
-
-    useEffect(() => {
-    const fetchAudiobook = async () => {
-        try {
-            const response = await getAudiobookById(id); 
-            setFormData({
-                title: response.data.title,
-                author: response.data.author,
-                category: response.data.category,
-                description: response.data.description,
-                coverUrl: response.data.coverUrl,
-                pdfFile: null,
-                portadaFile: null
-            });
-        } catch (error) {
-            console.error("Error al obtener el audiolibro:", error);
-        }
-    };
-
-    fetchAudiobook();
-}, [id]);
+const handleCategoryChange = (e) => {
+    setFormData({
+        ...formData,
+        category: e.target.value,
+    });
+};
 
 
     // Validar que el archivo sea un PDF y no exceda 50MB
@@ -370,27 +367,30 @@ function Actualizar() {
                                 )}
                             </div>
 
-                            <div>
-                                <label htmlFor="categoria" className="text-lg font-semibold text-[#213A57]">Categoría<span className="text-red-500">*</span></label>
-                                <select
-                                    name="categoria"
-                                    id="categoria"
-                                    value={formData.category}
-                                    onChange={e => setFormData({ ...formData, category: e.target.value })}
-                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
-                                    required
-                                >
-                                    <option value="">Selecciona una categoría</option>
-                                    {categories.map(category => (
-                                        <option key={category.id} value={category.id}>
-                                            {category.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.category && (
-                                    <p className="text-red-500 text-sm">{errors.category}</p>
-                                )}
-                            </div>
+<div>
+            <label htmlFor="categoria" className="text-lg font-semibold text-[#213A57]">
+                Categoría<span className="text-red-500">*</span>
+            </label>
+            
+            <select
+                name="categoria"
+                id="categoria"
+                value={formData.category} // El valor del select se establece al ID de la categoría
+                onChange={handleCategoryChange}
+                className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                required
+            >
+                <option value="">Selecciona una categoría</option>
+                {categories.map(category => (
+                    <option key={category.id} value={category.id}>
+                        {category.name}
+                    </option>
+                ))}
+            </select>
+            {errors.category && (
+                <p className="text-red-500 text-sm">{errors.category}</p>
+            )}
+        </div>
 
                             <div>
                                 <label htmlFor="descripcion" className="text-lg font-semibold text-[#213A57]">Descripción<span className="text-red-500">*</span></label>
@@ -468,44 +468,44 @@ function Actualizar() {
                                 id="dropZone"
                                 className="relative p-10 w-full h-96 border-2 border-[#45DFB1] border-dashed rounded-xl text-center bg-[#F0F9F9] cursor-pointer flex flex-col justify-center items-center"
                                 onDrop={handleDrop}
-                                onDragOver={handleDragOver}
+                                onDragOver={(e) => e.preventDefault()}
                             >
                                 <p className="text-sm text-[#213A57] mb-4">Arrastra y suelta la imagen o selecciona un archivo</p>
                                 <input
-                                    type="file"
-                                    id="portadaFile"
-                                    name="portadaFile"
-                                    className="hidden"
-                                    accept="image/jpeg, image/png, image/webp, image/jpg"
-                                    onChange={handleFileChange}
+                                type="file"
+                                id="portadaFile"
+                                name="portadaFile"
+                                className="hidden"
+                                accept="image/jpeg, image/png, image/webp, image/jpg"
+                                onChange={handleFileChange}
                                 />
                                 <button
-                                    type="button"
-                                    className="bg-[#14919B] text-white py-2 px-6 rounded-lg hover:bg-[#0B6477] flex items-center justify-center mb-4"
-                                    onClick={() => document.getElementById('portadaFile').click()}
-                                >
-                                    <FaImage className="mr-2" /> Elegir archivo
-                                </button>
+                        type="button"
+                        className="bg-[#14919B] text-white py-2 px-6 rounded-lg hover:bg-[#0B6477] flex items-center justify-center mb-4"
+                        onClick={() => document.getElementById("portadaFile").click()}
+                    >
+                        <FaImage className="mr-2" /> Elegir archivo
+                    </button>
 
-                                {preview && (
-                                    <div className="absolute inset-0">
-                                        <img src={preview} alt="Vista previa" className="w-full h-full object-cover rounded-lg shadow-lg" />
-                                    </div>
-                                )}
+                    {preview && (
+                        <div className="absolute inset-0">
+                            <img src={preview} alt="Vista previa" className="w-full h-full object-cover rounded-lg shadow-lg" />
+                        </div>
+                    )}
 
-                                {formData.portadaFile && (
-                                    <button
-                                        type="button"
-                                        onClick={handleCancelPortada}
-                                        className="absolute bottom-2 right-2 bg-[#FF6F61] text-white rounded-full p-2 transform hover:scale-110 transition-all duration-300"
-                                    >
-                                        <FaTrashAlt />
-                                    </button>
-                                )}
-                            </div>
-                            {errors.portadaFile && (
-                                <p className="text-red-500 text-sm">{errors.portadaFile}</p>
-                            )}
+                    {(formData.portadaFile || formData.coverUrl) && (
+                        <button
+                            type="button"
+                            onClick={handleCancelPortada}
+                            className="absolute bottom-2 right-2 bg-[#FF6F61] text-white rounded-full p-2 transform hover:scale-110 transition-all duration-300"
+                        >
+                            <FaTrashAlt />
+                        </button>
+                    )}
+                </div>
+                {errors.portadaFile && (
+                    <p className="text-red-500 text-sm">{errors.portadaFile}</p>
+                )}
                         </div>
                     </div>
                 </div>
