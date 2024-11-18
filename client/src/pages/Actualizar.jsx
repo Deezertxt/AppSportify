@@ -41,17 +41,25 @@ function Actualizar() {
     useEffect(() => {
         const fetchCategoriesAndAudiobook = async () => {
             try {
-               
+                const categoriesResponse = await getCategories();
+                const categoriesData = categoriesResponse.data;
+    
+                const audiobookResponse = await getAudiobookById(id);
+                const audiobookData = audiobookResponse.data;
+    
+                setCategories(categoriesData);
+                const pdfFileName = audiobookData.pdfUrl ? audiobookData.pdfUrl.split('/').pop() : '';
+                
     
                 setFormData({
                     title: audiobookData.title,
                     author: audiobookData.author,
                     category: audiobookData.categoryId, // ID de la categoría
                     description: audiobookData.description,
-                    pdfFile: null,
+                    pdfFile: pdfFileName,
                     portadaFile: audiobookData.coverUrl ? audiobookData.coverUrl : null // Asigna portadaFile si hay coverUrl
                 });
-    
+                setDocumentFileName(pdfFileName);
                 setPreview(audiobookData.coverUrl);
                 setCoverFileName(audiobookData.coverUrl ? 'Portada Actual' : '');
             } catch (error) {
@@ -61,6 +69,7 @@ function Actualizar() {
     
         fetchCategoriesAndAudiobook();
     }, [id]);
+    
     
 
 const handleCategoryChange = (e) => {
@@ -205,104 +214,108 @@ const handleCategoryChange = (e) => {
         e.preventDefault();
         let formErrors = {};
         setIsLoading(true);
-
+    
         // Validar título, caracteres especiales y espacios
         if (!validateTextInput(formData.title)) {
             formErrors.title = "El título contiene caracteres no permitidos.";
         } else if (formData.title.trim() === "") {
             formErrors.titleEmpty = "El título no puede estar vacío ni contener solo espacios.";
         }
-
+    
         // Validar autor, caracteres especiales y espacios
         if (!validateTextInput(formData.author)) {
             formErrors.author = "El autor contiene caracteres no permitidos.";
         } else if (formData.author.trim() === "") {
             formErrors.authorEmpty = "El autor no puede estar vacío ni contener solo espacios.";
         }
-
-        // Validar descripción, espacios
+    
+        // Validar descripción, caracteres especiales y longitud
         if (!validateTextInput(formData.description)) {
             formErrors.description = "La descripción contiene caracteres no permitidos.";
         } else if (formData.description.trim() === "") {
             formErrors.descriptionEmpty = "La descripción no puede estar vacía ni contener solo espacios.";
+        } else if (formData.description.length > 200) {
+            formErrors.descriptionLength = "La descripción no puede superar los 200 caracteres.";
         }
-
-        if (!formData.pdfFile) {
-            formErrors.pdfFile = "Por favor, sube un archivo PDF o DOCX.";
+    
+        // Validar archivo PDF
+        if (!formData.pdfFile && !documentFileName) {
+            formErrors.pdfFile = "Por favor, sube un archivo PDF.";
         }
-
-        // Validar portada
-        if (!formData.portadaFile) {
+    
+        // Validar archivo de portada
+        if (!formData.portadaFile && !coverFileName) {
             formErrors.portadaFile = "Por favor, sube una portada.";
         }
-        // Si hay errores, mostrar y no enviar el formulario
+    
+        // Si hay errores, no se envía el formulario
         if (Object.keys(formErrors).length > 0) {
             setErrors(formErrors);
             setIsLoading(false);
             return;
         }
-
+    
         try {
-            // Crear un objeto FormData
+            // Crear un objeto FormData para subir los archivos
             const form = new FormData();
-            form.append("pdfFile", formData.pdfFile);
-            form.append("portadaFile", formData.portadaFile);
+            if (formData.pdfFile) {
+                form.append("pdfFile", formData.pdfFile);
+            }
+            if (formData.portadaFile) {
+                form.append("portadaFile", formData.portadaFile);
+            }
             form.append("title", formData.title);
             form.append("author", formData.author);
             form.append("category", formData.category);
             form.append("description", formData.description);
-
-             
-            const uploadResponse = await uploadFilesToFirebase(form);
-
-            // Verificar si la respuesta es exitosa
-            if (uploadResponse.status === 200) {
-                const { pdfUrl, portadaUrl } = uploadResponse.data;
-
-                if (!pdfUrl || !portadaUrl) {
-                    setErrors({ general: "Error: No se recuperaron las URLs de los archivos." });
-                    setIsLoading(false);
-                    return;
-                }
-
-                // Preparar los datos para crear el audiolibro
-                const audiobookData = {
-                    title: formData.title,
-                    author: formData.author,
-                    categoryId: formData.category,
-                    description: formData.description,
-                    pdfUrl,     // URL del PDF en Firebase
-                    coverUrl: portadaUrl  // URL de la portada en Firebase
-                };
-
-                // Ahora crear el audiolibro en la base de datos
-                const response = await updateAudiobook(audiobookData);
-                console.log('Publicación Editada con éxito:', response);
-
-                setErrors({});
-                setSuccessMessage("Audiolibro publicado con éxito!");
-
-                // Resetear el formulario
-                setFormData({
-                    title: "",
-                    author: "",
-                    category: "",
-                    description: "",
-                    pdfFile: null,
-                    portadaFile: null
-                });
-                setDocumentFileName("");
-                setCoverFileName("");
-                setPreview(null);
-                document.getElementById("documento").value = "";
-            }
+    
+            // Subir archivos si es necesario
+            const uploadResponse = formData.pdfFile || formData.portadaFile 
+                ? await uploadFilesToGCS(form)
+                : { data: { pdfUrl: null, portadaUrl: null } };
+    
+            const { pdfUrl, portadaUrl } = uploadResponse.data;
+    
+            // Preparar datos para actualizar
+            const updatedAudiobookData = {
+                title: formData.title,
+                author: formData.author,
+                categoryId: formData.category,
+                description: formData.description,
+                pdfUrl: pdfUrl || formData.pdfFile || "", // Mantener el archivo previo si no se subió uno nuevo
+                coverUrl: portadaUrl || formData.portadaFile || preview || "" // Mantener la portada previa
+            };
+    
+            // Actualizar audiolibro mediante la API
+            const response = await updateAudiobook(id, updatedAudiobookData);
+    
+            // Confirmar éxito
+            console.log("Audiolibro actualizado con éxito:", response);
+            setSuccessMessage("Audiolibro actualizado con éxito.");
+    
+            // Limpiar estado
+            setErrors({});
+            setFormData({
+                title: "",
+                author: "",
+                category: "",
+                description: "",
+                pdfFile: null,
+                portadaFile: null
+            });
+            setDocumentFileName("");
+            setCoverFileName("");
+            setPreview(null);
+            document.getElementById("documento").value = "";
+            document.getElementById("portadaFile").value = "";
         } catch (error) {
-            console.error("Error al subir los archivos:", error);
-            setErrors({ general: "Error al registrar la publicación. Verifique los campos." });
+            console.error("Error al actualizar el audiolibro:", error);
+            setErrors({ general: "Error al actualizar el audiolibro. Por favor, inténtelo nuevamente." });
         } finally {
             setIsLoading(false);
         }
     };
+    
 
     return (
         <div className="max-h-screen-xl bg-[#F0F9F9]">
@@ -433,6 +446,9 @@ const handleCategoryChange = (e) => {
                                         required
                                     />
                                     {formData.pdfFile && (
+                                        <div className="flex items-center gap-2">
+                                        <span className="text-gray-700">{formData.pdfFile.name || formData.pdfFile}</span>
+                                        
                                         <button
                                             type="button"
                                             onClick={handleCancelDocumento}
@@ -440,6 +456,7 @@ const handleCategoryChange = (e) => {
                                         >
                                             <FaTrashAlt />
                                         </button>
+                                        </div>
                                     )}
                                 </div>
                                 {/* Mensaje de error para PDF */}
@@ -563,5 +580,3 @@ const handleCategoryChange = (e) => {
 }
 
 export default Actualizar;
-
-
