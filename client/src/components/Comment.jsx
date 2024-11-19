@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { BiLike, BiSolidLike } from "react-icons/bi";
-export const Comment = ({ comment }) => {
+export const Comment = ({ comment, currentUser }) => {
     const [contador, setContador] = useState(0);
 
-    const handleClick = () => {
+    const handleClickLike = () => {
         const a = contador + 1;
         setContador(a);
+        console.log("id de usuario", currentUser);
     };
 
     return (
@@ -13,7 +14,7 @@ export const Comment = ({ comment }) => {
             <div className="flex">
                 <div id="comment-image-container">
                     <img
-                        src="../public/diavlo.jpg"
+                        src={comment.user.profilePicUrl}
                         className="size-[50px] rounded-full mx-2 my-6"
                     />
                 </div>
@@ -23,16 +24,16 @@ export const Comment = ({ comment }) => {
                             id="comment-author"
                             className="font-semibold text-xl"
                         >
-                            {comment.username}
+                            {comment.user.username}
                         </div>
                         <div>{comment.createdAt}</div>
                     </div>
-                    <div id="comment-text">{comment.body}</div>
+                    <div id="comment-text">{comment.comment}</div>
                 </div>
             </div>
 
             <div className="">
-                <button onClick={() => handleClick()}>
+                <button onClick={() => handleClickLike()}>
                     {(contador / 2) % 0 ? (
                         <BiSolidLike size={30} />
                         
@@ -40,7 +41,7 @@ export const Comment = ({ comment }) => {
                         <BiLike size={30} />
                     )}
 
-                    {contador}
+                    {comment.rating}
                 </button>
             </div>
         </div>

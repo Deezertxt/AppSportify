@@ -6,6 +6,7 @@ import { SlEarphonesAlt ,SlBookOpen } from "react-icons/sl";
 import { getAudiobooks, addBookToLibraryCategory } from "../api/api";
 import { useAuth } from "../context/authContext";
 import { useLibrary } from "../context/libraryContext";
+import { Comments } from '../components/Comments';
 
 function Preview() {
   const { id } = useParams(); // Obtener el id desde la URL
@@ -148,7 +149,7 @@ function Preview() {
         </section>
       </main>
       <div id='commentsSection'>
-          <Comments/>
+          <Comments currentBookId={id} currentUserId={user}/>
       </div>
     </div>
   );

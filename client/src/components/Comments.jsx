@@ -1,23 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { getComments as getCommentsApi } from "../api/userPrueba";
 import { Comment } from "./Comment";
+import { getFeedbacks } from "../api/api";
 
-
-export const Comments = ({ currentUserId }) => {
+export const Comments = ({ currentBookId, currentUserId }) => {
     const [backendComments, setBackendComments] = useState([]);
-    const rootComments = backendComments.filter(
-        (backendComment) => backendComment.parentId === null
-    );
-    console.log("backendComments: ", backendComments);
-
-    const addComment = (text, parentId) => {
-        console.log("texto:  ", text);
-    };
 
     useEffect(() => {
-        getCommentsApi().then((data) => {
-            setBackendComments(data);
-        });
+        const fetchComments = async () => {
+            try {
+                const response = await getFeedbacks(currentBookId)
+                if (Array.isArray(response.data)) {
+                    setBackendComments(response.data)
+                    console.log("Commentarios del book:    ", response.data);
+                    
+                }else {
+                    console.error("La respuesta no es un array:", response.data);
+                    setBackendComments([]); // Estado vacío en caso de error
+                }
+            } catch (error) {
+                console.error("Error fetching commentarios:", error);
+                setBackendComments([]); // Estado vacío en caso de error
+            }
+        };
+        fetchComments();
     }, []);
     return (
         <div
@@ -26,8 +31,8 @@ export const Comments = ({ currentUserId }) => {
         >
             <div id="comments-container" className="h-auto rounded-xl">
                 <div className="text-xl font-bold">Reseñas: </div>
-                {rootComments.map((rootComment) => (
-                    <Comment key={rootComment.id} comment={rootComment} />
+                {backendComments.map((rootComment) => (
+                    <Comment key={rootComment.id} comment={rootComment} currentUser={currentUserId} />
                 ))}
             </div>
         </div>
