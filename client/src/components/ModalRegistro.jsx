@@ -308,12 +308,20 @@ const RegistrationForm = ({ closeModal, openLogin }) => {
           Inicia sesión con Google
         </button>
 
-        <p className="text-white text-1g mt-4 text-center">
-          ¿Ya tienes cuenta?{" "}
-          <button type="button" onClick={openLogin} className="text-blue-500">
-             <p className=" text-lg text-white font-bold "> Inicia sesión </p> 
-          </button>
-        </p>
+        <div className="text-white text-center leading-none">
+  <p className="text-sm">
+    ¿Ya tienes cuenta?{" "}
+    <button type="button" onClick={openLogin} className="text-blue-500 font-bold">
+      Inicia sesión
+    </button>
+  </p>
+  <p className="text-[10px]">
+  ¿Aceptas las normas y políticas de?{" "}
+  <button type="button" onClick={openLogin} className="text-blue-500 font-bold text-[10px]">
+    ese servicio
+  </button>
+</p>
+</div>
       </form>
     </div>
   );
