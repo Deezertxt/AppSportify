@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BiLike, BiSolidLike } from "react-icons/bi";
+import { likeFeedback } from "../api/api";
 export const Comment = ({ comment, currentUser }) => {
-    const [contador, setContador] = useState(0);
-
+    const [contador, setContador] = useState(comment.likes);
+    const [liked, setLiked] = useState(false)
     const handleClickLike = () => {
-        const a = contador + 1;
-        setContador(a);
-        console.log("id de usuario", currentUser);
+        //likeFeedback(comment)
+        //console.log("id de usuario", currentUser);
+        console.log("comentario: ", comment);
+        if (liked) {
+            setLiked(false)
+            // const a = contador - 1;
+            // setContador(a)
+        }else{
+            setLiked(true)
+            // const a = contador + 1;
+            // setContador(a)
+            likeFeedback(comment.id)
+        }
+        console.log(liked);
     };
 
     return (
@@ -32,17 +44,20 @@ export const Comment = ({ comment, currentUser }) => {
                 </div>
             </div>
 
-            <div className="">
+            <div className="flex mx-20">
                 <button onClick={() => handleClickLike()}>
-                    {(contador / 2) % 0 ? (
+                    {liked ? (
                         <BiSolidLike size={30} />
                         
                     ) : (
                         <BiLike size={30} />
                     )}
 
-                    {comment.rating}
+                   
                 </button>
+                <div className="mx-2">
+                    {contador}
+                </div>
             </div>
         </div>
     );
