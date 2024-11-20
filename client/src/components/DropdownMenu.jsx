@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 
-import { FiBarChart, FiBookmark, FiChevronsRight, FiFolderMinus, FiHome, FiLogOut, FiSearch } from "react-icons/fi";
+import { FiBarChart, FiBookmark, FiChevronsRight, FiFolderMinus, FiHome, FiLogOut, FiSearch ,FiUser   } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
@@ -59,14 +59,21 @@ const handleLogout = async () => {
           to="/explorar"
         />
         <Option
-          Icon={FiBookmark}
+          Icon={FiBookmark }
           title="Mi biblioteca"
           selected={selected}
           setSelected={setSelected}
           open={open}
           to="/biblioteca"
         />
-
+        <Option
+          Icon={FiUser}
+          title="Perfil User"
+          selected={selected}
+          setSelected={setSelected}
+          open={open}
+          to="/PerfilUser"
+        />
         {user?.email === "yalasoft@gmail.com" && (
           <>
             <Option
