@@ -1,5 +1,7 @@
 http://localhost:3000/api/user/register    registrar usuario
 
+http://localhost:3000/api/user/get/
+
 http://localhost:3000/api/user/put/5       actualizar usuario con id 5 es ejemplo
 
 http://localhost:3000/api/user/delete/5    eliminar usuario con id 5 es ejemplo
