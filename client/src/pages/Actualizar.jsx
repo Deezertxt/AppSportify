@@ -449,48 +449,55 @@ const handleCategoryChange = (e) => {
                             {/* Campo Documento PDF */}
                             <div className="flex flex-col gap-1">
                             <label htmlFor="documento" className="text-lg font-semibold text-[#213A57]">
-        Documento PDF<span className="text-red-500">*</span>
-    </label>
-    <div className="relative w-full">
-        {/* Input de archivo real (oculto) */}
-        <input
-            type="file"
-            id="documento"
-            name="documento"
-            onChange={(e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    setFormData({ ...formData, pdfFile: file.name }); // Actualizar al nuevo archivo
-                }
-            }}
-            accept="application/pdf"
-            className="hidden" // Ocultamos el input estándar
-        />
-        
-        {/* Botón personalizado */}
-        
-        <div
-            className="flex items-center justify-between p-3 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B] cursor-pointer bg-white"
-            onClick={() => document.getElementById("documento").click()} // Activa el input oculto
-        >
-            <button
-                type="button"
-                className="bg-[#14919B] text-white py-1 px-4 rounded-lg hover:bg-[#0B6477] ml-2"
-            >
-                Seleccionar archivo
-            </button>
-            {/* Mostrar el nombre del archivo actual o texto predeterminado */}
-            <span className="text-gray-700">
-                {formData.pdfFile || "Ningún archivo seleccionado"}
-            </span>
-            
-        </div>
-    </div>
-    {/* Mensaje de error para PDF */}
-    {errors.pdfFile && <p className="text-red-500 text-sm">{errors.pdfFile}</p>}
-    {/* Texto sobre tamaño máximo de archivo */}
-    <p className="text-gray-500 text-sm">Tamaño máximo del archivo: 50 MB</p>
-</div>
+                            Documento PDF<span className="text-red-500">*</span>
+                            </label>
+                            <div className="relative w-full">
+                                {/* Input de archivo real (oculto) */}
+                                <input
+                                    type="file"
+                                    id="documento"
+                                    name="documento"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            setFormData({ ...formData, pdfFile: file.name }); // Actualizar al nuevo archivo
+                                        }
+                                    }}
+                                    accept="application/pdf"
+                                    className="hidden" // Ocultamos el input estándar
+                                />
+                                
+                                {/* Botón personalizado */}
+                                
+                                <div
+                                    className="flex items-center justify-between p-3 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B] cursor-pointer bg-white"
+                                    onClick={() => document.getElementById("documento").click()} // Activa el input oculto
+                                >
+                                    <button
+                                        type="button"
+                                        className="bg-[#14919B] text-white py-1 px-4 rounded-lg hover:bg-[#0B6477] ml-2"
+                                    >
+                                        Seleccionar archivo
+                                    </button>
+                                    {/* Mostrar el nombre del archivo actual o texto predeterminado */}
+                                    <span className="text-gray-700">
+                                        {formData.pdfFile || "Ningún archivo seleccionado"}
+                                    </span>
+                                    
+                                </div>
+                                <button
+                                            type="button"
+                                            onClick={handleCancelDocumento}
+                                            className="bg-[#FF6F61] text-white py-2 px-4 rounded-lg hover:bg-[#FF4F3F] transition-all duration-300 ml-2"
+                                        >
+                                            <FaTrashAlt />
+                                        </button>
+                            </div>
+                            {/* Mensaje de error para PDF */}
+                            {errors.pdfFile && <p className="text-red-500 text-sm">{errors.pdfFile}</p>}
+                            {/* Texto sobre tamaño máximo de archivo */}
+                            <p className="text-gray-500 text-sm">Tamaño máximo del archivo: 50 MB</p>
+                        </div>
 
 
                             {/* Botones Publicar y Cancelar */}
