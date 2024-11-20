@@ -41,12 +41,12 @@ function App() {
                         <Route path="/buscar" element={<ProtectedRoutes><SearchResults /></ProtectedRoutes>} />
                         <Route path="/explorar" element={<ProtectedRoutes><Explorar /></ProtectedRoutes>} />
                         <Route path="/categorias/:id" element={<ProtectedRoutes><Categorias /></ProtectedRoutes>} />
-                   
+                        <Route path="/PerfilUser" element={<ProtectedRoutes><PerfilUser /></ProtectedRoutes>} />
+
                        
 
                     </Route>
                     <Route path="/resenia/:id" element={<ProtectedRoutes><Reseña /></ProtectedRoutes>} />
-                    <Route path="/PerfilUser" element={<ProtectedRoutes><PerfilUser /></ProtectedRoutes>} />
                 </Routes>
             </LibraryProvider>
         </AuthProvider>
