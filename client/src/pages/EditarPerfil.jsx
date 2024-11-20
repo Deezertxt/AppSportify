@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"; // Importa useParams si no lo has hecho
 import { getUserById, updateUser } from "../api/api";
+import { useAuth } from '../context/authContext';
 
 const ProfileForm = () => {
   const { id } = useParams();  // Aquí obtienes el ID del usuario desde la URL.
-   
+  const { user } = useAuth();
+  const userId = user.userId;
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
