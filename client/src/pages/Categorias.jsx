@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { getAudiobooksByCategory } from "../api/api";
 import Card from "../components/cards/Card";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from "react-router-dom";
 import SearchBar from "../components/search/SearchBar";
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import Breadcrumb from "../components/Breadcrumb"; // Importar el componente Breadcrumb
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+
 
 function Categorias() {
     const { id } = useParams();
     const [audiobooks, setAudiobooks] = useState([]);
-    const [loading, setLoading] = useState(true); 
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchAudiobooks = async () => {
-            setLoading(true); 
+            setLoading(true);
             try {
                 const response = await getAudiobooksByCategory(id);
                 if (Array.isArray(response.data)) {
@@ -27,7 +29,7 @@ function Categorias() {
                 console.error("Error fetching audiobooks:", error);
                 setAudiobooks([]);
             } finally {
-                setLoading(false); 
+                setLoading(false);
             }
         };
         fetchAudiobooks();
@@ -38,22 +40,26 @@ function Categorias() {
     };
 
     return (
-        <div>
-            <div className="px-20">
+        <div className="px-6 py-4">
+
+            <div className="mb-4">
                 <SearchBar />
             </div>
-            <div className="max-w-5xl mx-auto mt-8">
+
+            <Breadcrumb />
+
+            {/* Contenido principal */}
+            <div className="max-w-5xl mx-auto">
                 {loading ? (
                     <div className="flex justify-center items-center h-40">
                         <AiOutlineLoading3Quarters className="animate-spin text-4xl text-gray-500" />
                         <span className="ml-2 text-gray-500">Cargando audiolibros...</span>
                     </div>
                 ) : audiobooks.length > 0 ? (
-                    <div className="flex flex-wrap -m-4 gap-4"> 
+                    <div className="flex flex-wrap -m-4 gap-4">
                         {audiobooks.map((audiobook) => (
-                            <div className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 p-4"> 
+                            <div key={audiobook.id} className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 p-4">
                                 <Card
-                                    key={audiobook.id}
                                     id={audiobook.id}
                                     title={audiobook.title}
                                     author={audiobook.author}
