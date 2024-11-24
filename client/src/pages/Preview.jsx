@@ -2,23 +2,25 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { FiBookmark, FiClock, FiStar } from "react-icons/fi";
 import { useEffect, useState } from "react";
-import { SlEarphonesAlt ,SlBookOpen } from "react-icons/sl";
+import { SlEarphonesAlt, SlBookOpen } from "react-icons/sl";
 import { getAudiobooks, addBookToLibraryCategory } from "../api/api";
 import { useAuth } from "../context/authContext";
 import { useLibrary } from "../context/libraryContext";
+import { Comments } from "../components/Comments/Comments";
+import ModalReu from "../components/modals/ModalReu";
 
 function Preview() {
-  const { id } = useParams(); // Obtener el id desde la URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const [bookData, setBookData] = useState(null);
-  const { user } = useAuth(); // Obtener la información del usuario
-  const { 
-    isBookSaved, 
-    addToSaved, 
-    initializeLibrary 
-  } = useLibrary(); // Obtener funciones del contexto de biblioteca
+  const { user } = useAuth();
+  const { isBookSaved, addToSaved, initializeLibrary } = useLibrary();
 
-  // Inicializar la biblioteca al cargar el componente
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState("success");
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalTitle, setModalTitle] = useState("");
+
   useEffect(() => {
     if (user?.userId) {
       initializeLibrary(user.userId);
@@ -49,21 +51,31 @@ function Preview() {
 
   const handleSaveToLibrary = async () => {
     if (isBookSaved(parseInt(id, 10))) return;
+
     try {
       const response = await addBookToLibraryCategory({
-        firebaseUserId: user.userId,
+        userId: user.userId,
         audiobookId: parseInt(id, 10),
         category: "saved",
       });
       if (response.status === 200) {
-        addToSaved(parseInt(id, 10)); // Actualiza el estado global
-        alert("Audiolibro guardado en la biblioteca.");
+        addToSaved(parseInt(id, 10));
+        setModalType("success");
+        setModalTitle("¡Éxito!");
+        setModalMessage("Audiolibro guardado en la biblioteca.");
+        setModalVisible(true);
       } else {
-        alert("Error al guardar el audiolibro.");
+        setModalType("error");
+        setModalTitle("¡Error!");
+        setModalMessage("Error al guardar el audiolibro.");
+        setModalVisible(true);
       }
     } catch (error) {
       console.error("Error al guardar el audiolibro:", error);
-      alert("Error al guardar el audiolibro.");
+      setModalType("error");
+      setModalTitle("¡Error!");
+      setModalMessage("Ocurrió un error al guardar el audiolibro.");
+      setModalVisible(true);
     }
   };
 
@@ -74,31 +86,30 @@ function Preview() {
   const { title, author, description, coverUrl, duration, averageRating } = bookData;
 
   return (
-    <div className="min-h-0 bg-second">
+    <div className=" min-h-screen">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Botón de retroceso */}
         <button
           onClick={() => navigate(-1)}
-          className="text-black font-bold mb-6 flex items-center"
+          className="flex items-center  hover:text-gray-500 mb-4"
         >
           <FaArrowLeft className="mr-2" />
           Volver
         </button>
 
-        {/* Información del libro */}
-        <section className="flex flex-col md:flex-row items-start md:items-center w-full bg-gray-50 rounded-lg shadow-lg overflow-hidden">
-          <div className="w-full md:w-1/3">
+        {/* Información del audiolibro */}
+        <section className="shadow-lg rounded-lg overflow-hidden flex flex-col md:flex-row md:space-x-4">
+          <div className="w-full md:w-1/3 flex-shrink-0">
             <img
               src={coverUrl}
               alt="Book Cover"
-              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+              className="w-full h-auto max-h-[400px]"
             />
           </div>
-          <div className="flex flex-col p-4 md:p-6 w-full md:w-2/3">
-            <h2 className="text-2xl md:text-3xl font-bold mb-2">{title}</h2>
-            <p className="text-lg font-semibold mb-1">Autor:</p>
-            <p className="text-lg text-gray-500 font-semibold">{author}</p>
-            <div className="flex space-x-4 mt-4 text-gray-700">
+          <div className="flex flex-col p-6 space-y-4 md:w-2/3">
+            <h2 className="text-2xl sm:text-3xl font-bold">{title}</h2>
+            <p className="text-lg font-medium">Autor: {author}</p>
+            <div className="flex flex-wrap space-x-4">
               <span className="flex items-center">
                 <FiClock className="mr-2" /> {duration}
               </span>
@@ -106,9 +117,7 @@ function Preview() {
                 <FiStar className="mr-2" /> {averageRating}
               </span>
             </div>
-
-            {/* Botones de acciones */}
-            <div className="flex space-x-4 mt-4">
+            <div className="flex flex-wrap gap-4 mt-4">
               <button
                 onClick={() => navigate(`/reproductor/${id}`)}
                 className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-300 flex items-center space-x-2"
@@ -122,31 +131,55 @@ function Preview() {
               >
                 <SlEarphonesAlt />
                 <span>Escuchar</span>
-                </button>
+              </button>
             </div>
-
             {/* Descripción */}
-            <section className="mt-6">
-              <h3 className="text-lg font-semibold">Descripción</h3>
-              <p className="text-gray-700 mt-2">{description}</p>
-            </section>
+            <h3 className="text-lg sm:text-xl font-bold">Descripción</h3>
+            <p
+              className="mt-2 text-sm sm:text-base leading-relaxed break-words"
+              style={{
+                wordWrap: "break-word",
+                overflowWrap: "break-word",
+              }}
+            >
+              {description}
+            </p>
 
-            {/* Botón de guardar en biblioteca */}
             <button
               onClick={handleSaveToLibrary}
-              className={`flex items-center mt-6 ${
-                isBookSaved(parseInt(id, 10))
-                  ? "text-blue-600"
-                  : "text-blue-400 hover:text-blue-800"
-              } font-semibold py-2 px-4 transition-colors duration-300 `}
-              disabled={isBookSaved(parseInt(id, 10))} // Deshabilitar si ya está guardado
+              className={`flex items-center mt-6 ${isBookSaved(parseInt(id, 10))
+                ? "text-blue-600"
+                : "text-blue-400 hover:text-blue-800"
+                } font-semibold py-2 px-4 transition-colors duration-300`}
+              disabled={isBookSaved(parseInt(id, 10))}
             >
-              <FiBookmark className={`mr-2 ${isBookSaved(parseInt(id, 10)) ? "fill-current" : ""}`} />
-              {isBookSaved(parseInt(id, 10)) ? "Guardado en Biblioteca" : "Guardar en mi Biblioteca"}
+              <FiBookmark
+                className={`mr-2 ${isBookSaved(parseInt(id, 10)) ? "fill-current" : ""
+                  }`}
+              />
+              {isBookSaved(parseInt(id, 10))
+                ? "Guardado en Biblioteca"
+                : "Guardar en mi Biblioteca"}
             </button>
           </div>
         </section>
+
+
+        {/* Sección de comentarios */}
+        <section id="commentsSection" className="mt-3">
+          <Comments currentBookId={id} currentUserId={user} />
+        </section>
       </main>
+
+      {/* Modal */}
+      {modalVisible && (
+        <ModalReu
+          onClose={() => setModalVisible(false)}
+          title={modalTitle}
+          message={modalMessage}
+          type={modalType}
+        />
+      )}
     </div>
   );
 }

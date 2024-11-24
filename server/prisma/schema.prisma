@@ -17,13 +17,14 @@ model User {
   email         String    @unique                        // Email único
   fullName      String?    @db.VarChar(100)               // Nombre completo, máximo 100 caracteres
   language      String    @default("Español")            // Idioma con valor predeterminado en español
-  theme         String?   @db.VarChar(50)                // Tema personalizado, máximo 50 caracteres
+  gender        String?   @default("Otro")               // Género con valor predeterminado en Otro
   bio           String?   @db.VarChar(180)               // Biografía con un máximo de 180 caracteres
   profilePicUrl String?   @db.Text                       // URL de la foto de perfil
   createdAt     DateTime  @default(now())                // Fecha de creación
   updatedAt     DateTime  @updatedAt                     // Fecha de actualización automática
   library       Library[]                               // Relación con la tabla Library (1-n)
   feedbacks     Feedback[]                              // Relación con los comentarios y calificaciones (1-n)
+  isPrivate     Boolean      @default(false)
 }
 
 model Audiobook {
@@ -69,6 +70,7 @@ model Library {
   favorite     Boolean   @default(false)                // Si el audiolibro es marcado como favorito
   played       Boolean   @default(false)                // Si el audiolibro ha sido reproducido
   finished     Boolean   @default(false)                // Si el audiolibro ha sido marcado como terminado
+  recommended  Boolean   @default(false)             // Si el audiolibro ha sido marcado como recomendado
 }
 
 model Category {

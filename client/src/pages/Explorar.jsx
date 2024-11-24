@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import CarouselCard from "../components/cards/CarouselCard";
 import Categories from "../components/categorias/Categories";
 import SkeletonCard from "../components/skeletons/SkeletonCard";
-import SkeletonCategoryButton from "../components/skeletons/SkeletonCategoryButton";
 import { getAudiobooks } from "../api/api";
 
 const Explorar = () => {
     const [trendingAudiobooks, setTrendingAudiobooks] = useState([]);
     const [recentAudiobooks, setRecentAudiobooks] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [visibleItems, setVisibleItems] = useState(5); // Inicializar con 5 para pantallas grandes
 
     useEffect(() => {
         const fetchData = async () => {
@@ -17,12 +17,17 @@ const Explorar = () => {
                 const response = await getAudiobooks();
                 const audiobooks = response.data;
 
-                const topRated = [...audiobooks].sort((a, b) => b.averageRating - a.averageRating).slice(0, 10);
+                // Obtener los audiolibros mejor calificados
+                const topRated = [...audiobooks]
+                    .sort((a, b) => b.averageRating - a.averageRating)
+                    .slice(0, 10);
                 setTrendingAudiobooks(topRated);
 
-                const recent = [...audiobooks].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 10);
+                // Obtener los audiolibros más recientes
+                const recent = [...audiobooks]
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    .slice(0, 10);
                 setRecentAudiobooks(recent);
-
             } catch (error) {
                 console.error("Error al cargar datos:", error);
             } finally {
@@ -33,46 +38,60 @@ const Explorar = () => {
         fetchData();
     }, []);
 
-    return (
-        <div className="p-6 text-black min-h-screen">
-            <h2 className="text-3xl font-bold mb-6">Tendencias</h2>
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 640) {
+                setVisibleItems(1); // En pantallas pequeñas (menos de 640px), mostrar 1 skeleton
+            } else if (window.innerWidth < 1024) {
+                setVisibleItems(2); // En pantallas medianas (menos de 1024px), mostrar 2 skeletons
+            } else {
+                setVisibleItems(5); // En pantallas grandes, mostrar 5 skeletons
+            }
+        };
 
-            <div className="flex justify-center mb-8">
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    return (
+        <div className="px-4 sm:px-6 lg:px-8 py-6 min-h-screen">
+            {/* Tendencias */}
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center">Tendencias</h2>
+            <div className="flex justify-center mb-10">
                 <div className="w-full max-w-7xl">
                     {loading ? (
-                        <div className="flex flex-wrap gap-4">
-                            {[...Array(5)].map((_, index) => (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                            {[...Array(visibleItems)].map((_, index) => (
                                 <SkeletonCard key={index} />
                             ))}
                         </div>
                     ) : (
-                        <CarouselCard audiobooks={trendingAudiobooks} />
+                        <CarouselCard audiobooks={trendingAudiobooks} loading={loading} />
                     )}
                 </div>
             </div>
 
-            <h2 className="text-3xl font-bold mb-4">Categorias</h2>
-            <div className="flex gap-4">
-                {loading ? (
-                    [...Array(6)].map((_, index) => (
-                        <SkeletonCategoryButton key={index} />
-                    ))
-                ) : (
-                    <Categories />
-                )}
+            {/* Categorías */}
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center">Categorías</h2>
+            <div className="flex justify-center mb-10">
+                <div className="w-full max-w-5xl">
+                    <Categories loading={loading} />
+                </div>
             </div>
 
-            <h2 className="text-3xl font-bold mb-4 mt-8">Recientes</h2>
-            <div className="flex justify-center mb-8">
+            {/* Recientes */}
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center">Recientes</h2>
+            <div className="flex justify-center">
                 <div className="w-full max-w-7xl">
                     {loading ? (
-                        <div className="flex flex-wrap gap-4">
-                            {[...Array(5)].map((_, index) => (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                            {[...Array(visibleItems)].map((_, index) => (
                                 <SkeletonCard key={index} />
                             ))}
                         </div>
                     ) : (
-                        <CarouselCard audiobooks={recentAudiobooks} />
+                        <CarouselCard audiobooks={recentAudiobooks} loading={loading} />
                     )}
                 </div>
             </div>

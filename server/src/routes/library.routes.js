@@ -6,6 +6,6 @@ const { addBookToLibraryCategory, getUserLibraryCategory, fetchLibraryState, rem
 router.post('/add', addBookToLibraryCategory);  
 router.get('/get/:userId/:category', getUserLibraryCategory);
 router.get('/fetch/:userId', fetchLibraryState); 
-router.delete('/delete/:userId/:audiobookId/:category', removeBookFromLibraryCategory); 
+router.patch('/patch/:userId/:audiobookId/:category', removeBookFromLibraryCategory); 
 
 module.exports = router;

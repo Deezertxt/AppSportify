@@ -122,12 +122,71 @@ const getUserById = async (req, res) => {
   }
 };
 
+const getUserByEmail = async (req, res) => {
+  const { email } = req.params;
+
+  try {
+      const user = await prisma.user.findUnique({
+          where: { email },
+      });
+
+      if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.status(200).json({ id: user.id, email: user.email });
+  } catch (error) {
+      console.error('Error fetching user by email:', error);
+      res.status(500).json({ error: 'Error fetching user by email', details: error.message });
+  }
+};
+
+const toggleProfilePrivacy = async (req, res) => {
+  const { id } = req.params; // ID del usuario
+  const { isPrivate } = req.body; // Nuevo estado de privacidad
+  console.log( isPrivate);
+
+  try {
+    // Verificar si el usuario existe
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado." });
+    }
+
+    // Actualizar el estado de privacidad
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: {
+        isPrivate,
+      },
+    });
+
+    res.status(200).json({
+      message: `El perfil ahora es ${isPrivate ? "privado" : "público"}`,
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error al cambiar el estado de privacidad:", error);
+    res.status(500).json({
+      error: "Error al cambiar el estado de privacidad",
+      details: error.message,
+    });
+  }
+};
+
+
+
 // Actualizar la información del usuario
 const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { name, email, bio, profilePicUrl, language } = req.body;
+  const { name, bio, profilePicUrl, language, gender, fullName } = req.body; // Excluir email
+  console.log(req.body);
 
   try {
+    // Verificar si el usuario existe
     const user = await prisma.user.findUnique({
       where: { id },
     });
@@ -135,14 +194,17 @@ const updateUser = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    // Actualizar los campos permitidos
     const updatedUser = await prisma.user.update({
       where: { id },
       data: {
         username: name || user.username,
-        email: email || user.email,
+        fullName: fullName || user.fullName,
         bio: bio || user.bio,
         profilePicUrl: profilePicUrl || user.profilePicUrl,
         language: language || user.language,
+        gender: gender || user.gender,
+        // El campo email no se incluye para evitar su modificación
       },
     });
 
@@ -153,10 +215,13 @@ const updateUser = async (req, res) => {
   }
 };
 
+
 module.exports = {
   registerOrLoginWithGoogle,
   createUser,
   deleteUser,
   updateUser,
-  getUserById
+  getUserById,
+  getUserByEmail,
+  toggleProfilePrivacy,
 };
