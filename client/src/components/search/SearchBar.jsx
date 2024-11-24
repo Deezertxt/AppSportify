@@ -1,37 +1,39 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { SearchResultsList } from "./SearchResultsList";
 import { getAudiobooks } from "../../api/api";
-import debounce from "lodash.debounce"; // Asegúrate de tener lodash instalado para el debounce
+import debounce from "lodash.debounce";
 
 function SearchBar() {
-    const [input, setInput] = useState("");
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const [input, setInput] = useState(location.state?.input || ""); // Recuperar el estado previo
     const [audiobooks, setAudiobooks] = useState([]);
     const [results, setResults] = useState([]);
     const [aparecer, setAparecer] = useState(false);
-    const navigate = useNavigate();
 
     // Llamada inicial a la API para obtener todos los audiolibros
     useEffect(() => {
         const fetchAudiobooks = async () => {
             try {
-                const response = await getAudiobooks(); // Llamada a la API
+                const response = await getAudiobooks();
                 if (Array.isArray(response.data)) {
-                    setAudiobooks(response.data); // Guardamos los audiolibros
+                    setAudiobooks(response.data);
                 } else {
                     console.error("La respuesta no es un array:", response.data);
-                    setAudiobooks([]); // Estado vacío en caso de error
+                    setAudiobooks([]);
                 }
             } catch (error) {
                 console.error("Error fetching audiobooks:", error);
-                setAudiobooks([]); // Estado vacío en caso de error
+                setAudiobooks([]);
             }
         };
 
         fetchAudiobooks();
     }, []);
 
-    // Lógica de búsqueda con debounce para optimizar las consultas
+    // Lógica de búsqueda con debounce
     const filterResults = debounce((value) => {
         if (value) {
             const filteredResults = audiobooks.filter(
@@ -39,17 +41,17 @@ function SearchBar() {
                     audiobook.title.toLowerCase().includes(value.toLowerCase()) ||
                     audiobook.author.toLowerCase().includes(value.toLowerCase())
             );
-            setResults(filteredResults.slice(0, 4)); // Limitar a los primeros 4 resultados
+            setResults(filteredResults.slice(0, 5));
         } else {
-            setResults([]); // Limpiar los resultados si no hay texto
+            setResults([]);
         }
-    }, 300); // Esperar 300ms después de la última escritura antes de realizar el filtrado
+    }, 300);
 
     const handleInputChange = (value) => {
         if (value.length < 100) {
             setInput(value);
             setAparecer(true);
-            filterResults(value); // Aplicamos el debounce
+            filterResults(value);
         } else {
             alert("Por favor, usa menos de 100 caracteres");
         }
@@ -57,7 +59,7 @@ function SearchBar() {
 
     const handleSearch = () => {
         if (input.trim()) {
-            navigate("/buscar", { state: { input, results } });
+            navigate("/buscar", { state: { input, results } }); // Pasar el estado del input
             setResults([]);
             setAparecer(false);
         } else {
@@ -66,27 +68,27 @@ function SearchBar() {
     };
 
     return (
-        <div className="flex justify-end w-full px-4 flex-col md:flex-row md:justify-start">
-            <div className="mb-3 w-full max-w-xs sm:max-w-sm md:max-w-md">
+        <div className="flex justify-center w-full px-4 flex-col md:flex-row md:justify-start">
+            <div className="relative mb-3 w-full max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-xl">
                 <div className="relative flex items-center">
                     <input
                         type="search"
-                        className="h-[38px] w-full rounded-l border border-solid border-gray-300 bg-white px-2 py-1 text-sm font-normal text-gray-700 placeholder-gray-400 transition duration-200 ease-in-out focus:z-[3] focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                        placeholder="Buscar por título, autor o categoría"
-                        aria-label="Buscar por título, autor o categoría"
+                        className="h-[40px] w-full rounded-l-lg border border-gray-300 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 placeholder-gray-500 transition duration-200 ease-in-out focus:ring-2 focus:ring-slate-500 focus:outline-none"
+                        placeholder="Buscar por título o autor"
+                        aria-label="Buscar por título o autor"
                         value={input}
                         onChange={(e) => handleInputChange(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                     />
                     <button
-                        className="h-[38px] flex items-center justify-center bg-orange-500 rounded-r px-2 py-1 text-white cursor-pointer hover:bg-orange-600 transition duration-200 ease-in-out"
+                        className="h-[40px] flex items-center justify-center bg-slate-500 rounded-r-lg px-4 py-2 text-white cursor-pointer hover:bg-slate-600 transition duration-200 ease-in-out"
                         onClick={handleSearch}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            className="h-4 w-4"
+                            className="h-5 w-5"
                         >
                             <path
                                 fillRule="evenodd"
@@ -96,23 +98,26 @@ function SearchBar() {
                         </svg>
                     </button>
                 </div>
+
+                {/* Resultados de la búsqueda */}
                 {aparecer && results.length > 0 && (
                     <div
                         id="lista-de-resultados"
-                        className="absolute w-full bg-white text-black flex-col shadow-md rounded-lg max-h-[300px] overflow-y-scroll z-50 mt-1"
+                        className="absolute text-black flex-col shadow-lg rounded-lg max-h-[300px] overflow-y-scroll z-50 mt-1 transition-all"
+                        style={{ width: "100%" }}
                     >
-                        {results.map((audiobook, id) => (  // Cambié 'results' por 'audiobook'
+                        {results.map((audiobook) => (
                             <SearchResultsList
                                 key={audiobook.id}
-                                results={audiobook} // Corregido: ahora pasamos un 'audiobook' individual
+                                results={audiobook}
                                 setInput={setInput}
                                 setResults={setResults}
                                 setAparecer={setAparecer}
                             />
                         ))}
-                        {results.length === 4 && (
+                        {results.length === 5 && (
                             <div
-                                className="font-bold hover:underline pl-4 cursor-pointer"
+                                className="dark:bg-gray-800 dark:hover:bg-gray-700 font-semibold text-center cursor-pointer text-teal-600 hover:underline py-2"
                                 onClick={handleSearch}
                             >
                                 Ver todos los resultados...
@@ -120,8 +125,6 @@ function SearchBar() {
                         )}
                     </div>
                 )}
-
-
             </div>
         </div>
     );
