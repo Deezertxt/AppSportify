@@ -5,11 +5,12 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "fullName" VARCHAR(100),
     "language" TEXT NOT NULL DEFAULT 'Español',
-    "theme" VARCHAR(50),
+    "gender" TEXT DEFAULT 'Otro',
     "bio" VARCHAR(180),
     "profilePicUrl" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isPrivate" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -55,6 +56,7 @@ CREATE TABLE "Library" (
     "favorite" BOOLEAN NOT NULL DEFAULT false,
     "played" BOOLEAN NOT NULL DEFAULT false,
     "finished" BOOLEAN NOT NULL DEFAULT false,
+    "recommended" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Library_pkey" PRIMARY KEY ("id")
 );
