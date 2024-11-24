@@ -1,72 +1,73 @@
-import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
 
 const Carousel = ({ images }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentImage, setCurrentImage] = useState(0);
+    const containerRef = useRef(null);
 
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex((prevIndex) => prevIndex - 1);
-    }
-  };
+    const [rotation, setRotation] = useState({ rotateX: 0, rotateY: 0 });
 
-  const handleNext = () => {
-    if (currentIndex < images.length - 1) {
-      setCurrentIndex((prevIndex) => prevIndex + 1);
-    }
-  };
+    const handleMouseMove = (e) => {
+        const { clientX, clientY } = e;
+        const { offsetWidth, offsetHeight } = containerRef.current;
+        const x = (clientX / offsetWidth) - 0.5;
+        const y = (clientY / offsetHeight) - 0.5;
+        setRotation({
+            rotateX: y * 15,
+            rotateY: -x * 15,
+        });
+    };
 
-  const getClassName = (index) => {
-    if (index === currentIndex) {
-      return "w-[70%] sm:w-[60%] scale-110 opacity-100 z-10"; 
-    } else if (index === currentIndex - 1 || index === currentIndex + 1) {
-      return "w-[40%] sm:w-[30%] scale-95 opacity-60";
-    }
-    return "hidden"; 
-  };
+    const handleMouseLeave = () => {
+        setRotation({ rotateX: 0, rotateY: 0 });
+    };
 
-  return (
-    <div className="carousel-container flex justify-center items-center relative w-full max-w-[100%] px-2 sm:px-4">
-      <button
-        onClick={handlePrevious}
-        disabled={currentIndex === 0}
-        className={`absolute left-0 z-20 bg-black bg-opacity-50 text-white px-3 py-2 rounded-full hover:bg-opacity-75 transition ${
-          currentIndex === 0 ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-      >
-        {"<"}
-      </button>
+    const changeImage = () => {
+        setCurrentImage((prevIndex) => (prevIndex + 1) % images.length);
+    };
 
-      
-      <div className="carousel flex justify-center items-center overflow-hidden w-full">
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className={`carousel-item relative transition-all duration-500 transform cursor-pointer ${getClassName(
-              index
-            )}`}
-            onClick={() => setCurrentIndex(index)}
-          >
-            <img
-              src={image}
-              alt={`Imagen ${index + 1}`}
-              className={`w-full ${
-                index === currentIndex ? "h-[300px] sm:h-[400px] object-contain" : "h-[200px] sm:h-[300px] object-cover"
-              } rounded-lg`}
-            />
-          </div>
-        ))}
-      </div>
-      <button
-        onClick={handleNext}
-        disabled={currentIndex === images.length - 1}
-        className={`absolute right-0 z-20 bg-black bg-opacity-50 text-white px-3 py-2 rounded-full hover:bg-opacity-75 transition ${
-          currentIndex === images.length - 1 ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-      >
-        {">"}
-      </button>
-    </div>
-  );
+    useEffect(() => {
+        const interval = setInterval(changeImage, 3000);
+        return () => clearInterval(interval);
+    }, []);
+
+    return (
+        <motion.div
+            ref={containerRef}
+            className="mt-10 md:mt-0 md:max-w-lg md:mx-auto w-full max-w-2xl"
+            style={{ perspective: "1000px" }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            animate={{
+                rotateX: rotation.rotateX,
+                rotateY: rotation.rotateY,
+            }}
+            transition={{ type: "spring", stiffness: 100 }}
+        >
+            <motion.div
+                className="carousel-container relative w-full h-[500px] md:h-[600px] rounded-lg shadow-lg overflow-hidden"
+                whileHover={{ scale: 1.05 }}
+            >
+                {images.map((img, index) => (
+                    <motion.img
+                        key={index}
+                        src={img}
+                        alt={`Audiolibro ${index}`}
+                        className="w-full h-full object-cover absolute inset-0 transition-all duration-700 ease-in-out"
+                        initial={{ opacity: 0 }}
+                        animate={{
+                            opacity: currentImage === index ? 1 : 0,
+                            scale: currentImage === index ? 1 : 0.95,
+                        }}
+                        transition={{
+                            duration: 0.7,
+                            ease: "easeInOut",
+                        }}
+                    />
+                ))}
+            </motion.div>
+        </motion.div>
+    );
 };
 
 export default Carousel;
