@@ -1,240 +1,145 @@
 import React, { useState, useEffect } from "react";
-
-
-import { FiBarChart, FiBookmark, FiChevronsRight, FiFolderMinus, FiHome, FiLogOut, FiSearch, FiUser } from "react-icons/fi";
+import {
+  FiBarChart,
+  FiBookmark,
+  FiChevronsRight,
+  FiFolderMinus,
+  FiHome,
+  FiLogOut,
+  FiSearch,
+  FiUser,
+} from "react-icons/fi";
 import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 
-const DropdownMenu = () => {
-  return (
-    <div className="w-auto bg-second flex-shrink-0 justify-end">
-      <Sidebar />
-    </div>
-  );
-};
-
 const Sidebar = () => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const location = useLocation();
   const [selected, setSelected] = useState("Inicio");
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-const handleLogout = async () => {
-  try {
-      await logout(); // Cierra sesión y actualiza el estado
-      console.log("Usuario cerrado sesión, redirigiendo...");
-      navigate("/", { replace: true, state: { loggedOut: true } }); // Redirige sin recargar la página
-  } catch (error) {
+  const options = [
+    { title: "Inicio", to: "/inicio", Icon: FiHome },
+    { title: "Explorar", to: "/explorar", Icon: FiSearch },
+    { title: "Mi biblioteca", to: "/biblioteca", Icon: FiBookmark },
+    { title: "Mi perfil", to: `/perfil/${user?.userId}`, Icon: FiUser },
+  ];
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const selectedOption = options.find((option) =>
+      currentPath.startsWith(option.to)
+    );
+    if (selectedOption) setSelected(selectedOption.title);
+  }, [location, options]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/", { replace: true, state: { loggedOut: true } });
+    } catch (error) {
       console.error("Error al cerrar sesión:", error);
-  }
-};
+    }
+  };
 
-
-    return (
-      <motion.nav
+  return (
+    <motion.div
       layout
-      className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-first p-2"
-      style={{
-        width: open ? "200px" : "fit-content",
-      }}
+      className={`sticky top-0 left-0 min-h-full bg-gradient-to-r from-[#023047] to-[#1b6c92] text-white transition-all duration-300 ${
+        open ? "w-60" : "w-16"
+      }`}
     >
-      <TitleSection open={open} />
-      <div className="space-y-1">
-        <Option
-          Icon={FiHome}
-          title="Inicio"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          to="/libros"
-        />
-        <Option
-          Icon={FiSearch}
-          title="Explorar"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          to="/explorar"
-        />
-        <Option
-          Icon={FiBookmark}
-          title="Mi biblioteca"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          to="/biblioteca"
-        />
+      {/* Header con Logo */}
+      <div className="flex items-center justify-between p-5  border-b border-gray-400">
+        <Link to="/inicio">
+          <img
+            src="/logoS.svg"
+            alt="Logo"
+            className={`h-10 transition-opacity ${open ? "opacity-100" : "opacity-0"}`}
+          />
+        </Link>
+        <button
+          aria-label={open ? "Cerrar menú" : "Abrir menú"}
+          onClick={() => setOpen(!open)}
+          className="p-2 text-gray-200 hover:text-white"
+        >
+          <FiChevronsRight
+            className={`transform transition-transform ${open ? "rotate-180" : ""}`}
+          />
+        </button>
+      </div>
 
-        <Option
-          Icon={FiUser}
-          title="Perfil"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          to={`/editarPerfil/${user?.id}`}
-        />
+      {/* Opciones del menú */}
+      <div className="mt-4 space-y-2">
+        {options.map(({ title, to, Icon }) => (
+          <Link
+            key={title}
+            to={to}
+            onClick={() => setSelected(title)}
+            className={`group flex items-center p-5 rounded-md transition-colors ${
+              selected === title
+                ? "bg-gradient-to-r from-[#023047] to-[#082938] text-white"
+                : "hover:bg-gradient-to-r from-[#023047] to-[#082938] hover:text-white"
+            }`}
+          >
+            {/* Icono siempre visible */}
+            <Icon className="text-xl" />
+            <span
+              className={`ml-4 text-sm font-medium ${!open && "hidden"}`}
+            >
+              {title}
+            </span>
+          </Link>
+        ))}
 
+        {/* Opciones administrativas solo para el administrador */}
         {user?.email === "yalasoft@gmail.com" && (
           <>
-            <Option
-              Icon={FiFolderMinus}
-              title="Registro Audiolibros"
-              selected={selected}
-              setSelected={setSelected}
-              open={open}
+            <Link
               to="/publicar"
-            />
-            <Option
-              Icon={FiBarChart}
-              title="Administración"
-              selected={selected}
-              setSelected={setSelected}
-              open={open}
+              className="group flex items-center p-5 rounded-md hover:bg-gradient-to-r from-[#023047] to-[#082938] hover:text-white"
+            >
+              <FiFolderMinus className="text-xl" />
+              <span
+                className={`ml-4 text-sm font-medium ${!open && "hidden"}`}
+              >
+                Registro Audiolibros
+              </span>
+            </Link>
+            <Link
               to="/PanelAdmin"
-            />
+              className="group flex items-center p-5 rounded-md hover:bg-gradient-to-r from-[#023047] to-[#082938] hover:text-white"
+            >
+              <FiBarChart className="text-xl" />
+              <span
+                className={`ml-4 text-sm font-medium ${!open && "hidden"}`}
+              >
+                Administración
+              </span>
+            </Link>
           </>
         )}
         
       </div>
 
-      
-
-      {/* Botón de Cerrar Sesión con icono */}
-      <div className="mt-auto mb-3">
+      {/* Footer con Logout */}
+      <div className="absolute bottom-0 left-0 w-full p-4 border-t border-gray-400">
         <button
-          type="button"
           onClick={handleLogout}
-          className="flex items-center space-x-2 w-full justify-center text-gray-50 hover:bg-gray-800 p-2 rounded-md"
+          className="flex items-center w-full space-x-2 rounded-md p-2 hover:bg-gradient-to-r from-[#023047] to-[#082938] hover:text-white"
         >
           <FiLogOut className="text-xl" />
-          {open && (
-            <motion.span
-              layout
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.125 }}
-              className="text-lg font-medium"
-            >
-              Cerrar sesión
-            </motion.span>
-          )}
+          <span
+            className={`text-sm font-medium ${!open && "hidden"}`}
+          >
+            Cerrar sesión
+          </span>
         </button>
       </div>
-
-      <ToggleClose open={open} setOpen={setOpen} />
-    </motion.nav>
+    </motion.div>
   );
 };
 
-  const Option = ({ Icon, title, selected, setSelected, open, notifs, to }) => {
-    return (
-      <Link to={to} className="w-full" onClick={() => setSelected(title)}>
-        <motion.button
-
-          layout
-          onClick={() => setSelected(title)}
-          className={`relative flex h-10 w-full items-center rounded-md transition-colors ${selected === title ? "bg-white text-gray-600" : "text-gray-50 hover:bg-gray-800"}`}
-        >
-
-          <motion.div
-            layout
-            className="grid h-full w-16 place-content-center text-xl"
-          >
-            <Icon />
-          </motion.div>
-          {open && (
-            <motion.span
-              layout
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.125 }}
-              className="text-x font-medium"
-            >
-              {title}
-            </motion.span>
-          )}
-          {notifs && open && (
-            <motion.span
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              style={{ y: "-50%" }}
-              transition={{ delay: 0.5 }}
-              className="absolute right-2 top-1/2 size-4 rounded bg-sky-500 text-xs text-white"
-            >
-              {notifs}
-            </motion.span>
-          )}
-        </motion.button>
-      </Link>
-    );
-  };
-
-  const TitleSection = ({ open }) => {
-    return (
-      <div className="mb-3 border-b border-slate-300 pb-3">
-        <div className="flex cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-gray-800">
-          <div className="flex items-center  ">
-            <Logo />
-            {open && (
-              <motion.div
-                layout
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.125 }}
-              />
-
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const Logo = () => {
-    return (
-      <motion.div
-        layout
-        className="grid size-16 shrink-0 place-content-center rounded-md  "
-      >
-
-        <Link to="/libros">{ }
-          <img className="block lg:hidden h-20 w-18" src="/logoS.svg" alt="Logo" />
-          <img className="hidden lg:block h-20 w-auto" src="/logoS.svg" alt="Logo" />
-        </Link>
-      </motion.div>
-    );
-  };
-
-  const ToggleClose = ({ open, setOpen }) => {
-    return (
-      <motion.button
-        layout
-        onClick={() => setOpen((pv) => !pv)}
-        className="absolute bottom-0 left-0 right-0 border-t border-slate-300 transition-colors hover:bg-gray-800"
-      >
-        <div className="flex items-center p-2 text-white">
-          <motion.div
-            layout
-            className="grid size-10 place-content-center text-lg"
-          >
-            <FiChevronsRight className={`transition-transform ${open && "rotate-180"}`} />
-          </motion.div>
-          {open && (
-            <motion.span
-              layout
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.125 }}
-              className="text-x font-medium"
-            >
-              Ocultar
-            </motion.span>
-          )}
-        </div>
-      </motion.button>
-    );
-  };
-
-  export default DropdownMenu;
+export default Sidebar;

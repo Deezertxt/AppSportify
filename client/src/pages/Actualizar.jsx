@@ -51,15 +51,7 @@ function Actualizar() {
                 setCategories(categoriesData);
                 const pdfFileName = audiobookData.pdfUrl ? audiobookData.pdfUrl.split('/').pop() : '';
                 
-                setOriginalData({
-                    title: audiobookData.title,
-                    author: audiobookData.author,
-                    description: audiobookData.description,
-                    category: audiobookData.categoryId,
-                    pdfFile:audiobookData.pdfUrl ,
-                    portadaFile: audiobookData.coverUrl
-                }); 
-
+    
                 setFormData({
                     title: audiobookData.title,
                     author: audiobookData.author,
@@ -87,7 +79,7 @@ const handleCategoryChange = (e) => {
         category: e.target.value,
     });
 };
-    
+
 
     // Validar que el archivo sea un PDF y no exceda 50MB
     const validatePDF = (file) => {
@@ -225,39 +217,22 @@ const handleCategoryChange = (e) => {
         e.preventDefault();
         let formErrors = {};
         setIsLoading(true);
-        if (!originalData) {
-            alert("Error: los datos originales no están disponibles.");
-            return;
-        }
     
-        // Verificar si se realizaron cambios
-        const hasChanges =
-            formData.title !== originalData.title ||
-            formData.author !== originalData.author ||
-            formData.description !== originalData.description ||
-            formData.category !== originalData.category ||
-            formData.pdfFile || // Nuevo archivo PDF
-            formData.portadaFile; // Nueva portada
-    
-        if (!hasChanges) {
-            alert("No se realizaron cambios. Por favor, modifica al menos un campo.");
-            setIsLoading(false);
-            return;
-        }
-    
-        // Validaciones del formulario
+        // Validar título, caracteres especiales y espacios
         if (!validateTextInput(formData.title)) {
             formErrors.title = "El título contiene caracteres no permitidos.";
         } else if (formData.title.trim() === "") {
             formErrors.titleEmpty = "El título no puede estar vacío ni contener solo espacios.";
         }
     
+        // Validar autor, caracteres especiales y espacios
         if (!validateTextInput(formData.author)) {
             formErrors.author = "El autor contiene caracteres no permitidos.";
         } else if (formData.author.trim() === "") {
             formErrors.authorEmpty = "El autor no puede estar vacío ni contener solo espacios.";
         }
     
+        // Validar descripción, caracteres especiales y longitud
         if (!validateTextInput(formData.description)) {
             formErrors.description = "La descripción contiene caracteres no permitidos.";
         } else if (formData.description.trim() === "") {
@@ -266,15 +241,17 @@ const handleCategoryChange = (e) => {
             formErrors.descriptionLength = "La descripción no puede superar los 200 caracteres.";
         }
     
+        // Validar archivo PDF
         if (!formData.pdfFile && !documentFileName) {
             formErrors.pdfFile = "Por favor, sube un archivo PDF.";
         }
     
+        // Validar archivo de portada
         if (!formData.portadaFile && !coverFileName) {
             formErrors.portadaFile = "Por favor, sube una portada.";
         }
     
-        // Si hay errores, detener el envío
+        // Si hay errores, no se envía el formulario
         if (Object.keys(formErrors).length > 0) {
             setErrors(formErrors);
             setIsLoading(false);
@@ -282,51 +259,61 @@ const handleCategoryChange = (e) => {
         }
     
         try {
-            // Crear un FormData para subir los archivos
+            // Crear un objeto FormData para subir los archivos
             const form = new FormData();
-            if (formData.pdfFile) form.append("pdfFile", formData.pdfFile);
-            if (formData.portadaFile) form.append("portadaFile", formData.portadaFile);
+            if (formData.pdfFile) {
+                form.append("pdfFile", formData.pdfFile);
+            }
+            if (formData.portadaFile) {
+                form.append("portadaFile", formData.portadaFile);
+            }
             form.append("title", formData.title);
             form.append("author", formData.author);
             form.append("categoryId", formData.category);
             form.append("description", formData.description);
     
-            // Subir los archivos a GCS
-            const uploadResponse = await uploadFilesToGCS(form);
+            // Subir archivos si es necesario
+            const uploadResponse = formData.pdfFile || formData.portadaFile 
+                ? await uploadFilesToGCS(form)
+                : { data: { pdfUrl: null, portadaUrl: null } };
     
-            if (uploadResponse.status === 200) {
-                const { pdfUrl, portadaUrl } = uploadResponse.data;
-                if (!pdfUrl || !portadaUrl) {
-                    setErrors({ general: "No se recuperaron las URLs de los archivos." });
-                    setIsLoading(false);
-                    return;
-                }
+            const { pdfUrl, portadaUrl } = uploadResponse.data;
     
-                // Actualizar los datos del audiolibro
-                const updatedAudiobookData = {
-                    title: formData.title,
-                    author: formData.author,
-                    categoryId: formData.category,
-                    description: formData.description,
-                    pdfUrl,
-                    coverUrl: portadaUrl
-                };
+            // Preparar datos para actualizar
+            const updatedAudiobookData = {
+                title: formData.title,
+                author: formData.author,
+                categoryId: formData.category,
+                description: formData.description,
+                pdfUrl: pdfUrl || formData.pdfFile || "", // Mantener el archivo previo si no se subió uno nuevo
+                coverUrl: portadaUrl || formData.portadaFile || preview || "" // Mantener la portada previa
+            };
     
-                const response = await updateAudiobook(audiobookId, updatedAudiobookData);
+            // Actualizar audiolibro mediante la API
+            const response = await updateAudiobook(id, updatedAudiobookData);
     
-                if (response.status === 200) {
-                    console.log("Audiolibro actualizado con éxito:", response.data);
-                    setSuccessMessage("Audiolibro actualizado con éxito!");
-                    setErrors({});
-                } else {
-                    setErrors({ general: "Error al actualizar el audiolibro." });
-                }
-            } else {
-                setErrors({ general: "Error al subir los archivos." });
-            }
+            // Confirmar éxito
+            console.log("Audiolibro actualizado con éxito:", response);
+            setSuccessMessage("Audiolibro actualizado con éxito.");
+    
+            // Limpiar estado
+            setErrors({});
+            setFormData({
+                title: "",
+                author: "",
+                category: "",
+                description: "",
+                pdfFile: null,
+                portadaFile: null
+            });
+            setDocumentFileName("");
+            setCoverFileName("");
+            setPreview(null);
+            document.getElementById("documento").value = "";
+            document.getElementById("portadaFile").value = "";
         } catch (error) {
             console.error("Error al actualizar el audiolibro:", error);
-            setErrors({ general: "Ocurrió un error inesperado al actualizar el audiolibro." });
+            setErrors({ general: "Error al actualizar el audiolibro. Por favor, inténtelo nuevamente." });
         } finally {
             setIsLoading(false);
         }
@@ -334,19 +321,19 @@ const handleCategoryChange = (e) => {
     
 
     return (
-        <div className="max-h-screen-xl bg-[#F0F9F9]">
+        <div className="max-h-screen-xl">
             <BarLoaderWrapper isLoading={isLoading} />
             <div className="max-w-screen-xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-8">
                     <button
                     
                     onClick={() => setIsModalOpen(true)} // Abre el modal
-                    className="mb-4 text-[#0B6477] flex items-center"
+                    className="mb-4 flex items-center"
                     >
                     <FaArrowLeft className="mr-2" /> Volver al panel de Administración
                     </button>
                     <div className="text-center flex-grow">
-                        <span className="text-4xl font-extrabold text-[#213A57]">Editar Audiolibro</span>
+                        <span className="text-4xl font-extrabold ">Editar Audiolibro</span>
                     </div>
                 </div>
 
@@ -355,8 +342,8 @@ const handleCategoryChange = (e) => {
                         {/* Formulario de texto y selección */}
                         <div className="flex flex-col gap-4">
                             <div>
-                                <label htmlFor="titulo" className="text-lg font-semibold text-[#213A57]">
-                                    Título<span className="text-red-500">*</span>
+                                <label htmlFor="titulo" className="text-lg font-semibold">
+                                    Título<span className="text-red-500"> *</span>
                                 </label>
                                 <input
                                     type="text"
@@ -364,7 +351,7 @@ const handleCategoryChange = (e) => {
                                     name="titulo"
                                     value={formData.title}
                                     onChange={e => setFormData({ ...formData, title: e.target.value })}
-                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                                    className="w-full p-3 mt-2 border-2 text-black border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     placeholder="Título del audiolibro"
                                     required
                                 />
@@ -377,8 +364,8 @@ const handleCategoryChange = (e) => {
                             </div>
 
                             <div>
-                                <label htmlFor="autor" className="text-lg font-semibold text-[#213A57]">
-                                    Autor<span className="text-red-500">*</span>
+                                <label htmlFor="autor" className="text-lg font-semibold">
+                                    Autor<span className="text-red-500"> *</span>
                                 </label>
                                 <input
                                     type="text"
@@ -386,7 +373,7 @@ const handleCategoryChange = (e) => {
                                     name="autor"
                                     value={formData.author}
                                     onChange={e => setFormData({ ...formData, author: e.target.value })}
-                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                                    className="w-full p-3 mt-2 border-2 text-black border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     placeholder="Nombre del Autor"
                                     required
                                 />
@@ -399,8 +386,8 @@ const handleCategoryChange = (e) => {
                             </div>
 
 <div>
-            <label htmlFor="categoria" className="text-lg font-semibold text-[#213A57]">
-                Categoría<span className="text-red-500">*</span>
+            <label htmlFor="categoria" className="text-lg font-semibold">
+                Categoría<span className="text-red-500"> *</span>
             </label>
             
             <select
@@ -408,7 +395,7 @@ const handleCategoryChange = (e) => {
                 id="categoria"
                 value={formData.category} // El valor del select se establece al ID de la categoría
                 onChange={handleCategoryChange}
-                className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                className="w-full p-3 mt-2 border-2 text-black border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                 required
             >
                 <option value="">Selecciona una categoría</option>
@@ -424,13 +411,13 @@ const handleCategoryChange = (e) => {
         </div>
 
                             <div>
-                                <label htmlFor="descripcion" className="text-lg font-semibold text-[#213A57]">Descripción<span className="text-red-500">*</span></label>
+                                <label htmlFor="descripcion" className="text-lg font-semibold">Descripción<span className="text-red-500"> *</span></label>
                                 <textarea
                                     id="descripcion"
                                     name="descripcion"
                                     value={formData.description}
                                     onChange={handleDescriptionChange}
-                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B] h-28 resize-none"
+                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B] h-28 resize-none text-black"
                                     placeholder="Descripción del audiolibro"
                                     required
                                 ></textarea>
@@ -448,57 +435,40 @@ const handleCategoryChange = (e) => {
 
                             {/* Campo Documento PDF */}
                             <div className="flex flex-col gap-1">
-                            <label htmlFor="documento" className="text-lg font-semibold text-[#213A57]">
-                            Documento PDF<span className="text-red-500">*</span>
-                            </label>
-                            <div className="relative w-full">
-                                {/* Input de archivo real (oculto) */}
-                                <input
-                                    type="file"
-                                    id="documento"
-                                    name="documento"
-                                    onChange={(e) => {
-                                        const file = e.target.files[0];
-                                        if (file) {
-                                            setFormData({ ...formData, pdfFile: file.name }); // Actualizar al nuevo archivo
-                                        }
-                                    }}
-                                    accept="application/pdf"
-                                    className="hidden" // Ocultamos el input estándar
-                                />
-                                
-                                {/* Botón personalizado */}
-                                
-                                <div
-                                    className="flex items-center justify-between p-3 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B] cursor-pointer bg-white"
-                                    onClick={() => document.getElementById("documento").click()} // Activa el input oculto
-                                >
-                                    <button
-                                        type="button"
-                                        className="bg-[#14919B] text-white py-1 px-4 rounded-lg hover:bg-[#0B6477] ml-2"
-                                    >
-                                        Seleccionar archivo
-                                    </button>
-                                    {/* Mostrar el nombre del archivo actual o texto predeterminado */}
-                                    <span className="text-gray-700">
-                                        {formData.pdfFile || "Ningún archivo seleccionado"}
-                                    </span>
-                                    
-                                </div>
-                                <button
+                                <label htmlFor="documento" className="text-lg font-semibold">
+                                    Documento PDF<span className="text-red-500"> *</span>
+                                </label>
+                                <div className="flex items-center">
+                                    <input
+                                        type="file"
+                                        id="documento"
+                                        name="documento"
+                                        onChange={handleDocumentoChange}
+                                        accept="application/pdf"
+                                        className="w-full p-3 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                                        required
+                                    />
+                                    {formData.pdfFile && (
+                                        <div className="flex items-center gap-2">
+                                        <span className="text-gray-400">{formData.pdfFile.name || formData.pdfFile}</span>
+                                        
+                                        <button
                                             type="button"
                                             onClick={handleCancelDocumento}
                                             className="bg-[#FF6F61] text-white py-2 px-4 rounded-lg hover:bg-[#FF4F3F] transition-all duration-300 ml-2"
                                         >
                                             <FaTrashAlt />
                                         </button>
+                                        </div>
+                                    )}
+                                </div>
+                                {/* Mensaje de error para PDF */}
+                                {errors.pdfFile && (
+                                    <p className="text-red-500 text-sm">{errors.pdfFile}</p>
+                                )}
+                                {/* Texto sobre tamaño máximo de archivo */}
+                                <p className="text-gray-400 text-sm">Tamaño máximo del archivo: 50 MB</p>
                             </div>
-                            {/* Mensaje de error para PDF */}
-                            {errors.pdfFile && <p className="text-red-500 text-sm">{errors.pdfFile}</p>}
-                            {/* Texto sobre tamaño máximo de archivo */}
-                            <p className="text-gray-500 text-sm">Tamaño máximo del archivo: 50 MB</p>
-                        </div>
-
 
                             {/* Botones Publicar y Cancelar */}
                             <div className="flex justify-center gap-4 mt-2 ">
@@ -515,14 +485,14 @@ const handleCategoryChange = (e) => {
                     {/* Columna de Portada */}
                     <div className="w-full sm:w-1/2 flex flex-col items-center justify-start gap-6">
                         <div>
-                            <label htmlFor="dropZone" className="text-lg font-semibold text-[#213A57]">Portada<span className="text-red-500">*</span></label>
+                            <label htmlFor="dropZone" className="text-lg font-semibold">Portada<span className="text-red-500"> *</span></label>
                             <div
                                 id="dropZone"
-                                className="relative p-10 w-full h-96 border-2 border-[#45DFB1] border-dashed rounded-xl text-center bg-[#F0F9F9] cursor-pointer flex flex-col justify-center items-center"
+                                className="relative p-10 w-full h-96 border-2 border-[#45DFB1] border-dashed rounded-xl text-center  cursor-pointer flex flex-col justify-center items-center"
                                 onDrop={handleDrop}
                                 onDragOver={(e) => e.preventDefault()}
                             >
-                                <p className="text-sm text-[#213A57] mb-4">Arrastra y suelta la imagen o selecciona un archivo</p>
+                                <p className="text-sm mb-4">Arrastra y suelta la imagen o selecciona un archivo</p>
                                 <input
                                 type="file"
                                 id="portadaFile"
@@ -541,7 +511,7 @@ const handleCategoryChange = (e) => {
 
                     {preview && (
                         <div className="absolute inset-0">
-                            <img src={preview} alt="Vista previa" className="w-full h-full object-cover rounded-lg shadow-lg" />
+                            <img src={preview} alt="Vista previa" className="w-full object-cover rounded-lg shadow-lg" />
                         </div>
                     )}
 

@@ -28,7 +28,7 @@ function Publicar() {
     const [isModalOpen, setIsModalOpen] = useState(false); //Estado para el modal
     const handleNavigateHome = () => {
         setIsModalOpen(false);
-        navigate('/libros');
+        navigate('/inicio');
     };
 
     useEffect(() => {
@@ -313,20 +313,20 @@ function Publicar() {
         }
     }
     return (
-        <div className="max-h-screen-xl bg-[#F0F9F9]">
+        <div className="max-h-screen-xl ">
             <BarLoaderWrapper isLoading={isLoading} />
             <div className="max-w-screen-xl mx-auto p-4">
                 <div className="flex justify-between items-center mb-8">
                     <button
 
                         onClick={() => setIsModalOpen(true)} // Abre el modal
-                        className="mb-4 text-[#0B6477] flex items-center"
+                        className="mb-4 flex items-center"
                     >
 
                         <FaArrowLeft className="mr-2" /> Volver al inicio
                     </button>
                     <div className="text-center flex-grow">
-                        <span className="text-4xl font-extrabold text-[#213A57]">Registro de Audiolibro</span>
+                        <span className="text-4xl font-extrabold">Registro de Audiolibro</span>
                     </div>
                 </div>
 
@@ -335,8 +335,8 @@ function Publicar() {
                         {/* Formulario de texto y selección */}
                         <div className="flex flex-col gap-4">
                             <div>
-                                <label htmlFor="titulo" className="text-lg font-semibold text-[#213A57]">
-                                    Título<span className="text-red-500">*</span>
+                                <label htmlFor="titulo" className="text-lg font-semibold">
+                                    Título<span className="text-red-500"> *</span>
                                 </label>
                                 <input
                                     type="text"
@@ -344,7 +344,7 @@ function Publicar() {
                                     name="titulo"
                                     value={formData.title}
                                     onChange={handleTitleChange}
-                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                                    className="w-full p-3 mt-2 border-2 text-black border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     placeholder="Título del audiolibro"
                                     required
                                 />
@@ -360,8 +360,8 @@ function Publicar() {
                             </div>
 
                             <div>
-                                <label htmlFor="autor" className="text-lg font-semibold text-[#213A57]">
-                                    Autor<span className="text-red-500">*</span>
+                                <label htmlFor="autor" className="text-lg font-semibold">
+                                    Autor<span className="text-red-500"> *</span>
                                 </label>
                                 <input
                                     type="text"
@@ -369,7 +369,7 @@ function Publicar() {
                                     name="autor"
                                     value={formData.author}
                                     onChange={handleAuthorChange}
-                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                                    className="w-full p-3 mt-2 border-2 text-black border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     placeholder="Nombre del Autor"
                                     required
                                 />
@@ -385,13 +385,13 @@ function Publicar() {
                             </div>
 
                             <div>
-                                <label htmlFor="categoria" className="text-lg font-semibold text-[#213A57]">Categoría<span className="text-red-500">*</span></label>
+                                <label htmlFor="categoria" className="text-lg font-semibold">Categoría<span className="text-red-500"> *</span></label>
                                 <select
                                     name="categoria"
                                     id="categoria"
                                     value={formData.category}
                                     onChange={e => setFormData({ ...formData, category: e.target.value })}
-                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
+                                    className="w-full p-3 mt-2 border-2 text-black border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B]"
                                     required
                                 >
                                     <option value="">Selecciona una categoría</option>
@@ -407,13 +407,13 @@ function Publicar() {
                             </div>
 
                             <div>
-                                <label htmlFor="descripcion" className="text-lg font-semibold text-[#213A57]">Descripción<span className="text-red-500">*</span></label>
+                                <label htmlFor="descripcion" className="text-lg font-semibold">Descripción<span className="text-red-500"> *</span></label>
                                 <textarea
                                     id="descripcion"
                                     name="descripcion"
                                     value={formData.description}
                                     onChange={handleDescriptionChange}
-                                    className="w-full p-3 mt-2 border-2 border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B] h-28 resize-none"
+                                    className="w-full p-3 mt-2 border-2 text-black border-[#45DFB1] rounded-lg focus:ring-2 focus:ring-[#14919B] h-28 resize-none"
                                     placeholder="Descripción del audiolibro"
                                     required
                                 ></textarea>
@@ -431,8 +431,8 @@ function Publicar() {
 
                             {/* Campo Documento PDF */}
                             <div className="flex flex-col gap-1">
-                                <label htmlFor="documento" className="text-lg font-semibold text-[#213A57]">
-                                    Documento PDF<span className="text-red-500">*</span>
+                                <label htmlFor="documento" className="text-lg font-semibold">
+                                    Documento PDF<span className="text-red-500"> *</span>
                                 </label>
                                 <div className="flex items-center">
                                     <input
@@ -459,7 +459,7 @@ function Publicar() {
                                     <p className="text-red-500 text-sm">{errors.pdfFile}</p>
                                 )}
                                 {/* Texto sobre tamaño máximo de archivo */}
-                                <p className="text-gray-500 text-sm">Tamaño máximo del archivo: 50 MB</p>
+                                <p className="text-gray-400 text-sm">Tamaño máximo del archivo: 50 MB</p>
                             </div>
 
 
@@ -486,14 +486,14 @@ function Publicar() {
                     {/* Columna de Portada */}
                     <div className="w-full sm:w-1/2 flex flex-col items-center justify-start gap-6">
                         <div>
-                            <label htmlFor="dropZone" className="text-lg font-semibold text-[#213A57]">Portada<span className="text-red-500">*</span></label>
+                            <label htmlFor="dropZone" className="text-lg font-semibold">Portada<span className="text-red-500"> *</span></label>
                             <div
                                 id="dropZone"
-                                className="relative p-10 w-full h-96 border-2 border-[#45DFB1] border-dashed rounded-xl text-center bg-[#F0F9F9] cursor-pointer flex flex-col justify-center items-center"
+                                className="relative p-10 w-full h-96 border-2 border-[#45DFB1] border-dashed rounded-xl text-center  cursor-pointer flex flex-col justify-center items-center"
                                 onDrop={handleDrop}
                                 onDragOver={handleDragOver}
                             >
-                                <p className="text-sm text-[#213A57] mb-4">Arrastra y suelta la imagen o selecciona un archivo</p>
+                                <p className="text-sm mb-4">Arrastra y suelta la imagen o selecciona un archivo</p>
                                 <input
                                     type="file"
                                     id="portadaFile"
@@ -504,10 +504,10 @@ function Publicar() {
                                 />
                                 <button
                                     type="button"
-                                    className="bg-[#14919B] text-white py-2 px-6 rounded-lg hover:bg-[#0B6477] flex items-center justify-center mb-4"
+                                    className="bg-[#14919B]  py-2 px-6 rounded-lg hover:bg-[#0B6477] flex items-center justify-center mb-4"
                                     onClick={() => document.getElementById('portadaFile').click()}
                                 >
-                                    <FaImage className="mr-2" /> Elegir archivo
+                                    <FaImage className="mr-2" /> Elegir imagen
                                 </button>
 
                                 {preview && (

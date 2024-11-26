@@ -1,340 +1,447 @@
 import React, { useState, useEffect } from "react";
-import { getUserById, updateUser } from "../api/api";
 import { useAuth } from "../context/authContext";
-import { useNavigate } from "react-router-dom"; 
+import { getUserById, updateUser } from "../api/api";
+import Breadcrumb from "../components/Breadcrumb";
+import { FiUser, FiCamera, FiTrash } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import ModalReu from "../components/modals/ModalReu";
 
-const ProfileForm = () => {
-  const { user } = useAuth();
-  const userId = user?.userId;
-  const navigate = useNavigate();
+const EditarPerfil = () => {
+    const { user } = useAuth();
+    const userId = user.userId;
+    const navigate = useNavigate();
 
-  const defaultProfileImage = "/pfp.svg";
+    const [formData, setFormData] = useState({
+        username: "",
+        email: "",
+        fullName: "",
+        gender: "",
+        biography: "",
+        profilePicUrl: "", // Aquí se guardará la cadena base64
+    });
 
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    fullName: "",
-    gender: "",
-    biography: "",
-    profileImage: null, // Para la imagen de perfil
-  });
+    const [isLoading, setIsLoading] = useState(false);
+    const [validationMessages, setValidationMessages] = useState({
+        profilePic: "",
+        fullName: "",
+        username: "",
+    });
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [usernameError, setUsernameError] = useState(null);
-  const [fullNameError, setFullNameError] = useState(null);
-  const [biographyError, setBiographyError] = useState(null);
-
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const [imagePreview, setImagePreview] = useState(null); // Para la vista previa de la imagen
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!userId) return;
-      setIsLoading(true);
-      try {
-        const response = await getUserById(userId);
-        const userData = response.data;
-        setFormData({
-          username: userData.username || "",
-          email: userData.email || "",
-          fullName: userData.fullName || "",
-          gender: userData.gender || "",
-          biography: userData.biography || "",
-          profileImage: userData.profileImage || null, // Cargar la imagen si ya existe
-        });
-
-        if(!userData.profileImage){
-            setImagePreview(defaultProfileImage);
-        } else {
-            setImagePreview(userData.profileImage);
-        }
-
-      } catch (error) {
-        console.error("Error al obtener los datos del usuario:", error);
-        setErrorMessage(error.response?.data?.error || "Error al cargar los datos del perfil.");
-      } finally {
-        setIsLoading(false);
-      }
+    const [modalTitle, setModalTitle] = useState("");
+    const [modalMessage, setModalMessage] = useState("");
+    const [modalType, setModalType] = useState(""); // "success" o "error"
+    const [showModal, setShowModal] = useState(false);
+    const showAlertMessage = (title, message, type) => {
+        setModalTitle(title);
+        setModalMessage(message);
+        setModalType(type); // Define el tipo: "success" o "error"
+        setShowModal(true);
+        setTimeout(() => setShowModal(false), 2000); // Cerrar el modal después de 2 segundos
     };
 
-    fetchUserData();
-  }, [userId]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    // Cargar datos del usuario al montar el componente
+    useEffect(() => {
+        const fetchUserData = async () => {
+            setIsLoading(true);
+            try {
+                const response = await getUserById(userId);
+                const userData = response.data;
+                setFormData({
+                    username: userData.username || "",
+                    email: userData.email || "",
+                    fullName: userData.fullName || "",
+                    gender: userData.gender || "",
+                    biography: userData.bio || "",
+                    profilePicUrl: userData.profilePicUrl || "", // Aquí cargamos la cadena base64 si está disponible
+                });
+            } catch (error) {
+                console.error("Error al cargar el perfil:", error);
+                setErrorMessage("Error al cargar los datos.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-    // Validación para el nombre de usuario (solo caracteres alfanuméricos)
-    if (name === "username") {
-      const alphanumericRegex = /^[a-zA-Z0-9]*$/;
-      if (!alphanumericRegex.test(value)) {
-        setUsernameError("El nombre de usuario solo puede contener caracteres alfanuméricos.");
-      } else {
-        setUsernameError(null);
-      }
-    }
+        if (userId) fetchUserData();
+    }, [userId]);
 
-    // Validación para el nombre completo (solo letras y espacios)
-    if (name === "fullName") {
-      const nameRegex = /^[a-zA-Z\s]*$/;
-      if (!nameRegex.test(value)) {
-        setFullNameError("El nombre completo solo puede contener letras y espacios.");
-      } else {
-        setFullNameError(null);
-      }
-    }
+    // Manejar cambios en los campos del formulario
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
 
-    if (name === "biography") {
-      if (value.length > 210) {
-        setBiographyError("La biografía no puede exceder los 210 caracteres.");
-      } else {
-        setBiographyError(null);  
-      }
-    }
+        if (name === "fullName") validateFullName(value);
+        if (name === "username") validateUsername(value);
+    };
 
-    setFormData({ ...formData, [name]: value });
-  };
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-  
-    if (file) {
-      // Verificar tamaño y formato de la imagen
-      const validFormats = ["image/jpeg", "image/png", "image/webp"];
-      if (!validFormats.includes(file.type)) {
-        setErrorMessage("El formato de la imagen no es válido. Suba una imagen en formato .jpg, .jpeg, .png y .webp.");
-        return;
-      }
-  
-      if (file.size > 5 * 1024 * 1024) {
-        setErrorMessage("La imagen no debe exceder los 5 MB.");
-        return;
-      }
-  
-      // Verificar las dimensiones mínimas de la imagen
-      const img = new Image();
-      img.onload = () => {
-        // Si la imagen tiene dimensiones menores que 200x200, no se permite
-        if (img.width < 200 || img.height < 200) {
-          setErrorMessage("La imagen debe tener al menos 200x200 píxeles.");
-          return;
+        // Restablecer mensajes de validación previos
+        setValidationMessages((prev) => ({ ...prev, profilePic: "" }));
+
+        if (!validateProfilePic(file)) {
+            // Si la validación falla, limpiar el input de archivo
+            e.target.value = null;
+            return;
         }
-  
-        // Si la imagen excede las dimensiones máximas, ajustarla
-        const maxWidth = 1000;
-        const maxHeight = 1000;
-  
-        let newWidth = img.width;
-        let newHeight = img.height;
-  
-        if (newWidth > maxWidth || newHeight > maxHeight) {
-          const ratio = Math.min(maxWidth / newWidth, maxHeight / newHeight); // Encontramos el ratio más pequeño
-          newWidth = newWidth * ratio;  // Ajustamos el ancho
-          newHeight = newHeight * ratio;  // Ajustamos la altura
+
+        // Leer el archivo y actualizar el estado
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setFormData((prev) => ({ ...prev, profilePicUrl: reader.result }));
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const validateProfilePic = (file) => {
+        if (!file) {
+            setValidationMessages((prev) => ({
+                ...prev,
+                profilePic: "Debe subir una imagen.",
+            }));
+            return false;
         }
-  
-        // Crear un canvas para redimensionar la imagen manteniendo la relación de aspecto
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = newWidth;
-        canvas.height = newHeight;
-        ctx.drawImage(img, 0, 0, newWidth, newHeight);
-  
-        // Convertir la imagen redimensionada a base64 y actualizar la vista previa
-        const resizedImage = canvas.toDataURL(file.type);
-        setImagePreview(resizedImage);
-        setFormData({ ...formData, profileImage: resizedImage });
-      };
-      img.src = URL.createObjectURL(file);
-    }
-  };
-  
-  
-  
 
-  const handleRemoveImage = () => {
-    setImagePreview(defaultProfileImage);  
-    setFormData({ ...formData, profileImage: null });  
-  };
+        if (file.size > 5 * 1024 * 1024) {
+            setValidationMessages((prev) => ({
+                ...prev,
+                profilePic: "El tamaño debe ser menor a 5 MB.",
+            }));
+            return false;
+        }
 
-  const handleSave = async (e) => {
-    e.preventDefault();
-    if (usernameError || fullNameError || biographyError) {
-      setErrorMessage("Corrige los errores antes de guardar.");
-      return;
-    }
-    setIsLoading(true);
-    setSuccessMessage(null);
-    setErrorMessage(null);
+        const validTypes = ["image/jpeg", "image/png", "image/webp"];
+        if (!validTypes.includes(file.type)) {
+            setValidationMessages((prev) => ({
+                ...prev,
+                profilePic: "Formato no válido. Solo se permite JPG, PNG o WEBP.",
+            }));
+            return false;
+        }
 
-    try {
-      const response = await updateUser(userId, formData);
-      if (response.status === 200) {
-        setSuccessMessage("Perfil actualizado con éxito.");
-      } else {
-        setErrorMessage("No se pudo actualizar el perfil.");
-      }
-    } catch (error) {
-      console.error("Error al actualizar el perfil:", error);
-      setErrorMessage("Ocurrió un error al guardar los datos.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        // Validar dimensiones de la imagen
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            img.onload = () => {
+                if (img.width < 200 || img.height < 200) {
+                    setValidationMessages((prev) => ({
+                        ...prev,
+                        profilePic: "La imagen debe ser al menos 200x200 píxeles.",
+                    }));
+                    resolve(false);
+                } else {
+                    setValidationMessages((prev) => ({
+                        ...prev,
+                        profilePic: "Foto de perfil válida.",
+                    }));
+                    resolve(true);
+                }
+            };
+            img.onerror = () => {
+                setValidationMessages((prev) => ({
+                    ...prev,
+                    profilePic: "No se pudo cargar la imagen. Intente con otro archivo.",
+                }));
+                resolve(false);
+            };
+        });
+    };
 
-  const handleCancel = () => {
-    setIsModalVisible(true);
-  };
+    const handleRemoveProfilePic = () => {
+        setFormData((prev) => ({ ...prev, profilePicUrl: "/user.webp" })); // URL predeterminada
+        setValidationMessages((prev) => ({ ...prev, profilePic: "" }));
+        document.getElementById("upload-profile-pic").value = ""; // Limpiar el input de archivo
+    };
 
-  const handleModalCancel = () => {
-    setIsModalVisible(false);
-  };
+    const validateFullName = (name) => {
+        if (!/^[a-zA-Z\s]+$/.test(name)) {
+            setValidationMessages((prev) => ({
+                ...prev,
+                fullName: "Solo se permiten caracteres alfabéticos.",
+            }));
+            return false;
+        }
+        setValidationMessages((prev) => ({ ...prev, fullName: "" }));
+        return true;
+    };
 
-  const handleModalAccept = () => {
-    setIsModalVisible(false);
-    navigate(-1);
-  };
+    const validateUsername = (username) => {
+        if (!/^[a-zA-Z0-9]+$/.test(username)) {
+            setValidationMessages((prev) => ({
+                ...prev,
+                username: "Solo se permiten caracteres alfanuméricos.",
+            }));
+            return false;
+        }
+        setValidationMessages((prev) => ({ ...prev, username: "" }));
+        return true;
+    };
 
-  return (                          
-    <div className="flex h-1/2">
-      <div className=" w-1/4 flex flex-col items-center justify-center p-8">
-        <div className="w-32 h-32   rounded-full flex items-center justify-center text-6xl text-gray-500 mb-4">
-          {imagePreview ? (
-            <img src={imagePreview} alt="Vista previa" className="w-full h-full object-cover rounded-full" />
-          ) : (
-            <span className="sr-only">Foto de perfil</span>
-          )}
-        </div>
-        <label className="bg-teal-500 text-white py-2 px-1 rounded cursor-pointer "> Cambiar Imagen
-          <input
-            type="file"  
-            onChange={handleImageChange}
-            accept="image/*"
-            className="hidden"
-          />
-        </label>
+
+    // Guardar los cambios del perfil
+    const handleSave = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+    
+        // Validaciones previas
+        const errors = {};
         
-        {imagePreview && (
-          <button
-            onClick={handleRemoveImage}
-            className="bg-red-500 text-white py-2 px-4 rounded mt-2"
-          >
-            Eliminar Imagen
-          </button>
-        )}
-      </div>
+        // Validación de nombre completo
+        if (!formData.fullName || !/^[a-zA-Z\s]+$/.test(formData.fullName)) {
+            errors.fullName = "El nombre completo solo debe contener caracteres alfabéticos.";
+        }
+    
+        // Validación de nombre de usuario
+        if (!formData.username || !/^[a-zA-Z0-9]+$/.test(formData.username)) {
+            errors.username = "El nombre de usuario solo debe contener caracteres alfanuméricos.";
+        }
+    
+        // Validación de biografía
+        if (formData.biography && formData.biography.length > 180) {
+            errors.biography = "La biografía no puede superar los 180 caracteres.";
+        }
+    
+        // Validación de la foto de perfil
+        if (!formData.profilePicUrl || formData.profilePicUrl === "/user.webp") {
+            errors.profilePic = "Debe subir una foto de perfil válida.";
+        } else if (validationMessages.profilePic && validationMessages.profilePic.startsWith("Formato no válido")) {
+            errors.profilePic = "El formato de la imagen no es válido.";
+        } else if (validationMessages.profilePic && validationMessages.profilePic.startsWith("La imagen debe ser al menos")) {
+            errors.profilePic = "La resolución de la imagen es insuficiente.";
+        }
+    
+        // Si hay errores, mostrar mensajes y detener el guardado
+        if (Object.keys(errors).length > 0) {
+            setValidationMessages(errors);
+            setIsLoading(false);
+            return;
+        }
+        const payload = {
+            name: formData.username,
+            bio: formData.biography,
+            profilePicUrl: formData.profilePicUrl,
+            language: formData.language || "Español",
+            gender: formData.gender,
+            fullName: formData.fullName,
+        };
 
-      <div className="flex-1 p-8">
-        <h2 className="text-2xl font-bold mb-4">Editar Perfil</h2>
-        {isLoading && <p className="text-blue-500">Cargando datos...</p>}
-        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-        {successMessage && <p className="text-green-500">{successMessage}</p>}
-        <form onSubmit={handleSave}>
-          <div className="mb-4">
-            <label className="block font-medium mb-2">Nombre de Usuario</label>
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded w-full p-2"
-            />
-            {usernameError && <p className="text-red-500">{usernameError}</p>}
-          </div>
-          <div className="mb-4">
-            <label className="block font-medium mb-2">Correo Electrónico</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded w-full p-2"
-              readOnly
-            />
-          </div>
+        try {
+            const response = await updateUser(userId, payload);
+            if (response.status === 200) {
+                showAlertMessage(
+                    "Éxito",
+                    "Perfil actualizado exitosamente.",
+                    "success"
+                );
+                setTimeout(() => navigate(`/perfil/${userId}`), 2000); // Redirige después de 2 segundos
+            } else {
+                showAlertMessage(
+                    "Error",
+                    "No se pudo actualizar el perfil.",
+                    "error"
+                );
+            }
+        } catch (error) {
+            console.error("Error al actualizar el perfil:", error);
+            showAlertMessage(
+                "Error",
+                "Ocurrió un error al guardar los datos.",
+                "error"
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-          <div className="mb-4">
-            <label className="block font-medium mb-2">Nombre Completo</label>
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded w-full p-2"
-            />
-            {fullNameError && <p className="text-red-500">{fullNameError}</p>}
-          </div>
+    const handleCancel = () => {
+        navigate(`/perfil/${userId}`);
+    };
 
-          <div className="mb-4">
-            <label className="block font-medium mb-2">Género</label>
-            <select
-              name="gender"
-              value={formData.gender}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded w-full p-2"
-            >
-              <option value="">Seleccione</option>
-              <option value="Male">Masculino</option>
-              <option value="Female">Femenino</option>
-              <option value="Female">Otro</option>
-            </select>
-          </div>
 
-          <div className="mb-4">
-            <label className="block font-medium mb-2">Biografía</label>
-            <textarea
-              name="biography"
-              value={formData.biography}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded w-full p-2"
-              maxLength="210"
-            />
-            {biographyError && <p className="text-red-500">{biographyError}</p>}
-          </div>
+    return (
+        <div className="min-h-screen flex justify-center">
+            <div className="max-w-4xl w-full shadow-lg rounded-lg overflow-hidden mt-8 p-8">
+                <Breadcrumb />
+                <h2 className="text-3xl font-semibold text-center mb-6">Editar Perfil</h2>
 
-          <div className="flex justify-between">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="bg-gray-500 text-white py-2 px-4 rounded"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="bg-teal-700 text-white py-2 px-4 rounded"
-            >
-              Guardar
-            </button>
-          </div>
-        </form>
-      </div>
+                {isLoading && (
+                    <div className="flex justify-center">
+                        <div className="spinner-border animate-spin inline-block w-12 h-12 border-4 border-teal-600 rounded-full"></div>
+                    </div>
+                )}
 
-      {isModalVisible && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-lg w-1/3">
-            <p>¿Estás seguro de que deseas cancelar los cambios?</p>
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={handleModalCancel}
-                className="bg-gray-500 text-white py-2 px-4 rounded"
-              >
-                No
-              </button>
-              <button
-                onClick={handleModalAccept}
-                className="bg-red-500 text-white py-2 px-4 rounded"
-              >
-                Sí
-              </button>
+                <form onSubmit={handleSave}>
+                    {/* Imagen de perfil */}
+                    <div className="flex flex-col items-center mb-6">
+                        <div className="relative">
+                            {/* Contenedor de la imagen de perfil */}
+                            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-teal-600 shadow-md">
+                                {formData.profilePicUrl ? (
+                                    <img
+                                        src={formData.profilePicUrl || "/user.webp"}
+                                        alt="Foto de perfil"
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-teal-600 text-4xl">
+                                        <FiUser />
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Botón de subir imagen */}
+                            <label
+                                htmlFor="upload-profile-pic"
+                                className="absolute bottom-2 right-2 bg-teal-500 hover:bg-teal-600 text-white p-2 rounded-full shadow-md cursor-pointer flex items-center justify-center"
+                                title="Subir nueva foto"
+                            >
+                                <FiCamera className="text-lg" />
+                            </label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className="hidden"
+                                id="upload-profile-pic"
+                            />
+
+                            {/* Botón de eliminar imagen */}
+                            <button
+                                type="button"
+                                onClick={handleRemoveProfilePic}
+                                className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-md flex items-center justify-center"
+                                title="Eliminar foto"
+                            >
+                                <FiTrash className="text-lg" />
+                            </button>
+                        </div>
+
+                        {/* Mensajes de validación */}
+                        {validationMessages.profilePic && (
+                            <p className="text-sm text-teal-500 mt-3">{validationMessages.profilePic}</p>
+                        )}
+                    </div>
+
+
+                    {/* Nombre de Usuario */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-semibold mb-2">Nombre de Usuario</label>
+                        <input
+                            type="text"
+                            name="username"
+                            value={formData.username}
+                            onChange={handleInputChange}
+                            className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                            placeholder="Nombre de Usuario"
+                            pattern="^[a-zA-Z0-9_]+$"
+                            required
+                        />
+                        {validationMessages.username && (
+                            <p className="text-sm text-red-500 mt-2">{validationMessages.username}</p>
+                        )}
+                    </div>
+
+                    {/* Correo Electrónico */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-semibold mb-2">Correo Electrónico</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            readOnly
+                            className="w-full border-2 border-gray-300 p-3 rounded-lg bg-gray-100 cursor-not-allowed"
+                            placeholder="Correo Electrónico"
+                        />
+                    </div>
+
+                    {/* Nombre Completo */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-semibold mb-2">Nombre Completo</label>
+                        <input
+                            type="text"
+                            name="fullName"
+                            maxLength={70}
+                            value={formData.fullName}
+                            onChange={handleInputChange}
+                            className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                            placeholder="Nombre Completo"
+                            pattern="^[A-Za-z\s]+$"
+                            required
+                        />
+                        {validationMessages.fullName && (
+                            <p className="text-sm text-red-500 mt-2">{validationMessages.fullName}</p>
+                        )}
+                    </div>
+
+                    {/* Género */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-semibold mb-2">Género</label>
+                        <select
+                            name="gender"
+                            value={formData.gender}
+                            onChange={handleInputChange}
+                            placeholder="Género"
+                            className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                            required
+                        >
+                            <option value="">Selecciona una opción</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+
+                    {/* Biografía */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-semibold mb-2">Biografía</label>
+                        <textarea
+                            name="biography"
+                            maxLength="180"
+                            value={formData.biography}
+                            onChange={handleInputChange}
+                            className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none resize-none"
+                            placeholder="Escribe algo sobre ti"
+                            rows="4"
+                            required
+                        />
+                        <p className="text-sm text-gray-500">Máximo 180 caracteres.</p>
+                    </div>
+
+                    {/* Botones */}
+                    <div className="flex justify-between items-center">
+                        <button
+                            type="button"
+                            onClick={handleCancel}
+                            className="bg-gray-300 text-black p-2 rounded-lg"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            className="bg-teal-500 text-white p-2 rounded-lg"
+                        >
+                            Guardar Cambios
+                        </button>
+                    </div>
+                </form>
             </div>
-          </div>
+
+            {/* Modal de éxito/error */}
+            {showModal && (
+                <ModalReu
+                    isSuccess={modalType === "success"}
+                    message={modalMessage}
+                    onClose={() => setShowModal(false)} // Para cerrar manualmente si es necesario
+                />
+            )}
+
+
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
-export default ProfileForm;
+export default EditarPerfil;

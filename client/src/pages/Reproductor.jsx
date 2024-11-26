@@ -110,9 +110,9 @@ const Reproductor = () => {
     const { title, author, description, coverUrl, audioUrl } = bookData;
 
     return (
-        <div className="min-h-0 bg-second text-white relative flex flex-col items-center p-4">
+        <div className="min-h-0 text-white relative flex flex-col items-center p-4">
             {/* Botón de cierre en la esquina superior izquierda */}
-            <button onClick={() => navigate(-1)} className="absolute top-4 left-4 text-black mb-6 flex items-center">
+            <button onClick={() => navigate(-1)} className="absolute top-4 left-4 mb-6 flex items-center">
                 <FiArrowLeft className="mr-2" />
                 Volver
             </button>

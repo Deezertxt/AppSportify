@@ -2,70 +2,66 @@ const { prisma } = require('../conf/db');
 
 // Añadir un libro a la biblioteca del usuario (como favorito o reproducido)
 const addBookToLibraryCategory = async (req, res) => {
-    const { firebaseUserId, audiobookId, category } = req.body;
+    const { userId, audiobookId, category } = req.body; // Ahora recibe userId del frontend
 
-    if (!firebaseUserId || !audiobookId || !category) {
-      return res.status(400).json({ message: "firebaseUserId, audiobookId y category son obligatorios." });
+    if (!userId || !audiobookId || !category) {
+        return res.status(400).json({ message: "userId, audiobookId y category son obligatorios." });
     }
 
     try {
-        // Buscar al usuario en la base de datos usando el firebaseUserId
-        const user = await prisma.user.findUnique({
-            where: { id: firebaseUserId },
+        // Verificar si el usuario existe
+        const userExists = await prisma.user.findUnique({
+            where: { id: userId }, // Cambiado a userId
         });
 
-        if (!user) {
+        if (!userExists) {
             return res.status(404).json({ message: "Usuario no encontrado." });
         }
 
         // Verificar si el audiolibro existe
-        const audiobook = await prisma.audiobook.findUnique({
+        const audiobookExists = await prisma.audiobook.findUnique({
             where: { id: audiobookId },
         });
 
-        if (!audiobook) {
+        if (!audiobookExists) {
             return res.status(404).json({ message: "Audiolibro no encontrado." });
         }
 
-        // Buscar si el audiolibro ya existe en la biblioteca del usuario
+        // Buscar si ya existe una entrada para este audiolibro en la biblioteca del usuario
         const existingEntry = await prisma.library.findFirst({
-            where: {
-                userId: firebaseUserId,
-                audiobookId,
-            },
+            where: { userId, audiobookId }, // Cambiado a userId
         });
 
         if (existingEntry) {
-            // Si ya existe, solo actualizamos el campo correspondiente
+            // Si la entrada existe, actualizar la categoría específica
             const updatedEntry = await prisma.library.update({
                 where: { id: existingEntry.id },
-                data: {
-                    // Solo actualizar el nuevo campo de la categoría, si no está ya en true
-                    [category]: true,
-                },
+                data: { [category]: true },
             });
-            res.status(200).json(updatedEntry);
-        } else {
-            // Si no existe, crear la nueva entrada con la categoría marcada como true
-            const libraryEntry = await prisma.library.create({
+        
+            return res.status(200).json( updatedEntry );
+        }
+
+        const libraryEntry = await prisma.library.create({
                 data: {
-                    userId: firebaseUserId,
+                    userId,
                     audiobookId,
                     // Mantener el estado anterior de otros campos y solo marcar la nueva categoría
                     saved: existingEntry?.saved || false,
                     favorite: existingEntry?.favorite || false,
                     played: existingEntry?.played || false,
                     finished: existingEntry?.finished || false,
+                    recommended: existingEntry?.recommended || false,
                     [category]: true, // Solo marcar la categoría en true
                 },
             });
-            res.status(200).json(libraryEntry);
-        }
+        return res.status(200).json(libraryEntry );
     } catch (error) {
-        console.error("Error al añadir el libro a la categoría:", error);
-        res.status(500).json({ message: "Error al añadir el libro a la categoría." });
+        console.error("Error al añadir el audiolibro a la categoría:", error);
+        res.status(500).json({ message: "Error interno del servidor." });
     }
 };
+
 
 
 // Obtener los libros favoritos o reproducidos de un usuario
@@ -118,6 +114,7 @@ const fetchLibraryState = async (req, res) => {
         favorite: [],
         played: [],
         finished: [],
+        recommended: [],
       };
   
       libraryEntries.forEach((entry) => {
@@ -125,6 +122,7 @@ const fetchLibraryState = async (req, res) => {
         if (entry.favorite) libraryState.favorite.push(entry.audiobook.id);
         if (entry.played) libraryState.played.push(entry.audiobook.id);
         if (entry.finished) libraryState.finished.push(entry.audiobook.id);
+        if (entry.recommended) libraryState.recommended.push(entry.audiobook.id);
       });
   
       res.status(200).json(libraryState);
@@ -137,18 +135,19 @@ const fetchLibraryState = async (req, res) => {
 
 // Eliminar un libro de la biblioteca del usuario
 const removeBookFromLibraryCategory = async (req, res) => {
-    const { firebaseUserId, audiobookId, category } = req.params;
+    const { userId, audiobookId, category } = req.params; // Usa 'userId' en lugar de 'firebaseUserId'
+    console.log(req.params);
 
-    if (!firebaseUserId || !audiobookId || !category) {
-      return res.status(400).json({ message: "firebaseUserId, audiobookId y category son obligatorios." });
+    if (!userId || !audiobookId || !category) {
+      return res.status(400).json({ message: "userId, audiobookId y category son obligatorios." }); // Actualiza el mensaje de error
     }
 
     try {
         // Buscar la entrada en la biblioteca
         const libraryEntry = await prisma.library.findFirst({
             where: {
-                userId: firebaseUserId,
-                audiobookId: Number(audiobookId),
+            userId: userId,  // Usa 'userId' en lugar de 'firebaseUserId'
+            audiobookId: parseInt(audiobookId, 10),
             },
         });
 
@@ -162,6 +161,7 @@ const removeBookFromLibraryCategory = async (req, res) => {
             favorite: libraryEntry.favorite,
             played: libraryEntry.played,
             finished: libraryEntry.finished,
+            recommended: libraryEntry.recommended,
         };
 
         updateData[category] = false;
@@ -173,7 +173,7 @@ const removeBookFromLibraryCategory = async (req, res) => {
         });
 
         // Si todos los campos están desmarcados, eliminar la entrada
-        if (!updatedEntry.saved && !updatedEntry.favorite && !updatedEntry.played && !updatedEntry.finished) {
+        if (!updatedEntry.saved && !updatedEntry.favorite && !updatedEntry.played && !updatedEntry.finished && !updatedEntry.recommended) {
             await prisma.library.delete({
                 where: { id: updatedEntry.id },
             });

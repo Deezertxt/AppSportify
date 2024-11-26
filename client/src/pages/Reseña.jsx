@@ -1,27 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getAudiobookById, createFeedback } from '../api/api';
-import { useAuth } from '../context/authContext';
-import ModalReu from './ModalReu';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getAudiobookById, createFeedback } from "../api/api";
+import { useAuth } from "../context/authContext";
+import ModalReu from "../components/modals/ModalReu";
 
 const Reseña = () => {
     const { id } = useParams();
     const [rating, setRating] = useState(null);
     const [hoverRating, setHoverRating] = useState(null);
     const [bookData, setBookData] = useState(null);
-    const [comment, setComment] = useState('');
-    const [showModal, setShowModal] = useState(false); // Estado para mostrar modal
+    const [comment, setComment] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
     const { user } = useAuth();
     const userId = user.userId;
 
+    const prohibitedWords = ["maldición", "insulto", "grosería", "mierda",]; // Añade más términos inapropiados
+
+    const correctCommonMistakes = (text) => {
+        const corrections = {
+            "q": "que",
+            "xq": "porque",
+            "tbn": "también",
+        };
+        const words = text.split(" ");
+        return words
+            .map((word) => corrections[word.toLowerCase()] || word)
+            .join(" ");
+    };
+
+    const validateComment = (text) => {
+        if (!text.trim()) {
+            setErrorMessage("");
+            return false;
+        }
+        if (prohibitedWords.some((word) => text.toLowerCase().includes(word))) {
+            setErrorMessage("Por favor, evita el uso de lenguaje inapropiado.");
+            return false;
+        }
+        setErrorMessage("");
+        return true;
+    };
+
     const handleRating = (rate) => setRating(rate);
     const handleMouseEnter = (rate) => setHoverRating(rate);
     const handleMouseLeave = () => setHoverRating(null);
-    const handleCommentChange = (e) => setComment(e.target.value);
+
+    const handleCommentChange = (e) => {
+        const rawText = e.target.value;
+        const correctedText = correctCommonMistakes(rawText);
+        setComment(correctedText);
+        validateComment(correctedText);
+    };
 
     const handleSubmit = async () => {
-        if (!rating) return; // Asegurarse de que haya un rating antes de enviar
+        if (!rating || !validateComment(comment)) return;
 
         const feedbackData = {
             userId: userId,
@@ -33,16 +67,16 @@ const Reseña = () => {
         try {
             const response = await createFeedback(feedbackData);
             if (response.status === 200) {
-                setShowModal(true); // Mostrar el modal después del envío exitoso
+                setShowModal(true);
                 setTimeout(() => {
-                    setShowModal(false); // Ocultar modal
-                    navigate(`/libros`); // Redirigir al inicio
-                }, 3000); // Mostrar modal durante 3 segundos
+                    setShowModal(false);
+                    navigate(`/inicio`);
+                }, 3000);
             } else {
-                console.error('Error al enviar la reseña');
+                console.error("Error al enviar la reseña");
             }
         } catch (error) {
-            console.error('Error al enviar la reseña:', error);
+            console.error("Error al enviar la reseña:", error);
         }
     };
 
@@ -56,7 +90,7 @@ const Reseña = () => {
                     console.error(`No se encontró un libro con el id: ${id}`);
                 }
             } catch (error) {
-                console.error('Error al cargar datos del audiolibro:', error);
+                console.error("Error al cargar datos del audiolibro:", error);
             }
         };
 
@@ -66,7 +100,7 @@ const Reseña = () => {
     if (!bookData) {
         return (
             <div className="flex items-center justify-center h-screen">
-                <div className="border-t-4 border-teal-600 border-solid w-16 h-16 rounded-full animate-spin"></div>
+                <div className="w-16 h-16 border-4 border-teal-600 border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
     }
@@ -75,84 +109,88 @@ const Reseña = () => {
     const labels = ["Horrible", "Malo", "Bueno", "Bien", "Excelente"];
 
     return (
-        <div className="min-h-screen bg-white flex flex-col items-center">
-            <div className="bg-[#ABDADC] w-full py-10 px-4 flex flex-col md:flex-row items-center justify-between">
-                <div className="text-center md:text-left md:w-2/3">
-                    <h2 className="text-2xl md:text-3xl font-bold text-blue-900">
-                        Cuéntanos qué piensas de
-                    </h2>
-                    <p className="italic text-lg md:text-xl text-blue-700 mt-2">
-                        {title} de {author}  
-                    </p>
+        <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
+            <div className="bg-white shadow-md w-full max-w-5xl rounded-lg overflow-hidden">
+                {/* Header */}
+                <div className="bg-teal-500 text-white py-8 px-6 text-center">
+                    <h2 className="text-2xl md:text-3xl font-bold">Cuéntanos qué piensas de</h2>
+                    <p className="mt-2 text-lg md:text-2xl italic">{title} de {author}</p>
                 </div>
-                <div className="mt-4 md:mt-0 md:w-1/3 flex justify-center">
+
+                {/* Main Content */}
+                <div className="p-8 flex flex-col lg:flex-row items-center">
                     <img
                         src={coverUrl}
-                        alt="Conversación"
-                        className="w-24 h-24 md:w-32 md:h-32"
+                        alt={title}
+                        className="w-40 h-40 md:w-48 md:h-48 rounded-md mb-6 lg:mb-0 lg:mr-8 shadow-md"
                     />
-                </div>
-            </div>
 
-            <div className="w-full max-w-xl bg-white px-6 py-8 mt-1 rounded-md">
-                <h3 className="text-xl font-semibold mb-6 text-center text-blue-900">
-                    ¿Cómo lo calificarías?
-                </h3>
-
-                <div className="flex justify-center mb-4 space-x-6">
-                    {labels.map((label, index) => (
-                        <div key={index} className="flex flex-col items-center">
-                            <button
-                                onClick={() => handleRating(index + 1)}
-                                onMouseEnter={() => handleMouseEnter(index + 1)}
-                                onMouseLeave={handleMouseLeave}
-                                className={`text-6xl ${hoverRating >= index + 1
-                                    ? 'text-yellow-500'
-                                    : rating >= index + 1
-                                        ? 'text-yellow-300'
-                                        : 'text-gray-300'
-                                    } transition-colors duration-200`}
-                            >
-                                ★
-                            </button>
-                            {rating === index + 1 && (
-                                <span className="text-sm mt-2 text-gray-700">{label}</span>
-                            )}
-                        </div>
-                    ))}
-                </div>
-
-                {rating && (
-                    <>
-                        <h3 className="text-lg font-semibold mb-2 text-center">
-                            ¿Algo más que quieras compartir?
+                    <div className="flex flex-col items-center w-full">
+                        <h3 className="text-xl font-semibold mb-6 text-center text-teal-900">
+                            ¿Cómo lo calificarías?
                         </h3>
-                        <textarea
-                            value={comment}
-                            onChange={handleCommentChange}
-                            className="w-full p-2 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Comparte tus pensamientos..."
-                            rows="3"
-                        ></textarea>
-                    </>
-                )}
+                        {/* Stars */}
+                        <div className="flex justify-center mb-6">
+                            {labels.map((label, index) => (
+                                <div key={index} className="flex flex-col items-center mx-2">
+                                    <button
+                                        onClick={() => handleRating(index + 1)}
+                                        onMouseEnter={() => handleMouseEnter(index + 1)}
+                                        onMouseLeave={handleMouseLeave}
+                                        className={`text-6xl ${hoverRating >= index + 1 || rating >= index + 1
+                                            ? "text-yellow-400"
+                                            : "text-gray-300"
+                                            } transition-colors duration-200`}
+                                    >
+                                        ★
+                                    </button>
+                                    {rating === index + 1 && (
+                                        <span className="text-sm mt-2 text-gray-700">{label}</span>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
 
-                <button
-                    onClick={handleSubmit}
-                    className={`w-full py-2 px-8 text-lg rounded-md mt-2 ${rating ? 'bg-[#16697A] text-white' : 'bg-gray-300 cursor-not-allowed'}`}
-                    disabled={!rating}
-                >
-                    Enviar comentario
-                </button>
+                        {/* Comment Box */}
+                        {rating && (
+                            <textarea
+                                value={comment}
+                                onChange={handleCommentChange}
+                                className="w-full max-w-lg p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-700 resize-none"
+                                placeholder="Máximo 280 caracteres..."
+                                rows={5}
+                                maxLength={280}
+                            ></textarea>
+                        )}
 
-                <button
-                    onClick={() => navigate(`/libros`)}
-                    className="mt-4 text-gray-500 underline text-sm"
-                >
-                    Saltar
-                </button>
+                        <p className="text-sm text-gray-500 mt-2">{comment.length} / 280 caracteres</p>
+                        {errorMessage && (
+                            <p className="text-sm text-red-500 mt-2">{errorMessage}</p>
+                        )}
+
+                        {/* Submit Button */}
+                        <button
+                            onClick={handleSubmit}
+                            className={`w-full max-w-lg py-3 mt-4 rounded-md text-white ${rating && !errorMessage
+                                ? "bg-teal-600 hover:bg-teal-700"
+                                : "bg-gray-300 cursor-not-allowed"
+                                }`}
+                            disabled={!rating || errorMessage}
+                        >
+                            Enviar comentario
+                        </button>
+
+                        <button
+                            onClick={() => navigate(`/libros`)}
+                            className="mt-4 text-gray-500 underline text-sm"
+                        >
+                            Saltar
+                        </button>
+                    </div>
+                </div>
             </div>
 
+            {/* Modal */}
             {showModal && (
                 <ModalReu
                     onClose={() => setShowModal(false)}

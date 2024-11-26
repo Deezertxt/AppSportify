@@ -3,6 +3,7 @@ import Card from "../cards/Card";
 import { useLocation, useNavigate } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import { getAudiobooks } from "../../api/api";
+import Breadcrumb from "../Breadcrumb";
 
 const SearchResults = () => {
     const location = useLocation();
@@ -58,57 +59,59 @@ const SearchResults = () => {
         }
     }, [input, filter, audiobooks]);
 
-    const handleCardClick = (id) => {
-        navigate(`/Preview/${id}`);
-    };
 
     return (
         <div>
             <div className="px-20">
                 <SearchBar />
+                <div className="px-4"><Breadcrumb /></div>
+
             </div>
             <div className="flex items-center pl-24">Filtrar por:</div>
             <div className="flex items-center mb-4 pl-24">
                 <button
                     onClick={() => setFilter("Todo")}
-                    className={`px-4 py-2 mr-2 ${filter === "Todo" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                    className={`px-4 py-2 mr-2 text-white ${filter === "Todo" ? "bg-blue-500 " : "bg-gray-500"}`}
                 >
                     Todos
                 </button>
                 <button
                     onClick={() => setFilter("Título")}
-                    className={`px-4 py-2 mr-2 ${filter === "Título" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                    className={`px-4 py-2 mr-2 text-white ${filter === "Título" ? "bg-blue-500 " : "bg-gray-500"}`}
                 >
                     Título
                 </button>
                 <button
                     onClick={() => setFilter("Autor")}
-                    className={`px-4 py-2 ${filter === "Autor" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                    className={`px-4 py-2 text-white ${filter === "Autor" ? "bg-blue-500 " : "bg-gray-500"}`}
                 >
                     Autor
                 </button>
             </div>
-            <div className="max-w-5xl mx-auto mt-8">
+            <div className="max-w-7xl mx-auto mt-8 px-4 md:px-20">
                 {filteredAudiobooks.length > 0 ? (
-                    <div className="flex flex-wrap -m-4 gap-4">
-                        {filteredAudiobooks.map((audiobook) => (
-                            <div className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 p-4" key={audiobook.id}>
-                                <Card
-                                    key={audiobook.id}
-                                    title={audiobook.title}
-                                    author={audiobook.author}
-                                    coverUrl={audiobook.coverUrl}
-                                    duration={audiobook.duration}
-                                    averagerating={audiobook.averageRating}
-                                    onClick={() => handleCardClick(audiobook.id)}
-                                />
-                            </div>
-                        ))}
+                    // Contenedor de las cards en grid con responsive
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {filteredAudiobooks.map((audiobook) => {
+                            return (
+                                <div className="w-full p-4" key={audiobook.id}>
+                                    <Card
+                                        id={audiobook.id}  // Pasa el id correctamente
+                                        title={audiobook.title.trim()}
+                                        author={audiobook.author.trim()}
+                                        coverUrl={audiobook.coverUrl}
+                                        duration={audiobook.duration}
+                                        averagerating={audiobook.averageRating}
+                                    />
+                                </div>
+                            );
+                        })}
                     </div>
                 ) : (
                     <p className="text-center text-[30px] font-bold py-5">No se encontraron resultados.</p>
                 )}
             </div>
+
         </div>
     );
 };

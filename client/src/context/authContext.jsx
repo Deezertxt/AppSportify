@@ -1,8 +1,8 @@
 // context/authContext.js
 import { createContext, useContext, useEffect, useState } from "react";
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "firebase/auth";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updatePassword, updateEmail, confirmPasswordReset, verifyPasswordResetCode } from "firebase/auth";
 import { auth } from "../utils/firebase";
-import { registerOrLoginWithGoogle, getUserById } from "../api/api";
+import { registerOrLoginWithGoogle, getUserById, getUserByEmail } from "../api/api";
 
 export const authContext = createContext();
 
@@ -30,15 +30,39 @@ export function AuthProvider({ children }) {
         setUser(null); // Actualiza el estado de user a null después de hacer logout
     };
 
-    const resetPassword = async (email) => {    
+    const resetPassword = async (email) => {
         try {
+            // Consultar al backend si el usuario existe
+            const response = await getUserByEmail(email);
+
+            if (!response || response.status !== 200) {
+                return { success: false, error: "No se encontró ningún usuario con este correo." };
+            }
+
+            // Si el usuario existe, enviar el correo de recuperación
             await sendPasswordResetEmail(auth, email);
-            console.log('Correo de recuperación de contraseña enviado');
+            return { success: true };
         } catch (error) {
-            console.error('Error al enviar el correo de recuperación de contraseña:', error);
+            return {
+                success: false,
+                error: "Error al verificar usuario o enviar correo de recuperación.",
+            };
         }
-    }
-    
+    };
+
+    const changePassword = async (newPassword, oobCode) => {
+        try {
+            // Verificar si el código de restablecimiento es válido
+            await verifyPasswordResetCode(auth, oobCode);
+            
+            // Confirmar el cambio de contraseña
+            await confirmPasswordReset(auth, oobCode, newPassword);
+            return { success: true };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    };
+
 
     const loginWithGoogle = async () => {
         const googleProvider = new GoogleAuthProvider();
@@ -46,10 +70,10 @@ export function AuthProvider({ children }) {
             const result = await signInWithPopup(auth, googleProvider);
             const user = result.user; // El usuario autenticado con Google
             const Token = await user.getIdToken(); // El token de autenticación de Firebase
-            const response = await registerOrLoginWithGoogle({idToken:Token}); // Registra o inicia sesión con Google en tu servidor
+            const response = await registerOrLoginWithGoogle({ idToken: Token }); // Registra o inicia sesión con Google en tu servidor
             if (response.status === 200) {
                 console.log("Usuario autenticado correctamente:", response.data);
-              }
+            }
             setUser(user); // Guarda el usuario en el estado
         } catch (error) {
             console.error('Error al iniciar sesión con Google:', error);
@@ -60,7 +84,7 @@ export function AuthProvider({ children }) {
         const fetchUserFromBackend = async () => {
             try {
                 const uid = user.uid; // Obtener el uid del usuario
-                const response = await getUserById( uid ); // Enviar el uid al backend
+                const response = await getUserById(uid); // Enviar el uid al backend
                 setUser((prevUser) => ({
                     ...prevUser,
                     userId: response.data.id, // Agregar el id del backend al usuario
@@ -82,11 +106,11 @@ export function AuthProvider({ children }) {
         });
         return () => unsubscribe(); // Desuscribirse cuando se desmonta el componente
     }, []);
-    
-    
+
+
 
     return (
-        <authContext.Provider value={{ login, signUp, user, logout, loading, loginWithGoogle, resetPassword }}>
+        <authContext.Provider value={{ login, signUp, user, logout, loading, loginWithGoogle, resetPassword, changePassword }}>
             {children}
         </authContext.Provider>
     );

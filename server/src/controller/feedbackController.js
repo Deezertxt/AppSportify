@@ -2,47 +2,51 @@
 const { prisma } = require('../conf/db');
 
 async function updateAverageRating(audiobookId) {
-    const feedbacks = await prisma.feedback.findMany({
-        where: { audiobookId },
-        select: { rating: true },
-    });
+  const feedbacks = await prisma.feedback.findMany({
+    where: { audiobookId },
+    select: { rating: true },
+  });
 
-    if (feedbacks.length === 0) return 0;
+  if (feedbacks.length === 0) return 0;
 
-    const totalRating = feedbacks.reduce((acc, feedback) => acc + feedback.rating, 0);
-    const averageRating = totalRating / feedbacks.length;
+  const totalRating = feedbacks.reduce((acc, feedback) => acc + feedback.rating, 0);
+  let averageRating = totalRating / feedbacks.length;
 
-    await prisma.audiobook.update({
-        where: { id: audiobookId },
-        data: { averageRating },
-    });
+  // Redondear a un decimal
+  averageRating = parseFloat(averageRating.toFixed(1));
 
-    return averageRating;
+  await prisma.audiobook.update({
+    where: { id: audiobookId },
+    data: { averageRating },
+  });
+
+  return averageRating;
 }
+
 
 // Crear feedback
 const createFeedback = async (req, res) => {
-    console.log(req.body);
-    const { userId, audiobookId, comment, rating } = req.body;
-    
-    try {
-        const newFeedback = await prisma.feedback.create({
-            data: {
-                userId,
-                audiobookId: parseInt(audiobookId, 10),
-                comment,
-                rating,
-            },
-        });
+  console.log(req.body);
+  const { userId, audiobookId, comment, rating } = req.body;
 
-        // Actualizar el promedio de calificación del audiolibro
-        const averageRating = await updateAverageRating(audiobookId);
+  try {
+    const newFeedback = await prisma.feedback.create({
+      data: {
+        userId,
+        audiobookId: parseInt(audiobookId, 10),
+        comment,
+        rating,
+      },
+    });
 
-        res.status(200).json({ newFeedback, averageRating });
-    } catch (error) {
-        console.error("Error creando feedback:", error);
-        res.status(500).json({ error: "Error creando feedback" });
-    }
+    // Actualizar el promedio de calificación del audiolibro
+    const averageRating = await updateAverageRating(audiobookId);
+
+    res.status(200).json({ newFeedback, averageRating });
+  } catch (error) {
+    console.error("Error creando feedback:", error);
+    res.status(500).json({ error: "Error creando feedback" });
+  }
 };
 
 
@@ -53,7 +57,7 @@ const getFeedbacksByAudiobook = async (req, res) => {
   try {
     const feedbacks = await prisma.feedback.findMany({
       where: { audiobookId: Number(audiobookId) },
-      include: { user: { select: { username: true, profilePicUrl: true } } }, // Incluye información del usuario
+      include: { user: { select: { id: true, username: true, profilePicUrl: true } } }, // Incluye información del usuario
     });
 
     res.status(200).json(feedbacks);
