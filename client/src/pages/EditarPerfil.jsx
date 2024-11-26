@@ -207,12 +207,15 @@ const ProfileForm = () => {
             <span className="sr-only">Foto de perfil</span>
           )}
         </div>
-        <input
-          type="file"
-          onChange={handleImageChange}
-          accept="image/*"
-          className="bg-teal-500 text-white py-2 px-1 rounded cursor-pointer  "
-        />
+        <label className="bg-teal-500 text-white py-2 px-1 rounded cursor-pointer "> Cambiar Imagen
+          <input
+            type="file"  
+            onChange={handleImageChange}
+            accept="image/*"
+            className="hidden"
+          />
+        </label>
+        
         {imagePreview && (
           <button
             onClick={handleRemoveImage}
