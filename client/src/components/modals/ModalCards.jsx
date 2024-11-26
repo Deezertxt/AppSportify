@@ -17,7 +17,7 @@ const ModalCard = ({ onDetails, onAddToRecommended, onRemoveFromSaved }) => {
                 <FiPlus /> Recomendados
             </button>
             <button
-                onClick={onRemoveFromSaved}
+                onClick={() => openConfirmModal(activeModal?.id)}
                 className="w-full flex items-center gap-2 text-left text-red-600 hover:text-red-800 py-1"
             >
                 <FiTrash /> Eliminar

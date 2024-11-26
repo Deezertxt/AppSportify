@@ -27,8 +27,9 @@
     "firebase-admin": "^13.0.0",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.1.7",
-    "uuid": "^11.0.2",
-    "server": "file:"
+    "react-icons": "^5.3.0",
+    "server": "file:",
+    "uuid": "^11.0.2"
   },
   "devDependencies": {
     "prisma": "^5.21.1"

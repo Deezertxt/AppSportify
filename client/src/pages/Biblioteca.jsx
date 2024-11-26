@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiBookmark, FiCheckCircle, FiMoreVertical, FiChevronRight } from "react-icons/fi";
+import { FiBookmark, FiCheckCircle, FiMoreVertical, FiChevronRight, } from "react-icons/fi";
+import { FaArrowLeft } from "react-icons/fa";
 import { addBookToLibraryCategory, deleteBookFromLibraryCategory, getUserLibraryCategory } from "../api/api";
 import Card from "../components/cards/Card";
 import ModalCard from "../components/modals/ModalCards"; // Nuevo modal compacto
 import { useAuth } from "../context/authContext";
 import SkeletonCard from "../components/skeletons/SkeletonCard";
 import ModalReu from "../components/modals/ModalReu"; // Importar el nuevo modal
+import ModalConfirmacionBorrado from "../components/modals/ModalConfirmacionBorrado";
 
 const Biblioteca = () => {
     const { user } = useAuth();
@@ -25,7 +27,15 @@ const Biblioteca = () => {
     const [modalTitle, setModalTitle] = useState("");
     const [modalType, setModalType] = useState("success"); // "success" o "error"
 
+
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [selectedAudiobookId, setSelectedAudiobookId] = useState(null); //id del audiolibro a eliminar
+
     const navigate = useNavigate();
+
+    const handleBack = () => {
+        navigate(-1); // Navega a la página anterior
+    };
 
     const handleViewAll = (category) => {
         navigate(`/biblioteca/libros?filter=${category}`);
@@ -33,6 +43,16 @@ const Biblioteca = () => {
 
     const handleCardClick = (id) => {
         navigate(`/preview/${id}`); // Redirige al reproductor del audiolibro usando el id
+    };
+
+    const handleConfirmDelete = () => {
+        handleRemoveFromSaved(selectedAudiobookId);
+        setShowConfirmModal(false);
+    };
+
+    const openConfirmModal = (audiobookId) => {
+        setSelectedAudiobookId(audiobookId);
+        setShowConfirmModal(true);
     };
 
     const toggleModal = (audiobookId, category) => {
@@ -173,6 +193,17 @@ const Biblioteca = () => {
 
     return (
         <div className="p-4 md:p-6 min-h-screen ">
+            {/* Botón de volver */}
+            <button
+                onClick={handleBack}
+                className="flex items-center  hover:text-gray-500 mb-4"
+                title="Regresar"
+            >
+                {/* Ícono FaArrowLeft */}
+                <FaArrowLeft className="mr-2" />
+                Volver
+            </button>
+
             {/* Modal de alerta */}
             {showModal && (
                 <ModalReu
@@ -180,6 +211,16 @@ const Biblioteca = () => {
                     title={modalTitle}
                     message={modalMessage}
                     type={modalType}
+                />
+            )}
+
+            {/*modal de confirmacion de borrado*/}
+            {showConfirmModal && (
+                <ModalConfirmacionBorrado
+                    title="Confirmar eliminación"
+                    message="¿Estás seguro de que deseas eliminar este audiolibro?"
+                    onConfirm={handleConfirmDelete}
+                    onCancel={() => setShowConfirmModal(false)}
                 />
             )}
 
