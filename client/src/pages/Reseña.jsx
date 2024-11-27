@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getAudiobookById, createFeedback } from "../api/api";
+import { getAudiobookById, createFeedback, checkUserFeedback } from "../api/api";
 import { useAuth } from "../context/authContext";
 import ModalReu from "../components/modals/ModalReu";
 
@@ -12,11 +12,13 @@ const Reseña = () => {
     const [comment, setComment] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false); // Para bloquear el botón
+    const [feedbackExists, setFeedbackExists] = useState(false); // Para bloquear la ruta si ya existe feedback
     const navigate = useNavigate();
     const { user } = useAuth();
     const userId = user.userId;
 
-    const prohibitedWords = ["maldición", "insulto", "grosería", "mierda",]; // Añade más términos inapropiados
+    const prohibitedWords = ["maldición", "insulto", "grosería", "mierda"];
 
     const correctCommonMistakes = (text) => {
         const corrections = {
@@ -24,15 +26,12 @@ const Reseña = () => {
             "xq": "porque",
             "tbn": "también",
         };
-        const words = text.split(" ");
-        return words
-            .map((word) => corrections[word.toLowerCase()] || word)
-            .join(" ");
+        return text.split(" ").map((word) => corrections[word.toLowerCase()] || word).join(" ");
     };
 
     const validateComment = (text) => {
         if (!text.trim()) {
-            setErrorMessage("");
+            setErrorMessage("Por favor, escribe un comentario.");
             return false;
         }
         if (prohibitedWords.some((word) => text.toLowerCase().includes(word))) {
@@ -43,7 +42,9 @@ const Reseña = () => {
         return true;
     };
 
-    const handleRating = (rate) => setRating(rate);
+    const handleRating = (rate) => {
+        setRating((prev) => (prev === rate ? null : rate)); // Resetear si se hace clic en la misma estrella
+    };
     const handleMouseEnter = (rate) => setHoverRating(rate);
     const handleMouseLeave = () => setHoverRating(null);
 
@@ -55,13 +56,15 @@ const Reseña = () => {
     };
 
     const handleSubmit = async () => {
-        if (!rating || !validateComment(comment)) return;
+        if (!rating || !validateComment(comment) || isSubmitting) return;
+
+        setIsSubmitting(true); // Bloquear el botón de envío
 
         const feedbackData = {
-            userId: userId,
+            userId,
             audiobookId: parseInt(id, 10),
-            comment: comment,
-            rating: rating,
+            comment,
+            rating,
         };
 
         try {
@@ -77,6 +80,8 @@ const Reseña = () => {
             }
         } catch (error) {
             console.error("Error al enviar la reseña:", error);
+        } finally {
+            setIsSubmitting(false); // Desbloquear el botón si hay error
         }
     };
 
@@ -84,20 +89,29 @@ const Reseña = () => {
         const fetchBookData = async () => {
             try {
                 const response = await getAudiobookById(id);
-                if (response.data && response.data.id === parseInt(id, 10)) {
-                    setBookData(response.data);
-                } else {
-                    console.error(`No se encontró un libro con el id: ${id}`);
-                }
+                setBookData(response.data);
             } catch (error) {
                 console.error("Error al cargar datos del audiolibro:", error);
             }
         };
 
-        fetchBookData();
-    }, [id]);
+        const checkFeedback = async () => {
+            try {
+                const response = await checkUserFeedback(userId, id);
+                if (response.data.exists) {
+                    setFeedbackExists(true); // Bloquear la ruta si ya hay feedback
+                    navigate(`/inicio`);
+                }
+            } catch (error) {
+                console.error("Error al verificar feedback existente:", error);
+            }
+        };
 
-    if (!bookData) {
+        fetchBookData();
+        checkFeedback();
+    }, [id, userId, navigate]);
+
+    if (feedbackExists || !bookData) {
         return (
             <div className="flex items-center justify-center h-screen">
                 <div className="w-16 h-16 border-4 border-teal-600 border-t-transparent rounded-full animate-spin"></div>
@@ -181,7 +195,7 @@ const Reseña = () => {
                         </button>
 
                         <button
-                            onClick={() => navigate(`/libros`)}
+                            onClick={() => navigate(`/inicio`)}
                             className="mt-4 text-gray-500 underline text-sm"
                         >
                             Saltar
