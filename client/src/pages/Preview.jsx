@@ -50,33 +50,59 @@ function Preview() {
   }, [id]);
 
   const handleSaveToLibrary = async () => {
-    if (isBookSaved(parseInt(id, 10))) return;
+    const audiobookId = parseInt(id, 10);
+    if (isBookSaved(audiobookId)) {
+      try {
+        const response = await addBookToLibraryCategory({
+          userId: user.userId,
+          audiobookId,
+          category: "removed", // Indica que se está eliminando
+        });
+        if (response.status === 200) {
+          addToSaved(audiobookId, true); // Actualiza el estado eliminándolo
+          setModalType("success");
+          setModalTitle("Éxito!");
+          setModalMessage("Audiolibro exitosamente eliminado de la biblioteca.");
+        } else {
+          setModalType("error");
+          setModalTitle("Error!");
+          setModalMessage("No se pudo eliminar el audiolibro.");
+        }
+      } catch (error) {
+        console.error("Error al eliminar el audiolibro:", error);
+        setModalType("error");
+        setModalTitle("Error!");
+        setModalMessage("Ocurrió un error al intentar eliminar el audiolibro.");
+      }
+    } else {
 
-    try {
-      const response = await addBookToLibraryCategory({
-        userId: user.userId,
-        audiobookId: parseInt(id, 10),
-        category: "saved",
-      });
-      if (response.status === 200) {
-        addToSaved(parseInt(id, 10));
-        setModalType("success");
-        setModalTitle("¡Éxito!");
-        setModalMessage("Audiolibro guardado en la biblioteca.");
-        setModalVisible(true);
-      } else {
+      try {
+        const response = await addBookToLibraryCategory({
+          userId: user.userId,
+          audiobookId,
+          category: "saved",
+        });
+        if (response.status === 200) {
+          addToSaved(parseInt(id, 10));
+          setModalType("success");
+          setModalTitle("¡Éxito!");
+          setModalMessage("Audiolibro guardado en la biblioteca.");
+
+        } else {
+          setModalType("error");
+          setModalTitle("¡Error!");
+          setModalMessage("Error al guardar el audiolibro.");
+
+        }
+      } catch (error) {
+        console.error("Error al guardar el audiolibro:", error);
         setModalType("error");
         setModalTitle("¡Error!");
-        setModalMessage("Error al guardar el audiolibro.");
-        setModalVisible(true);
+        setModalMessage("Ocurrió un error al guardar el audiolibro.");
+
       }
-    } catch (error) {
-      console.error("Error al guardar el audiolibro:", error);
-      setModalType("error");
-      setModalTitle("¡Error!");
-      setModalMessage("Ocurrió un error al guardar el audiolibro.");
-      setModalVisible(true);
     }
+    setModalVisible(true);
   };
 
   if (!bookData) {
@@ -158,7 +184,7 @@ function Preview() {
                   }`}
               />
               {isBookSaved(parseInt(id, 10))
-                ? "Guardado en Biblioteca"
+                ? "Eliminar de mi Biblioteca" 
                 : "Guardar en mi Biblioteca"}
             </button>
           </div>

@@ -19,7 +19,8 @@ export const getUserById = (id) => api.get(`/api/user/get/${id}`);
 export const getUserByEmail = (email) => api.get(`/api/user/getemail/${email}`);
 export const updateUser = (id, data) => api.put(`/api/user/put/${id}`, data);
 export const deleteUser = (id) => api.delete(`/api/user/delete/${id}`);
-export const toggleProfilePrivacy = (id, isPrivate) => { return api.patch(`/api/user/privacy/${id}`, { isPrivate });
+export const toggleProfilePrivacy = (id, isPrivate) => {
+    return api.patch(`/api/user/privacy/${id}`, { isPrivate });
 };
 
 export const uploadFilesToGCS = (data) => api.post("/api/uploads/upload", data);
@@ -45,3 +46,12 @@ export const getLibrary = (userId) => api.get(`/api/library/fetch/${userId}`);
 export const getUserLibraryCategory = (userId, category) => api.get(`/api/library/get/${userId}/${category}`);
 export const addBookToLibraryCategory = (data) => api.post("/api/library/add", data);
 export const deleteBookFromLibraryCategory = (userId, audiobookId, category) => api.patch(`/api/library/patch/${userId}/${audiobookId}/${category}`);
+
+
+export const manageBookInLibrary = (data, action) => {
+    // Define la URL según la acción requerida
+    const endpoint = action === "add" ? "/api/library/add" : "/api/library/remove";
+
+    // Realiza la solicitud al endpoint correspondiente
+    return api.post(endpoint, data);
+};
