@@ -88,6 +88,12 @@ CREATE UNIQUE INDEX "Audiobook_audioUrl_key" ON "Audiobook"("audioUrl");
 CREATE UNIQUE INDEX "Audiobook_text_key" ON "Audiobook"("text");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Feedback_userId_key" ON "Feedback"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Feedback_audiobookId_key" ON "Feedback"("audiobookId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
 
 -- AddForeignKey
