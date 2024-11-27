@@ -42,7 +42,7 @@ const Categories = () => {
                             <button
                                 key={category.id}
                                 onClick={() => handleCategoryClick(category.id)}
-                                className="relative w-full flex items-center justify-center px-4 py-3 text-sm sm:text-base rounded-lg bg-gradient-to-br from-orange-700 to-yellow-500 text-gray-100 font-semibold transition-all duration-200 hover:scale-105 hover:shadow-md focus:outline-none"
+                                className="relative w-full flex items-center justify-center px-4 py-3 text-sm sm:text-base rounded-lg bg-gradient-to-br from-sky-600 to-blue-900 text-white font-semibold transition-all duration-200 hover:scale-105 hover:shadow-md focus:outline-none"
                             >
                                 <span className="absolute inset-0 bg-white opacity-0 hover:opacity-10 rounded-lg"></span>
                                 {category.name}

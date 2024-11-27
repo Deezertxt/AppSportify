@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import {
   FiBarChart,
   FiBookmark,
+  FiChevronsLeft,
   FiChevronsRight,
   FiFolderMinus,
   FiHome,
   FiLogOut,
+  FiMenu,
   FiSearch,
   FiUser,
 } from "react-icons/fi";
@@ -14,7 +16,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 
 const Sidebar = () => {
-  const [open, setOpen] = useState(false);
+  const [isSidebarOpen, setSidebarOpen] = useState(false); // Estado para pantallas grandes
+  const [isMenuOpen, setMenuOpen] = useState(false); // Estado para pantallas pequeñas (hamburguesa)
   const location = useLocation();
   const [selected, setSelected] = useState("Inicio");
   const navigate = useNavigate();
@@ -27,13 +30,21 @@ const Sidebar = () => {
     { title: "Mi perfil", to: `/perfil/${user?.userId}`, Icon: FiUser },
   ];
 
+  const adminOptions = [
+    { title: "Registro Audiolibros", to: "/publicar", Icon: FiFolderMinus },
+    { title: "Administración", to: "/PanelAdmin", Icon: FiBarChart },
+  ];
+
+  const allOptions =
+    user?.email === "yalasoft@gmail.com" ? [...options, ...adminOptions] : options;
+
   useEffect(() => {
     const currentPath = location.pathname;
-    const selectedOption = options.find((option) =>
+    const selectedOption = allOptions.find((option) =>
       currentPath.startsWith(option.to)
     );
     if (selectedOption) setSelected(selectedOption.title);
-  }, [location, options]);
+  }, [location, allOptions]);
 
   const handleLogout = async () => {
     try {
@@ -44,15 +55,19 @@ const Sidebar = () => {
     }
   };
 
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const toggleMenu = () => setMenuOpen(!isMenuOpen);
+
   return (
-    <motion.div
-      layout
-      className={`sticky top-0 left-0 min-h-full bg-gradient-to-r from-[#023047] to-[#1b6c92] text-white transition-all duration-300 ${
-        open ? "w-60" : "w-16"
-      }`}
-    >
-      {/* Header con Logo */}
-      <div className="flex items-center justify-between p-5  border-b border-gray-400">
+    <>
+      {/* Sidebar para pantallas grandes */}
+      <motion.div
+        layout
+        className={`hidden md:block sticky top-0 left-0 min-h-full bg-gradient-to-r from-[#023047] to-[#1b6c92] text-white transition-all duration-300 ${
+          isSidebarOpen ? "w-55" : "w-16"
+        }`}
+      >
+        <div className="flex items-center justify-between p-5  border-b border-gray-400">
         <Link to="/inicio">
           <img
             src="/logoS.svg"
@@ -60,20 +75,21 @@ const Sidebar = () => {
             className={`h-10 transition-opacity ${open ? "opacity-100" : "opacity-0"}`}
           />
         </Link>
-        <button
-          aria-label={open ? "Cerrar menú" : "Abrir menú"}
-          onClick={() => setOpen(!open)}
-          className="p-2 text-gray-200 hover:text-white"
-        >
-          <FiChevronsRight
-            className={`transform transition-transform ${open ? "rotate-180" : ""}`}
-          />
-        </button>
       </div>
+        {/* Botón para expandir/colapsar */}
+        <button
+          onClick={toggleSidebar}
+          className="absolute -right-4 top-4 bg-[#023047] p-2 rounded-full shadow-lg hover:scale-110 transition-transform"
+        >
+          {isSidebarOpen ? (
+            <FiChevronsLeft className="text-white text-lg" />
+          ) : (
+            <FiChevronsRight className="text-white text-lg" />
+          )}
+        </button>
 
-      {/* Opciones del menú */}
-      <div className="mt-4 space-y-2">
-        {options.map(({ title, to, Icon }) => (
+        {/* Opciones del sidebar */}
+        {allOptions.map(({ title, to, Icon }) => (
           <Link
             key={title}
             to={to}
@@ -84,60 +100,84 @@ const Sidebar = () => {
                 : "hover:bg-gradient-to-r from-[#023047] to-[#082938] hover:text-white"
             }`}
           >
-            {/* Icono siempre visible */}
             <Icon className="text-xl" />
             <span
-              className={`ml-4 text-sm font-medium ${!open && "hidden"}`}
+              className={`ml-4 text-sm font-medium ${!isSidebarOpen && "hidden"}`}
             >
               {title}
             </span>
           </Link>
         ))}
 
-        {/* Opciones administrativas solo para el administrador */}
-        {user?.email === "yalasoft@gmail.com" && (
-          <>
-            <Link
-              to="/publicar"
-              className="group flex items-center p-5 rounded-md hover:bg-gradient-to-r from-[#023047] to-[#082938] hover:text-white"
-            >
-              <FiFolderMinus className="text-xl" />
-              <span
-                className={`ml-4 text-sm font-medium ${!open && "hidden"}`}
-              >
-                Registro Audiolibros
-              </span>
-            </Link>
-            <Link
-              to="/PanelAdmin"
-              className="group flex items-center p-5 rounded-md hover:bg-gradient-to-r from-[#023047] to-[#082938] hover:text-white"
-            >
-              <FiBarChart className="text-xl" />
-              <span
-                className={`ml-4 text-sm font-medium ${!open && "hidden"}`}
-              >
-                Administración
-              </span>
-            </Link>
-          </>
-        )}
-      </div>
-
-      {/* Footer con Logout */}
-      <div className="absolute bottom-0 left-0 w-full p-4 border-t border-gray-400">
-        <button
-          onClick={handleLogout}
-          className="flex items-center w-full space-x-2 rounded-md p-2 hover:bg-gradient-to-r from-[#023047] to-[#082938] hover:text-white"
-        >
-          <FiLogOut className="text-xl" />
-          <span
-            className={`text-sm font-medium ${!open && "hidden"}`}
+        {/* Logout */}
+        <div className="absolute bottom-0 left-0 w-full p-4 border-t border-gray-400">
+          <button
+            onClick={handleLogout}
+            className="flex items-center w-full space-x-2 rounded-md p-2 hover:bg-gradient-to-r from-[#023047] to-[#082938] hover:text-white"
           >
-            Cerrar sesión
-          </span>
+            <FiLogOut className="text-xl" />
+            <span
+              className={`text-sm font-medium ${!isSidebarOpen && "hidden"}`}
+            >
+              Cerrar sesión
+            </span>
+          </button>
+        </div>
+      </motion.div>
+
+      {/* Menú hamburguesa para pantallas pequeñas */}
+      <div className="md:hidden fixed top-4 left-4 z-50">
+        <button
+          onClick={() => setMenuOpen(true)}
+          className="p-2 bg-transparent rounded focus:outline-none"
+        >
+          <FiMenu className="text-2xl" />
         </button>
       </div>
-    </motion.div>
+
+      {/* Fondo oscuro al abrir el menú */}
+      {isMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
+
+      {/* Menú lateral */}
+      <motion.div
+        initial={{ x: "-100%" }}
+        animate={{ x: isMenuOpen ? 0 : "-100%" }}
+        exit={{ x: "-100%" }}
+        className="fixed top-0 left-0 w-64 h-full bg-gradient-to-r from-[#023047] to-[#3089b1] text-white z-50 p-6"
+      >
+        {/* Opciones del menú */}
+        <div className="flex flex-col space-y-6">
+          {options.map(({ title, to, Icon }) => (
+            <Link
+              key={title}
+              to={to}
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center space-x-4 p-3 rounded-md hover:bg-[#082938] transition-colors"
+            >
+              <Icon className="text-xl" />
+              <span className="text-base font-medium">{title}</span>
+            </Link>
+          ))}
+
+          {/* Logout */}
+          <button
+            onClick={() => {
+              handleLogout();
+              setMenuOpen(false);
+            }}
+            className="flex items-center space-x-4 p-3 rounded-md hover:bg-[#082938] transition-colors"
+          >
+            <FiLogOut className="text-xl" />
+            <span className="text-base font-medium">Cerrar sesión</span>
+          </button>
+        </div>
+      </motion.div>
+    </>
   );
 };
 
