@@ -8,16 +8,14 @@ const AudioDetails = ({ title, author, isSaved, onSave }) => (
       <p className="text-white">{author}</p>
     </div>
     <button
-      onClick={onSave}
-      className={`text-2xl cursor-pointer transition ${
-        isSaved ? "text-green-600" : "text-white hover:text-green-600"
-      }`}
-      aria-label="Guardar en la biblioteca"
-      disabled={isSaved} // Deshabilitar si ya está guardado
+      onClick={onSave} // Aquí se maneja tanto para guardar como para eliminar
+      className="text-2xl cursor-pointer transition"
+      aria-label={isSaved ? "Eliminar de la biblioteca" : "Guardar en la biblioteca"}
+      disabled={false} // Se puede dejar habilitado siempre
     >
       <FiBookmark
         className={`${
-          isSaved ? "fill-current text-green-600" : "text-white"
+          isSaved ? "fill-current text-green-600" : "text-white hover:text-green-600"
         }`}
       />
     </button>
