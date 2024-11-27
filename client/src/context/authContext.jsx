@@ -45,7 +45,7 @@ export function AuthProvider({ children }) {
         } catch (error) {
             return {
                 success: false,
-                error: "Error al verificar usuario o enviar correo de recuperación.",
+                error: "No se encontró ningún usuario con este correo.",
             };
         }
     };
