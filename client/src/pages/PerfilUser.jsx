@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Slider from "react-slick";
 import SmallCard from "../components/cards/SmallCard";
 import { BsBookmark, BsCheckCircle, BsListTask, BsPencilSquare } from "react-icons/bs";
 import { getUserById, getUserLibraryCategory, toggleProfilePrivacy } from "../api/api";
@@ -14,7 +13,7 @@ function PerfilUser() {
     const [libraryData, setLibraryData] = useState({ recomendados: [], guardados: [], terminados: [] });
     const [isPrivate, setIsPrivate] = useState(false);
     const [activeTab, setActiveTab] = useState("recomendado");
-
+    
     // Si no se pasa un ID en la URL, usa el ID del usuario logueado
     const userId = urlUserId || user.userId;
 
@@ -51,34 +50,15 @@ function PerfilUser() {
         fetchLibrary();
     }, [userId]);
 
-    const sliderSettings = {
-        dots: true,
-        infinite: false,
-        speed: 500,
-        slidesToShow: 3,
-        slidesToScroll: 1,
-        responsive: [
-            { breakpoint: 1024, settings: { slidesToShow: 2 } },
-            { breakpoint: 600, settings: { slidesToShow: 1 } },
-        ],
-    };
-
     const handleTogglePrivacy = async () => {
-        console.log("Estado actual de privacidad:", isPrivate); // Verifica el estado actual
-
         try {
             // Enviar el estado actualizado de privacidad al backend
             const response = await toggleProfilePrivacy(userId, !isPrivate);
-            console.log("Respuesta al actualizar privacidad:", response);
-
-            // Alternar el valor de privacidad en el frontend
             setIsPrivate(!isPrivate);
         } catch (error) {
             console.error("Error al actualizar la privacidad:", error);
         }
     };
-
-
 
     if (!profileData) return <p>Cargando perfil...</p>;
 
@@ -127,7 +107,7 @@ function PerfilUser() {
 
             <div className="border-t border-gray-200">
                 <div className="flex justify-around bg-gray-100 text-gray-700">
-                    {[
+                    {[  
                         { tab: "recomendado", label: "Recomendado", icon: <BsListTask size={20} /> },
                         { tab: "guardado", label: "Guardado", icon: <BsBookmark size={20} /> },
                         { tab: "terminados", label: "Terminados", icon: <BsCheckCircle size={20} /> },
@@ -147,53 +127,56 @@ function PerfilUser() {
                 </div>
 
                 {/* Contenido de los tabs */}
-                <div className="p-4">
+                <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {activeTab === "recomendado" && (
                         libraryData.recomendados.length > 0 ? (
-                            <Slider {...sliderSettings}>
-                                {libraryData.recomendados.map((item) => (
-                                    <SmallCard
-                                        key={item.id}
-                                        title={item.title}
-                                        author={item.author}
-                                        coverUrl={item.coverUrl}
-                                    />
-                                ))}
-                            </Slider>
+                            libraryData.recomendados.map((item) => (
+                                <SmallCard
+                                    key={item.id}
+                                    id={item.id}
+                                    title={item.title}
+                                    author={item.author}
+                                    coverUrl={item.coverUrl}
+                                    className="transition-all transform hover:scale-105 hover:shadow-lg"
+                                    
+                                />
+                            ))
                         ) : (
                             <p className="text-center text-gray-500">No tienes recomendaciones aún.</p>
                         )
                     )}
 
-                    {isPrivate && activeTab === "guardado" && (
+                    {(user.userId === userId || !isPrivate) && activeTab === "guardado" && (
                         libraryData.guardados.length > 0 ? (
-                            <Slider {...sliderSettings}>
-                                {libraryData.guardados.map((item) => (
-                                    <SmallCard
-                                        key={item.id}
-                                        title={item.title}
-                                        author={item.author}
-                                        coverUrl={item.coverUrl}
-                                    />
-                                ))}
-                            </Slider>
+                            libraryData.guardados.map((item) => (
+                                <SmallCard
+                                    key={item.id}
+                                    id={item.id}
+                                    title={item.title}
+                                    author={item.author}
+                                    coverUrl={item.coverUrl}
+                                    className="transition-all transform hover:scale-105 hover:shadow-lg"
+                                    
+                                />
+                            ))
                         ) : (
                             <p className="text-center text-gray-500">No tienes elementos guardados aún.</p>
                         )
                     )}
 
-                    {isPrivate && activeTab === "terminados" && (
+                    {(user.userId === userId || !isPrivate) && activeTab === "terminados" && (
                         libraryData.terminados.length > 0 ? (
-                            <Slider {...sliderSettings}>
-                                {libraryData.terminados.map((item) => (
-                                    <SmallCard
-                                        key={item.id}
-                                        title={item.title}
-                                        author={item.author}
-                                        coverUrl={item.coverUrl}
-                                    />
-                                ))}
-                            </Slider>
+                            libraryData.terminados.map((item) => (
+                                <SmallCard
+                                    key={item.id}
+                                    id={item.id}
+                                    title={item.title}
+                                    author={item.author}
+                                    coverUrl={item.coverUrl}
+                                    className="transition-all transform hover:scale-105 hover:shadow-lg"
+                                
+                                />
+                            ))
                         ) : (
                             <p className="text-center text-gray-500">No has terminado ningún elemento aún.</p>
                         )
