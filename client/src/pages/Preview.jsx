@@ -3,7 +3,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { FiBookmark, FiClock, FiStar } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { SlEarphonesAlt, SlBookOpen } from "react-icons/sl";
-import { getAudiobooks, addBookToLibraryCategory } from "../api/api";
+import { getAudiobooks, addBookToLibraryCategory, deleteBookFromLibraryCategory } from "../api/api";
 import { useAuth } from "../context/authContext";
 import { useLibrary } from "../context/libraryContext";
 import { Comments } from "../components/Comments/Comments";
@@ -14,7 +14,7 @@ function Preview() {
   const navigate = useNavigate();
   const [bookData, setBookData] = useState(null);
   const { user } = useAuth();
-  const { isBookSaved, addToSaved, initializeLibrary } = useLibrary();
+  const { isBookSaved, addToSaved, removeFromSaved, initializeLibrary } = useLibrary();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState("success");
@@ -78,6 +78,29 @@ function Preview() {
       setModalVisible(true);
     }
   };
+  const handleRemoveFromLibrary = async () => {
+    try {
+      const response = await deleteBookFromLibraryCategory(user.userId, parseInt(id, 10), "saved");
+      if (response.status === 200) {
+        removeFromSaved(parseInt(id, 10)); // Elimina el libro de la biblioteca localmente
+        setModalType("success");
+        setModalTitle("¡Éxito!");
+        setModalMessage("Audiolibro eliminado de la biblioteca.");
+        setModalVisible(true);
+      } else {
+        setModalType("error");
+        setModalTitle("¡Error!");
+        setModalMessage("Error al eliminar el audiolibro.");
+        setModalVisible(true);
+      }
+    } catch (error) {
+      console.error("Error al eliminar el audiolibro:", error);
+      setModalType("error");
+      setModalTitle("¡Error!");
+      setModalMessage("Ocurrió un error al eliminar el audiolibro.");
+      setModalVisible(true);
+    }
+  };
 
   if (!bookData) {
     return <div className="flex items-center justify-center h-screen">Cargando...</div>;
@@ -103,7 +126,7 @@ function Preview() {
             <img
               src={coverUrl}
               alt="Book Cover"
-              className="w-full h-auto max-h-[400px]"
+              className="w-full object-contain"
             />
           </div>
           <div className="flex flex-col p-6 space-y-4 md:w-2/3">
@@ -146,19 +169,18 @@ function Preview() {
             </p>
 
             <button
-              onClick={handleSaveToLibrary}
+              onClick={isBookSaved(parseInt(id, 10)) ? handleRemoveFromLibrary : handleSaveToLibrary}
               className={`flex items-center mt-6 ${isBookSaved(parseInt(id, 10))
-                ? "text-blue-600"
+                ? "text-red-600 hover:text-red-800"
                 : "text-blue-400 hover:text-blue-800"
                 } font-semibold py-2 px-4 transition-colors duration-300`}
-              disabled={isBookSaved(parseInt(id, 10))}
             >
               <FiBookmark
                 className={`mr-2 ${isBookSaved(parseInt(id, 10)) ? "fill-current" : ""
                   }`}
               />
               {isBookSaved(parseInt(id, 10))
-                ? "Guardado en Biblioteca"
+                ? "Eliminar de mi Biblioteca"
                 : "Guardar en mi Biblioteca"}
             </button>
           </div>
