@@ -23,7 +23,7 @@ const Card = ({ id, title, author, coverUrl, duration, averagerating }) => {
             onClick={handleCardClick}
         >
             {/* Imagen de portada */}
-            <div className="w-full h-96">
+            <div className="w-full object-contain">
                 <img
                     src={coverUrl}
                     alt={title}
