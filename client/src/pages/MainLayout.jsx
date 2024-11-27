@@ -29,6 +29,8 @@ const MainLayout = () => {
       {/* Page Content */}
       <div
         className={`flex-grow flex flex-col min-h-screen transition-all duration-300 ease-in-out ${
+          sidebarOpen ? "w-60" : "w-16"
+        } ${
           darkMode ? "bg-gradient-to-r from-[#023047] to-[#082938] text-white" : "bg-white text-gray-800"
         }`}
       >

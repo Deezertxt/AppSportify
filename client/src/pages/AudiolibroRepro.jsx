@@ -5,7 +5,7 @@ import ProgressBar from "../components/reproductor/ProgressBar";
 import AudioDetails from "../components/reproductor/AudioDetails";
 import ControlButtons from "../components/reproductor/ControlButtons";
 import PlayerControls from "../components/reproductor/PlayerControls";
-import { getAudiobookById, addBookToLibraryCategory } from "../api/api";
+import { getAudiobookById, addBookToLibraryCategory, deleteBookFromLibraryCategory } from "../api/api";
 import { FiArrowLeft, FiCheck } from "react-icons/fi";
 
 import { useAuth } from "../context/authContext";
@@ -34,6 +34,7 @@ const AudioLibroReproductor = () => {
         isBookFinished,
         addToSaved,
         addToFinished,
+        removeFromSaved
     } = useLibrary();
 
     const handleFinishedToLibrary = async () => {
@@ -78,33 +79,59 @@ const AudioLibroReproductor = () => {
     };
 
     const handleSaveToLibrary = async () => {
-        if (isBookSaved(parseInt(id, 10))) return;
-
-        // Mostrar el modal con el mensaje de "procesando"
-        setModalMessage("Guardando el audiolibro en la biblioteca...");
-        setModalAction(null); // No es necesario tener una acción de confirmación
-        setShowModal(true);
-
-        try {
-            const response = await addBookToLibraryCategory({
-                userId: user.userId,
-                audiobookId: parseInt(id, 10),
-                category: "saved",
-            });
+        if (isBookSaved(parseInt(id, 10))) {
+          // Si el libro ya está guardado, lo eliminamos
+          setModalMessage("Eliminando el audiolibro de la biblioteca...");
+          setModalAction(null); // No es necesario tener una acción de confirmación
+          setShowModal(true);
+      
+          try {
+            // Usamos la API de eliminación
+            const response = await deleteBookFromLibraryCategory(
+              user.userId,
+              parseInt(id, 10),
+              "saved" // Aquí usamos "saved" para indicar que el libro está guardado
+            );
+            
             if (response.status === 200) {
-                addToSaved(parseInt(id, 10));
-                setModalMessage("Audiolibro guardado en la biblioteca.");
+              removeFromSaved(parseInt(id, 10)); // Actualiza el estado del libro en la biblioteca
+              setModalMessage("Audiolibro eliminado de la biblioteca.");
             } else {
-                setModalMessage("Error al guardar el audiolibro.");
+              setModalMessage("Error al eliminar el audiolibro.");
             }
-        } catch (error) {
+          } catch (error) {
+            console.error("Error al eliminar el audiolibro:", error);
+            setModalMessage("Error al eliminar el audiolibro.");
+          }
+        } else {
+          // Si el libro no está guardado, lo agregamos
+          setModalMessage("Guardando el audiolibro en la biblioteca...");
+          setModalAction(null); // No es necesario tener una acción de confirmación
+          setShowModal(true);
+      
+          try {
+            const response = await addBookToLibraryCategory({
+              userId: user.userId,
+              audiobookId: parseInt(id, 10),
+              category: "saved", // Aquí usamos "saved" para agregar el libro a los guardados
+            });
+            
+            if (response.status === 200) {
+              addToSaved(parseInt(id, 10)); // Actualiza el estado del libro en la biblioteca
+              setModalMessage("Audiolibro guardado en la biblioteca.");
+            } else {
+              setModalMessage("Error al guardar el audiolibro.");
+            }
+          } catch (error) {
             console.error("Error al guardar el audiolibro:", error);
             setModalMessage("Error al guardar el audiolibro.");
+          }
         }
+      
         // Opcionalmente cerrar el modal después de un tiempo o al actualizar
         setTimeout(() => setShowModal(false), 2000);  // Se cierra el modal después de 2 segundos
-    };
-
+      };
+      
 
     useEffect(() => {
         const fetchAudiobook = async () => {
@@ -119,8 +146,6 @@ const AudioLibroReproductor = () => {
         fetchAudiobook();
     }, [id]);
 
-    const increaseFontSize = () => setFontSize(prev => prev + 2);
-    const decreaseFontSize = () => setFontSize(prev => Math.max(prev - 2, 10));
 
     const togglePlayPause = () => {
         if (isPlaying) {

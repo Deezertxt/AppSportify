@@ -504,7 +504,7 @@ function Publicar() {
                                 />
                                 <button
                                     type="button"
-                                    className="bg-[#14919B]  py-2 px-6 rounded-lg hover:bg-[#0B6477] flex items-center justify-center mb-4"
+                                    className="bg-[#14919B] text-white py-2 px-6 rounded-lg hover:bg-[#0B6477] flex items-center justify-center mb-4"
                                     onClick={() => document.getElementById('portadaFile').click()}
                                 >
                                     <FaImage className="mr-2" /> Elegir imagen
