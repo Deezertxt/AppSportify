@@ -33,15 +33,18 @@ export const getAudiobooks = () => api.get("/api/audiobook/get");
 export const getAudiobookById = (id) => api.get(`/api/audiobook/get/${id}`);
 export const getAudiobooksByCategory = (id) => api.get(`/api/audiobook/get/category/${id}`);
 export const createAudiobook = (data) => api.post("/api/audiobook/register", data);
-export const updateAudiobook = (id, data) => api.put(`/api/audiobook/update/${id}`, data);
+export const updateAudiobook = (id, data) => api.put(`/api/audiobook/put/${id}`, data);
 export const deleteAudiobook = (id) => api.delete(`/api/audiobook/delete/${id}`);
 
 export const getFeedbacks = (id) => api.get(`/api/feedback/get/${id}`);
+export const checkUserFeedback =(userId, audiobookId) =>api.get(`/api/feedback/check/${userId}/${audiobookId}`);
 export const createFeedback = (data) => api.post("/api/feedback/subir", data);
-export const likeFeedback = (id) => api.patch(`/api/feedback/like/${id}`);
+export const toggleLikeFeedback = (feedbackId, userId) => { api.patch(`/api/feedback/like/${feedbackId}`, { userId }); };  
+export const getUserLikes = (userId) => api.get(`/api/feedback/likes/${userId}`);
 export const deleteFeedback = (id) => api.delete(`/api/feedback/delete/${id}`);
 
 export const getLibrary = (userId) => api.get(`/api/library/fetch/${userId}`);
 export const getUserLibraryCategory = (userId, category) => api.get(`/api/library/get/${userId}/${category}`);
 export const addBookToLibraryCategory = (data) => api.post("/api/library/add", data);
 export const deleteBookFromLibraryCategory = (userId, audiobookId, category) => api.patch(`/api/library/patch/${userId}/${audiobookId}/${category}`);
+export const updateLastPosition = (data) => api.post("/api/library/last-position", data);

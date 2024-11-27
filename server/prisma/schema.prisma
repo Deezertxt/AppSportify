@@ -23,6 +23,7 @@ model User {
   createdAt     DateTime  @default(now())                // Fecha de creación
   updatedAt     DateTime  @updatedAt                     // Fecha de actualización automática
   library       Library[]                               // Relación con la tabla Library (1-n)
+  likes         Like[]                                  // Relación con la tabla Like (1-n)
   feedbacks     Feedback[]                              // Relación con los comentarios y calificaciones (1-n)
   isPrivate     Boolean      @default(false)
 }
@@ -49,16 +50,31 @@ model Audiobook {
 
 // Nueva tabla para gestionar comentarios, calificaciones y likes de otros usuarios
 model Feedback {
-  id            Int       @id @default(autoincrement())  // Campo ID autoincremental
-  userId        String                                       // Relación con la tabla User
-  audiobookId   Int                                       // Relación con la tabla Audiobook
-  comment       String?   @db.Text                        // Comentario opcional
-  rating        Int       @default(0)                     // Calificación, 0-5 (5 estrellas como máximo)
-  likes         Int       @default(0)                     // Número de likes que otros usuarios han dado al comentario
-  createdAt     DateTime  @default(now())                 // Fecha de creación del comentario
-  audiobook     Audiobook @relation(fields: [audiobookId], references: [id]) // Clave foránea a Audiobook
-  user          User      @relation(fields: [userId], references: [id])      // Clave foránea a User
+  id          Int       @id @default(autoincrement()) // ID autoincremental
+  userId      String                                      // Relación con la tabla User
+  audiobookId Int                                         // Relación con la tabla Audiobook
+  comment     String?   @db.Text                         // Comentario opcional
+  rating      Int       @default(0)                      // Calificación
+  likes       Int       @default(0)                      // Contador de Likes
+  createdAt   DateTime  @default(now())                  // Fecha de creación
+  audiobook   Audiobook @relation(fields: [audiobookId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+  likesList   Like[]                                     // Relación con la tabla Like
+
+  @@unique([userId, audiobookId]) // Restricción única por usuario y audiolibro
 }
+
+model Like {
+  id          Int       @id @default(autoincrement())    // ID del like
+  userId      String                                      // Relación con la tabla User
+  feedbackId  Int                                         // Relación con la tabla Feedback
+  createdAt   DateTime  @default(now())                  // Fecha en que se dio el like
+  user        User      @relation(fields: [userId], references: [id])
+  feedback    Feedback   @relation(fields: [feedbackId], references: [id])
+
+  @@unique([userId, feedbackId]) // Un usuario solo puede dar un like por feedback
+}
+
 
 model Library {
   id           Int       @id @default(autoincrement())
@@ -70,8 +86,11 @@ model Library {
   favorite     Boolean   @default(false)                // Si el audiolibro es marcado como favorito
   played       Boolean   @default(false)                // Si el audiolibro ha sido reproducido
   finished     Boolean   @default(false)                // Si el audiolibro ha sido marcado como terminado
-  recommended  Boolean   @default(false)             // Si el audiolibro ha sido marcado como recomendado
+  recommended  Boolean   @default(false)                // Si el audiolibro ha sido marcado como recomendado
+  updatedAt    DateTime  @updatedAt                     // Fecha de última modificación
+  lastPosition Int       @default(0)                    // Última posición de reproducción en segundos
 }
+
 
 model Category {
   id         Int         @id @default(autoincrement())  // Campo ID autoincremental

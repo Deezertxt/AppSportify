@@ -95,8 +95,8 @@ const Navbar = () => {
                             Cerrar
                         </motion.button>
                         <div className="flex flex-col space-y-6">
-                            <a href="#" className="hover:text-white transition-all duration-300">Contáctanos</a>
-                            <a href="#" className="hover:text-white transition-all duration-300">Sobre nosotros</a>
+                            <a href="/contactanos" className="hover:text-white transition-all duration-300">Contáctanos</a>
+                            <a href="/sobrenosotros" className="hover:text-white transition-all duration-300">Sobre nosotros</a>
                             <a href="#" className="hover:text-white transition-all duration-300">Coaching</a>
                             <motion.button
                                 onClick={openModal}

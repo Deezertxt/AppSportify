@@ -5,6 +5,7 @@ import Breadcrumb from "../components/Breadcrumb";
 import { FiUser, FiCamera, FiTrash } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import ModalReu from "../components/modals/ModalReu";
+import ConfirmCancelModal from "../components/modals/ConfirmCancelModal";
 
 const EditarPerfil = () => {
     const { user } = useAuth();
@@ -27,6 +28,7 @@ const EditarPerfil = () => {
         username: "",
     });
 
+    const [showCancelModal, setShowCancelModal] = useState(false);
     const [modalTitle, setModalTitle] = useState("");
     const [modalMessage, setModalMessage] = useState("");
     const [modalType, setModalType] = useState(""); // "success" o "error"
@@ -185,40 +187,43 @@ const EditarPerfil = () => {
     const handleSave = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-    
+
         // Validaciones previas
         const errors = {};
-        
+
         // Validación de nombre completo
         if (!formData.fullName || !/^[a-zA-Z\s]+$/.test(formData.fullName)) {
             errors.fullName = "El nombre completo solo debe contener caracteres alfabéticos.";
         }
-    
+
         // Validación de nombre de usuario
         if (!formData.username || !/^[a-zA-Z0-9]+$/.test(formData.username)) {
             errors.username = "El nombre de usuario solo debe contener caracteres alfanuméricos.";
         }
-    
+
         // Validación de biografía
         if (formData.biography && formData.biography.length > 180) {
             errors.biography = "La biografía no puede superar los 180 caracteres.";
         }
-    
-        // Validación de la foto de perfil
-        if (!formData.profilePicUrl || formData.profilePicUrl === "/user.webp") {
-            errors.profilePic = "Debe subir una foto de perfil válida.";
-        } else if (validationMessages.profilePic && validationMessages.profilePic.startsWith("Formato no válido")) {
-            errors.profilePic = "El formato de la imagen no es válido.";
-        } else if (validationMessages.profilePic && validationMessages.profilePic.startsWith("La imagen debe ser al menos")) {
-            errors.profilePic = "La resolución de la imagen es insuficiente.";
+
+        // Validación de la foto de perfil solo si no es la predeterminada
+        if (formData.profilePicUrl !== "/user.webp") {
+            if (!formData.profilePicUrl) {
+                errors.profilePic = "Debe subir una foto de perfil válida.";
+            } else if (validationMessages.profilePic && validationMessages.profilePic.startsWith("Formato no válido")) {
+                errors.profilePic = "El formato de la imagen no es válido.";
+            } else if (validationMessages.profilePic && validationMessages.profilePic.startsWith("La imagen debe ser al menos")) {
+                errors.profilePic = "La resolución de la imagen es insuficiente.";
+            }
         }
-    
+
         // Si hay errores, mostrar mensajes y detener el guardado
         if (Object.keys(errors).length > 0) {
             setValidationMessages(errors);
             setIsLoading(false);
             return;
         }
+
         const payload = {
             name: formData.username,
             bio: formData.biography,
@@ -258,6 +263,9 @@ const EditarPerfil = () => {
 
     const handleCancel = () => {
         navigate(`/perfil/${userId}`);
+    };
+    const handleCancelButtonClick = () => {
+        setShowCancelModal(true); // Muestra el modal de confirmación al presionar "Cancelar"
     };
 
 
@@ -334,7 +342,7 @@ const EditarPerfil = () => {
                             name="username"
                             value={formData.username}
                             onChange={handleInputChange}
-                            className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                            className="w-full border-2 text-black border-teal-500 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none"
                             placeholder="Nombre de Usuario"
                             pattern="^[a-zA-Z0-9_]+$"
                             required
@@ -353,7 +361,7 @@ const EditarPerfil = () => {
                             value={formData.email}
                             onChange={handleInputChange}
                             readOnly
-                            className="w-full border-2 border-gray-300 p-3 rounded-lg bg-gray-100 cursor-not-allowed"
+                            className="w-full border-2 text-black border-teal-500 p-3 rounded-lg bg-gray-100 cursor-not-allowed"
                             placeholder="Correo Electrónico"
                         />
                     </div>
@@ -367,7 +375,7 @@ const EditarPerfil = () => {
                             maxLength={70}
                             value={formData.fullName}
                             onChange={handleInputChange}
-                            className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                            className="w-full border-2 text-black border-teal-500 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none"
                             placeholder="Nombre Completo"
                             pattern="^[A-Za-z\s]+$"
                             required
@@ -385,7 +393,7 @@ const EditarPerfil = () => {
                             value={formData.gender}
                             onChange={handleInputChange}
                             placeholder="Género"
-                            className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                            className="w-full border-2 text-black border-teal-500 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none"
                             required
                         >
                             <option value="">Selecciona una opción</option>
@@ -403,32 +411,42 @@ const EditarPerfil = () => {
                             maxLength="180"
                             value={formData.biography}
                             onChange={handleInputChange}
-                            className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none resize-none"
+                            className="w-full border-2 text-black border-teal-500 p-3 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none resize-none"
                             placeholder="Escribe algo sobre ti"
-                            rows="4"
+                            rows="2"
                             required
                         />
-                        <p className="text-sm text-gray-500">Máximo 180 caracteres.</p>
+                        <p className="text-sm text-gray-400">Máximo 180 caracteres.</p>
                     </div>
 
                     {/* Botones */}
                     <div className="flex justify-between items-center">
                         <button
                             type="button"
-                            onClick={handleCancel}
-                            className="bg-gray-300 text-black p-2 rounded-lg"
+                            onClick={handleCancelButtonClick}
+                            className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="bg-teal-500 text-white p-2 rounded-lg"
+                            className="bg-teal-500 text-white p-2 rounded-lg hover:bg-teal-600"
                         >
                             Guardar Cambios
                         </button>
                     </div>
                 </form>
             </div>
+
+            <ConfirmCancelModal
+                isOpen={showCancelModal}
+                onClose={() => setShowCancelModal(false)} // Cierra el modal si el usuario cancela
+                onConfirm={handleCancel} // Navega al perfil si el usuario confirma
+                title="¿Cancelar cambios?"
+                message="Si cancelas, los cambios realizados no se guardarán. ¿Estás seguro?"
+                confirmText="Sí, cancelar"
+                cancelText="No, volver"
+            />
 
             {/* Modal de éxito/error */}
             {showModal && (

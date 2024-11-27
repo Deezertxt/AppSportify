@@ -38,24 +38,24 @@ const addBookToLibraryCategory = async (req, res) => {
                 where: { id: existingEntry.id },
                 data: { [category]: true },
             });
-        
-            return res.status(200).json( updatedEntry );
+
+            return res.status(200).json(updatedEntry);
         }
 
         const libraryEntry = await prisma.library.create({
-                data: {
-                    userId,
-                    audiobookId,
-                    // Mantener el estado anterior de otros campos y solo marcar la nueva categoría
-                    saved: existingEntry?.saved || false,
-                    favorite: existingEntry?.favorite || false,
-                    played: existingEntry?.played || false,
-                    finished: existingEntry?.finished || false,
-                    recommended: existingEntry?.recommended || false,
-                    [category]: true, // Solo marcar la categoría en true
-                },
-            });
-        return res.status(200).json(libraryEntry );
+            data: {
+                userId,
+                audiobookId,
+                // Mantener el estado anterior de otros campos y solo marcar la nueva categoría
+                saved: existingEntry?.saved || false,
+                favorite: existingEntry?.favorite || false,
+                played: existingEntry?.played || false,
+                finished: existingEntry?.finished || false,
+                recommended: existingEntry?.recommended || false,
+                [category]: true, // Solo marcar la categoría en true
+            },
+        });
+        return res.status(200).json(libraryEntry);
     } catch (error) {
         console.error("Error al añadir el audiolibro a la categoría:", error);
         res.status(500).json({ message: "Error interno del servidor." });
@@ -69,85 +69,123 @@ const getUserLibraryCategory = async (req, res) => {
     const { userId, category } = req.params;
 
     if (!userId || !category) {
-      return res.status(400).json({ message: "userId y category son obligatorios." });
+        return res.status(400).json({ message: "userId y category son obligatorios." });
     }
 
     try {
-        // Obtener todos los libros de la biblioteca del usuario filtrados por la categoría
+        // Validar que la categoría es válida
+        const categoryField = ["saved", "favorite", "played", "finished", "recommended"].includes(category)
+            ? category
+            : "saved";
+
+        // Obtener los libros de la biblioteca del usuario ordenados por la categoría seleccionada y updatedAt
         const libraryEntries = await prisma.library.findMany({
             where: {
-                userId: userId,
-                [category]: true, // Filtrar por la categoría que se pasa en el parámetro
+                userId,
+                [categoryField]: true,
             },
-            include: { audiobook: true },
+            include: { audiobook: true }, // Incluir detalles del audiolibro
+            orderBy: [
+                { updatedAt: "desc" }, // Ordenar por la fecha de actualización más reciente
+                { id: "desc" }, // Como respaldo, ordenar por ID en orden descendente
+            ],
         });
 
         res.status(200).json({
             [category]: {
-                audiobooks: libraryEntries.map(entry => entry.audiobook),
+                audiobooks: libraryEntries.map((entry) => entry.audiobook),
                 count: libraryEntries.length,
-            }
+            },
         });
     } catch (error) {
-        console.error('Error fetching user library category:', error);
-        res.status(500).json({ error: 'Error fetching user library category', details: error.message });
+        console.error("Error al obtener los libros por categoría:", error);
+        res.status(500).json({ error: "Error al obtener los libros por categoría.", details: error.message });
     }
 };
 
 const fetchLibraryState = async (req, res) => {
     const { userId } = req.params;
-  
+
     if (!userId) {
-      return res.status(400).json({ message: "userId es obligatorio." });
+        return res.status(400).json({ message: "userId es obligatorio." });
     }
-  
+
     try {
-      // Consultar todos los libros de la biblioteca del usuario
-      const libraryEntries = await prisma.library.findMany({
-        where: { userId },
-        include: { audiobook: true }, // Incluir detalles de los audiolibros
-      });
-  
-      // Agrupar los libros por categoría
-      const libraryState = {
-        saved: [],
-        favorite: [],
-        played: [],
-        finished: [],
-        recommended: [],
-      };
-  
-      libraryEntries.forEach((entry) => {
-        if (entry.saved) libraryState.saved.push(entry.audiobook.id);
-        if (entry.favorite) libraryState.favorite.push(entry.audiobook.id);
-        if (entry.played) libraryState.played.push(entry.audiobook.id);
-        if (entry.finished) libraryState.finished.push(entry.audiobook.id);
-        if (entry.recommended) libraryState.recommended.push(entry.audiobook.id);
-      });
-  
-      res.status(200).json(libraryState);
+        // Consultar todos los libros de la biblioteca del usuario
+        const libraryEntries = await prisma.library.findMany({
+            where: { userId },
+            include: { audiobook: true }, // Incluir detalles de los audiolibros
+        });
+
+        // Agrupar los libros por categoría
+        const libraryState = {
+            saved: [],
+            favorite: [],
+            played: [],
+            finished: [],
+            recommended: [],
+        };
+
+        libraryEntries.forEach((entry) => {
+            if (entry.saved) libraryState.saved.push(entry.audiobook.id);
+            if (entry.favorite) libraryState.favorite.push(entry.audiobook.id);
+            if (entry.played) libraryState.played.push(entry.audiobook.id);
+            if (entry.finished) libraryState.finished.push(entry.audiobook.id);
+            if (entry.recommended) libraryState.recommended.push(entry.audiobook.id);
+        });
+
+        res.status(200).json(libraryState);
     } catch (error) {
-      console.error("Error al obtener el estado de la biblioteca:", error);
-      res.status(500).json({ message: "Error al obtener el estado de la biblioteca." });
+        console.error("Error al obtener el estado de la biblioteca:", error);
+        res.status(500).json({ message: "Error al obtener el estado de la biblioteca." });
     }
-  };
-  
+};
+
+const updateLastPosition = async (req, res) => {
+    const { userId, audiobookId, lastPosition } = req.body;
+
+    if (!userId || !audiobookId || lastPosition === undefined) {
+        return res.status(400).json({ message: "userId, audiobookId y lastPosition son obligatorios." });
+    }
+
+    try {
+        // Verificar si la entrada en la biblioteca existe
+        const libraryEntry = await prisma.library.findFirst({
+            where: { userId, audiobookId },
+        });
+
+        if (!libraryEntry) {
+            return res.status(404).json({ message: "Audiolibro no encontrado en la biblioteca del usuario." });
+        }
+
+        // Actualizar la posición de reproducción
+        const updatedEntry = await prisma.library.update({
+            where: { id: libraryEntry.id },
+            data: { lastPosition },
+        });
+
+        res.status(200).json(updatedEntry);
+    } catch (error) {
+        console.error("Error al actualizar la posición de reproducción:", error);
+        res.status(500).json({ message: "Error interno del servidor." });
+    }
+};
+
 
 // Eliminar un libro de la biblioteca del usuario
 const removeBookFromLibraryCategory = async (req, res) => {
-    const { userId, audiobookId, category } = req.params; // Usa 'userId' en lugar de 'firebaseUserId'
-    console.log(req.params);
+    const { userId, audiobookId, category } = req.params; 
 
     if (!userId || !audiobookId || !category) {
-      return res.status(400).json({ message: "userId, audiobookId y category son obligatorios." }); // Actualiza el mensaje de error
+        return res.status(400).json({ message: "userId, audiobookId y category son obligatorios." }); // Actualiza el mensaje de error
     }
 
     try {
         // Buscar la entrada en la biblioteca
         const libraryEntry = await prisma.library.findFirst({
             where: {
-            userId: userId,  // Usa 'userId' en lugar de 'firebaseUserId'
-            audiobookId: parseInt(audiobookId, 10),
+                userId: userId,  // Usa 'userId' en lugar de 'firebaseUserId'
+                audiobookId: parseInt(audiobookId, 10),
             },
         });
 
@@ -177,7 +215,7 @@ const removeBookFromLibraryCategory = async (req, res) => {
             await prisma.library.delete({
                 where: { id: updatedEntry.id },
             });
-            return res.status(204).send(); // No content response
+            return res.status(200).json({ message: "Audiolibro removido completamente de biblioteca" }); // No content response
         }
 
         res.status(200).json(updatedEntry);
@@ -192,6 +230,7 @@ const removeBookFromLibraryCategory = async (req, res) => {
 module.exports = {
     addBookToLibraryCategory,
     getUserLibraryCategory,
+    updateLastPosition,
     fetchLibraryState,
     removeBookFromLibraryCategory,
 };

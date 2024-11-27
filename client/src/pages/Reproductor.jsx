@@ -107,7 +107,7 @@ const Reproductor = () => {
         return <div className="flex items-center justify-center h-screen text-xl text-white">Cargando...</div>;
     }
 
-    const { title, author, description, coverUrl, audioUrl } = bookData;
+    const { title, author, coverUrl, audioUrl } = bookData;
 
     return (
         <div className="min-h-0 text-white relative flex flex-col items-center p-4">

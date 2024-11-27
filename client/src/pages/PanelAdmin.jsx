@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";  
-import CardAdmin from "../components/CardAdmin";  
+import CardAdmin from "../components/cards/CardAdmin";  
 import { getAudiobooks, getCategories, deleteAudiobook } from "../api/api";
 import { FaTimes } from "react-icons/fa"; 
 import { useParams } from "react-router-dom";
@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 function PanelAdmin(){ 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [audiobooks, setAudiobooks] = useState([]); 
-    const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState([]); 
     const [audiobookToDelete, setAudiobookToDelete] = useState(null); 
 
     const openModal = (id) => {
@@ -72,16 +72,18 @@ function PanelAdmin(){
                 Lista de audiolibros 
             </div>
 
-            <div className="card-row grid grid-cols-6 items-center border-b border-gray-300 py-4 ">
-                {/* Encabezados de las columnas */}
-                <div className="title  font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-10">Portada</div>
-                <div className="title  font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ">Título</div>
-                <div className="description font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-1 ">Autor</div>
-                <div className="author font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-8 ">Descripción</div>
-                <div className="categoryfont-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-14 ">Categoría</div>
-                <div className="categoryfont-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-20">Acción</div>
+            {/* Este contenedor usa flex para pantallas grandes y grid para pantallas pequeñas */}
+            <div className="card-row flex flex-wrap items-center border-b border-gray-300 py-4 lg:grid lg:grid-cols-6 lg:gap-6">
+                {/* Encabezados de las columnas solo visibles en pantallas grandes */}
+                <div className="title hidden lg:block font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-10">Portada</div>
+                <div className="title hidden lg:block font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis">Título</div>
+                <div className="description hidden lg:block font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-1">Autor</div>
+                <div className="author hidden lg:block font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-8">Descripción</div>
+                <div className="category hidden lg:block font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-14">Categoría</div>
+                <div className="category hidden lg:block font-bold text-sm truncate max-w-xs overflow-hidden text-ellipsis ml-20">Acción</div>
             </div>
 
+            {/* Tarjetas de audiolibros */}
             {audiobooks.map((audiobook) => (
                 <CardAdmin
                     key={audiobook.id} 
@@ -95,8 +97,6 @@ function PanelAdmin(){
                 />
             ))}
 
-            {/*<FormModal isOpen={isModalOpen} closeModal={closeModal} />*/}
-        
             {/* Modal de Confirmación */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">

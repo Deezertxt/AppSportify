@@ -27,6 +27,7 @@ const registerOrLoginWithGoogle = async (req, res) => {
           id: firebaseUserId,  // Usamos el id de Firebase como id
           email: email,         // Usamos el email de Google
           username: email.split('@')[0], // Puedes generar un nombre de usuario por defecto
+          profilePicUrl: "/user.webp", // URL de la imagen de perfil por defecto
         },
       });
     }
@@ -46,7 +47,6 @@ const registerOrLoginWithGoogle = async (req, res) => {
 
 // Crear usuario en la base de datos después del registro en Firebase
 const createUser = async (req, res) => {
-  console.log(req.body);
   const { firebaseUserId, username, email } = req.body;
 
   try {
@@ -67,7 +67,7 @@ const createUser = async (req, res) => {
         email: email,
         language: "Español",
         bio: "",
-        profilePicUrl: "",
+        profilePicUrl: "/user.webp",
       },
     });
 
@@ -144,7 +144,6 @@ const getUserByEmail = async (req, res) => {
 const toggleProfilePrivacy = async (req, res) => {
   const { id } = req.params; // ID del usuario
   const { isPrivate } = req.body; // Nuevo estado de privacidad
-  console.log( isPrivate);
 
   try {
     // Verificar si el usuario existe
@@ -183,7 +182,6 @@ const toggleProfilePrivacy = async (req, res) => {
 const updateUser = async (req, res) => {
   const { id } = req.params;
   const { name, bio, profilePicUrl, language, gender, fullName } = req.body; // Excluir email
-  console.log(req.body);
 
   try {
     // Verificar si el usuario existe

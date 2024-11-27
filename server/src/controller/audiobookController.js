@@ -4,6 +4,7 @@ const textToSpeech = require('@google-cloud/text-to-speech');
 const { Storage } = require('@google-cloud/storage');
 const { prisma } = require('../conf/db');
 const path = require('path');
+const { uploadFilesToGCS, uploadToGCS, uploadCoverToGCS } = require('./uploadController');
 
 
 // Configuración de los clientes de Google Cloud
@@ -254,52 +255,91 @@ const getAudiobooksByCategory = async (req, res) => {
 const updateAudiobook = async (req, res) => {
   const { id } = req.params;
   const { title, categoryId, description, author, pdfUrl, coverUrl } = req.body;
+
   let newPdfUrl = pdfUrl;
   let newAudioUrl = null;
+  let newCoverUrl = coverUrl;
+  let newText = null;
+  let newDuration = null;
 
   try {
     // Buscar el audiolibro existente
     const audiobook = await prisma.audiobook.findUnique({
       where: { id: parseInt(id) },
     });
+
     if (!audiobook) {
-      return res.status(404).json({ error: 'Audiobook not found' });
+      return res.status(404).json({ error: "Audiobook not found" });
     }
 
     // Verificar si hay un nuevo archivo PDF
     if (req.files?.pdfFile) {
-      // Subir el nuevo archivo PDF y obtener la URL
-      newPdfUrl = await uploadFile(req.files.pdfFile);
+      // Subir el nuevo PDF a GCS
+      newPdfUrl = await uploadToGCS(
+        req.files.pdfFile[0].buffer,
+        req.files.pdfFile[0].originalname,
+        "uploads/pdf"
+      );
+      console.log("Nuevo PDF URL generado:", newPdfUrl);
 
-      // Extraer texto y generar audio
-      const extractedText = await extractTxtFromPdf(newPdfUrl);
-      newAudioUrl = await textToSpeech(extractedText);
+      // Extraer texto del PDF
+      const { extractedText } = await extractTextFromPDF(newPdfUrl);
+      console.log("Texto extraído correctamente");
+
+      // Generar audio a partir del texto
+      const { audioUrl, audioDuration } = await convertirTextoAVoz(extractedText, title || audiobook.title);
+      console.log("Audio generado correctamente:", audioUrl);
+
+      // Asignar nuevos valores
+      newAudioUrl = audioUrl;
+      newText = extractedText;
+      newDuration = audioDuration;
     }
 
     // Verificar si hay una nueva portada
-    let newCoverUrl = coverUrl;
     if (req.files?.coverFile) {
-      newCoverUrl = await uploadFile(req.files.coverFile);
+      newCoverUrl = await uploadCoverToGCS(
+        req.files.coverFile[0].buffer,
+        req.files.coverFile[0].originalname
+      );
     }
 
-    // Actualizar el audiolibro solo con los cambios
+    // Construir datos de actualización solo si hay cambios
+    const updateData = {};
+
+    if (title && title !== audiobook.title) updateData.title = title;
+    if (categoryId && parseInt(categoryId) !== audiobook.categoryId) updateData.categoryId = parseInt(categoryId);
+    if (description && description !== audiobook.description) updateData.description = description;
+    if (author && author !== audiobook.author) updateData.author = author;
+
+    // Solo actualizar si el PDF ha cambiado
+    if (newPdfUrl && newPdfUrl !== audiobook.pdfUrl) {
+      updateData.pdfUrl = newPdfUrl;
+      updateData.text = newText;  // Actualizar el texto extraído
+      updateData.duration = `${newDuration} min`;  // Actualizar la duración
+    }
+
+    // Solo actualizar si la portada ha cambiado
+    if (newCoverUrl && newCoverUrl !== audiobook.coverUrl) updateData.coverUrl = newCoverUrl;
+
+    // Solo actualizar si el audio ha cambiado
+    if (newAudioUrl) updateData.audioUrl = newAudioUrl;
+
+    // Si no hay cambios en los datos
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ error: "No changes detected to update." });
+    }
+
+    // Actualizar el audiolibro en la base de datos
     const updatedAudiobook = await prisma.audiobook.update({
       where: { id: parseInt(id) },
-      data: {
-        title,
-        categoryId,
-        description,
-        author,
-        pdfUrl: newPdfUrl,
-        coverUrl: newCoverUrl,
-        audioUrl: newAudioUrl || audiobook.audioUrl, // Solo actualizar si hay un nuevo audio
-      },
+      data: updateData,
     });
 
     res.status(200).json(updatedAudiobook);
   } catch (error) {
-    console.error('Error updating Audiobook:', error);
-    res.status(500).json({ error: 'Error updating Audiobook', details: error.message });
+    console.error("Error updating Audiobook:", error);
+    res.status(500).json({ error: "Error updating Audiobook", details: error.message });
   }
 };
 
