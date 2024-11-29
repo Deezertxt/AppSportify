@@ -43,6 +43,12 @@ const Biblioteca = () => {
         );
     };
 
+    const handleOpenConfirmModal = (action) => {
+        // Cierra el modal de opciones antes de abrir el de confirmación
+        setActiveModal(null);
+        setShowModal({ type: "confirm", action });
+    };
+
     const showAlertMessage = (title, message, type) => {
         setModalTitle(title);
         setModalMessage(message);
@@ -153,18 +159,19 @@ const Biblioteca = () => {
                             {showOptions && (
                                 <button
                                     onClick={() => toggleModal(audiobook.id, category)}
-                                    className="absolute top-2 right-2 text-xl text-gray-800 hover:text-gray-400 focus:outline-none"
+                                    className="absolute top-2 right-2 text-xl text-white hover:text-gray-600 focus:outline-none"
                                 >
                                     <FiMoreVertical />
                                 </button>
                             )}
                             {activeModal?.id === audiobook.id && activeModal?.category === category && (
                                 <ModalCards
-                                    onAddToRecommended={() => setShowModal({ type: "confirm", action: "recommend" })}
-                                    onRemoveFromSaved={() => setShowModal({ type: "confirm", action: "remove" })}
+                                    onAddToRecommended={() => handleOpenConfirmModal("recommend")}
+                                    onRemoveFromSaved={() => handleOpenConfirmModal("remove")}
                                     onDetails={() => handleCardClick(audiobook.id)}
                                 />
                             )}
+
                         </div>
                     ))}
             </div>

@@ -5,7 +5,7 @@ import { getFeedbacks } from "../../api/api";
 export const Comments = ({ currentBookId, currentUserId }) => {
     const [backendComments, setBackendComments] = useState([]);
     const [visibleCount, setVisibleCount] = useState(5); // Número de comentarios visibles inicialmente
-    const [sortOrder, setSortOrder] = useState("mostLiked"); // Orden inicial: más likes
+    const [sortOrder, setSortOrder] = useState("recent"); // Orden inicial: más likes
 
     useEffect(() => {
         const fetchComments = async () => {
