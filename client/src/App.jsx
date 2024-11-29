@@ -27,41 +27,50 @@ import Contactanos from './pages/Contactanos';
 import { AuthProvider } from './context/authContext';
 import { ProtectedRoutes } from './context/ProtectedRoutes';
 import { LibraryProvider } from './context/libraryContext';
+import { PlayerProvider } from './context/PlayerContext';
+import { ThemeProvider } from './context/ThemeContext';
+import GlobalPlayer from './components/reproductor/GlobalPlayer';
 
 function App() {
     return (
         <AuthProvider>
+            <ThemeProvider>
             <LibraryProvider>
-                <Routes>
-                    <Route path="/" element={<HeroSection />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/sobrenosotros" element={<SobreNosotros />} />
-                    <Route path="/contactanos" element={<Contactanos />} />
-                    {/* MainLayout envuelve las rutas protegidas */}
-                    <Route element={<MainLayout />}>
+                <PlayerProvider>
+                    <Routes>
+                        <Route path="/" element={<HeroSection />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/sobrenosotros" element={<SobreNosotros />} />
+                        <Route path="/contactanos" element={<Contactanos />} />
+                        {/* MainLayout envuelve las rutas protegidas */}
+                        <Route element={<MainLayout />}>
 
-                        <Route path="/inicio" element={<ProtectedRoutes><Inicio /></ProtectedRoutes>} />
-                        <Route path="/biblioteca" element={<ProtectedRoutes><Biblioteca /></ProtectedRoutes>} />
-                        <Route path="/reproductor/:id" element={<ProtectedRoutes><AudioLibroReproductor /></ProtectedRoutes>} />
-                        <Route path="/escuchar/:id" element={<ProtectedRoutes><Reproductor /></ProtectedRoutes>} />
-                        <Route path="/panelAdmin" element={<ProtectedRoutes><PanelAdmin /></ProtectedRoutes>} />
-                        <Route path="/publicar" element={<ProtectedRoutes><Publicar /></ProtectedRoutes>} />
-                        <Route path="/actualizar/:id" element={<ProtectedRoutes><Actualizar /></ProtectedRoutes>} />
-                        <Route path="/taskpage" element={<ProtectedRoutes><TasksPage /></ProtectedRoutes>} />
-                        <Route path="/preview/:id" element={<ProtectedRoutes><Preview /></ProtectedRoutes>} />
-                        <Route path="/buscar" element={<ProtectedRoutes><SearchResults /></ProtectedRoutes>} />
-                        <Route path="/explorar" element={<ProtectedRoutes><Explorar /></ProtectedRoutes>} />
-                        <Route path="/explorar/categorias/:id" element={<ProtectedRoutes><Categorias /></ProtectedRoutes>} />
-                        <Route path="/perfil" element={<ProtectedRoutes><PerfilUser /></ProtectedRoutes>} />
-                        <Route path="/perfil/:userId" element={<ProtectedRoutes><PerfilUser /></ProtectedRoutes>} />
-                        <Route path="/perfil/editar_perfil" element={<ProtectedRoutes><EditarPerfil /></ProtectedRoutes>} />
-                        <Route path="/biblioteca/libros" element={<ProtectedRoutes><TodoBiblioteca /></ProtectedRoutes>} />
+                            <Route path="/inicio" element={<ProtectedRoutes><Inicio /></ProtectedRoutes>} />
+                            <Route path="/biblioteca" element={<ProtectedRoutes><Biblioteca /></ProtectedRoutes>} />
+                            <Route path="/reproductor/:id" element={<ProtectedRoutes><AudioLibroReproductor /></ProtectedRoutes>} />
+                            <Route path="/escuchar/:id" element={<ProtectedRoutes><Reproductor /></ProtectedRoutes>} />
+                            <Route path="/panelAdmin" element={<ProtectedRoutes><PanelAdmin /></ProtectedRoutes>} />
+                            <Route path="/publicar" element={<ProtectedRoutes><Publicar /></ProtectedRoutes>} />
+                            <Route path="/actualizar/:id" element={<ProtectedRoutes><Actualizar /></ProtectedRoutes>} />
+                            <Route path="/taskpage" element={<ProtectedRoutes><TasksPage /></ProtectedRoutes>} />
+                            <Route path="/preview/:id" element={<ProtectedRoutes><Preview /></ProtectedRoutes>} />
+                            <Route path="/buscar" element={<ProtectedRoutes><SearchResults /></ProtectedRoutes>} />
+                            <Route path="/explorar" element={<ProtectedRoutes><Explorar /></ProtectedRoutes>} />
+                            <Route path="/explorar/categorias/:id" element={<ProtectedRoutes><Categorias /></ProtectedRoutes>} />
+                            <Route path="/perfil" element={<ProtectedRoutes><PerfilUser /></ProtectedRoutes>} />
+                            <Route path="/perfil/:userId" element={<ProtectedRoutes><PerfilUser /></ProtectedRoutes>} />
+                            <Route path="/perfil/editar_perfil" element={<ProtectedRoutes><EditarPerfil /></ProtectedRoutes>} />
+                            <Route path="/biblioteca/libros" element={<ProtectedRoutes><TodoBiblioteca /></ProtectedRoutes>} />
 
-                    </Route><Route path="/resenia/:id" element={<ProtectedRoutes><Reseña /></ProtectedRoutes>} />
-                    <Route path="/verificar" element={<VerificarEmail />} />
-                    <Route path="/recuperar" element={<RecuperarPassword />} />
-                </Routes>
+                        </Route>
+                        <Route path="/resenia/:id" element={<ProtectedRoutes><Reseña /></ProtectedRoutes>} />
+                        <Route path="/verificar" element={<VerificarEmail />} />
+                        <Route path="/recuperar" element={<RecuperarPassword />} />
+                    </Routes>
+                    <GlobalPlayer />
+                </PlayerProvider>
             </LibraryProvider>
+            </ThemeProvider>
         </AuthProvider>
     );
 }
