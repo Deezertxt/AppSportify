@@ -13,6 +13,8 @@ const CarouselCard = ({ audiobooks, loading }) => {
         setVisibleItems(1); // En pantallas pequeñas (menos de 640px), mostrar 1 skeleton
       } else if (window.innerWidth < 1024) {
         setVisibleItems(2); // En pantallas medianas (menos de 1024px), mostrar 2 skeletons
+      } else if(window.innerWidth < 1280) {
+        setVisibleItems(3); // En pantallas grandes (menos de 1280px), mostrar 3 skeletons
       } else {
         setVisibleItems(5); // En pantallas grandes, mostrar 5 skeletons
       }
@@ -74,8 +76,8 @@ const CarouselCard = ({ audiobooks, loading }) => {
                 className="flex-none w-full sm:w-1/2 md:w-1/3 lg:w-1/5 xl:w-1/5 px-2 transition-transform duration-500"
               >
                 <div className="flex justify-center items-center">
-                  <div className="w-full max-w-[200px] sm:max-w-[220px]">
-                    <Card
+                  <div className="w-full aspect-[3/4] relative overflow-hidden rounded-lg">
+                    <Card 
                       id={audiobook.id}
                       title={audiobook.title}
                       author={audiobook.author}

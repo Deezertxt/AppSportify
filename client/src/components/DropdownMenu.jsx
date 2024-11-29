@@ -110,7 +110,7 @@ const Sidebar = () => {
         ))}
 
         {/* Logout */}
-        <div className="absolute bottom-0 left-0 w-full p-4 border-t border-gray-400">
+        <div className="absolute left-0 w-full p-4 border-t border-gray-400">
           <button
             onClick={handleLogout}
             className="flex items-center w-full space-x-2 rounded-md p-2 hover:bg-gradient-to-r from-[#023047] to-[#082938] hover:text-white"
@@ -152,7 +152,7 @@ const Sidebar = () => {
       >
         {/* Opciones del menú */}
         <div className="flex flex-col space-y-6">
-          {options.map(({ title, to, Icon }) => (
+          {allOptions.map(({ title, to, Icon }) => (
             <Link
               key={title}
               to={to}

@@ -40,7 +40,6 @@ const Navbar = () => {
                 <div className="space-x-8 text-gray-300">
                     <a href="/contactanos" className="hover:text-white transition-all duration-300">Contáctanos</a>
                     <a href="/sobrenosotros" className="hover:text-white transition-all duration-300">Sobre nosotros</a>
-                    <a href="#" className="hover:text-white transition-all duration-300">Coaching</a>
                     <motion.button
                         onClick={() => {
                             openModal();
@@ -97,7 +96,6 @@ const Navbar = () => {
                         <div className="flex flex-col space-y-6">
                             <a href="/contactanos" className="hover:text-white transition-all duration-300">Contáctanos</a>
                             <a href="/sobrenosotros" className="hover:text-white transition-all duration-300">Sobre nosotros</a>
-                            <a href="#" className="hover:text-white transition-all duration-300">Coaching</a>
                             <motion.button
                                 onClick={openModal}
                                 className="bg-[#217e73] text-white px-6 py-2 rounded-full hover:bg-[#457B9D] transition-all duration-300"
