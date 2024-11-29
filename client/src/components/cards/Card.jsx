@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FiClock, FiStar } from "react-icons/fi";
 
+
 // Función para capitalizar palabras
 function convertir(cadena) {
     return cadena
@@ -23,7 +24,7 @@ const Card = ({ id, title, author, coverUrl, duration, averagerating }) => {
             onClick={handleCardClick}
         >
             {/* Imagen de portada */}
-            <div className="w-full object-contain">
+            <div className="w-full aspect-[3/4] relative overflow-hidden">
                 <img
                     src={coverUrl}
                     alt={title}
