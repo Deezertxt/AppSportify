@@ -42,9 +42,12 @@ const CarouselCard = ({ audiobooks, loading }) => {
   const isFirstIndex = currentIndex === 0;
 
   return (
-    <div className="relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <div
+      id="carousel-card"
+      className="relative max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Flecha Anterior */}
       <button
+        id="prev-boton"
         onClick={handlePrev}
         className={`absolute left-0 top-1/2 transform -translate-y-1/2 text-3xl z-10 transition-all duration-300 ${isFirstIndex ? "text-gray-400" : "text-gray-500 hover:text-blue-500"
           }`}
@@ -55,8 +58,9 @@ const CarouselCard = ({ audiobooks, loading }) => {
       </button>
 
       {/* Carrusel de Audiolibros */}
-      <div className="flex overflow-hidden">
+      <div id="carousel-contenedor" className="flex overflow-hidden">
         <div
+          id="carousel-pista"
           className="flex transition-all duration-500"
           style={{
             transform: `translateX(-${(currentIndex * 100) / visibleItems}%)`, // Siempre mueve de 1 en 1
@@ -64,17 +68,20 @@ const CarouselCard = ({ audiobooks, loading }) => {
         >
           {loading
             ? [...Array(visibleItems)].map((_, index) => (
-              <div key={index} className="flex-none w-full sm:w-1/2 md:w-1/3 lg:w-1/5 xl:w-1/5 px-2 transition-transform duration-500">
+              <div id={`skeleton-card-${index}`} key={index} className="flex-none w-full sm:w-1/2 md:w-1/3 lg:w-1/5 xl:w-1/5 px-2 transition-transform duration-500">
                 <SkeletonCard />
               </div>
             ))
             : limitedAudiobooks.map((audiobook) => (
               <div
+                id={`carousel-item-${audiobook.id}`}
                 key={audiobook.id}
                 className="flex-none w-full sm:w-1/2 md:w-1/3 lg:w-1/5 xl:w-1/5 px-2 transition-transform duration-500"
               >
                 <div className="flex justify-center items-center">
-                  <div className="w-full max-w-[200px] sm:max-w-[220px]">
+                  <div
+                    id={`card-container-${audiobook.id}`}
+                    className="w-full max-w-[200px] sm:max-w-[220px]">
                     <Card
                       id={audiobook.id}
                       title={audiobook.title}
@@ -92,6 +99,7 @@ const CarouselCard = ({ audiobooks, loading }) => {
 
       {/* Flecha Siguiente */}
       <button
+        id="siguiente-boton"
         onClick={handleNext}
         className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-3xl z-10 transition-all duration-300 ${isLastIndex ? "text-gray-400" : "text-gray-500 hover:text-blue-500"
           }`}
