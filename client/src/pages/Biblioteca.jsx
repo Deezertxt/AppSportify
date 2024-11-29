@@ -45,6 +45,8 @@ const Biblioteca = () => {
         navigate(`/preview/${id}`); // Redirige al reproductor del audiolibro usando el id
     };
 
+    const isModalActive = showConfirmModal || showModal;
+
     const handleConfirmDelete = () => {
         handleRemoveFromSaved(selectedAudiobookId);
         setShowConfirmModal(false);
@@ -193,13 +195,16 @@ const Biblioteca = () => {
 
     return (
         <div className="p-4 md:p-6 min-h-screen ">
+            {/* Fondo de bloqueo */}
+            {isModalActive && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+            )}
             {/* Botón de volver */}
             <button
                 onClick={handleBack}
                 className="flex items-center  hover:text-gray-500 mb-4"
                 title="Regresar"
             >
-                {/* Ícono FaArrowLeft */}
                 <FaArrowLeft className="mr-2" />
                 Volver
             </button>
