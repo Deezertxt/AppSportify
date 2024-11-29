@@ -145,7 +145,7 @@ const Reseña = () => {
                     <img
                         src={coverUrl}
                         alt={title}
-                        className="w-full h-auto rounded-lg mb-6 lg:mb-0 lg:mr-8 shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl object-cover"
+                        className="w-full rounded-lg shadow-sm  object-cover lg:w-1/3 lg:mr-8 transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
                     />
 
                     <div className="flex flex-col items-center w-full">
@@ -163,7 +163,7 @@ const Reseña = () => {
                                         className={`text-6xl ${hoverRating >= index + 1 || rating >= index + 1
                                             ? "text-yellow-400"
                                             : "text-gray-300"
-                                            } transition-colors duration-200`}
+                                            } transform transition-all duration-300 hover:scale-105 hover:shadow-2xl`}
                                     >
                                         ★
                                     </button>
