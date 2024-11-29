@@ -1,24 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useTheme } from "../context/ThemeContext"; // Importa el contexto
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/DropdownMenu";
 import Footer from "../components/Footer";
 
 const MainLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true); // Estado para controlar si el sidebar está abierto o no
-  const [darkMode, setDarkMode] = useState(false); // Estado para controlar el modo oscuro
-
-  // Cambiar el tema según el estado de darkMode
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
+  const { darkMode, setDarkMode } = useTheme(); // Accede al estado y función del contexto
 
   // Función para alternar el modo oscuro
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
+    setDarkMode((prevMode) => !prevMode);
   };
 
   return (

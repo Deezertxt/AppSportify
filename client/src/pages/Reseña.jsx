@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getAudiobookById, createFeedback, checkUserFeedback } from "../api/api";
 import { useAuth } from "../context/authContext";
+import { useTheme } from "../context/ThemeContext";
 import ModalReu from "../components/modals/ModalReu";
 
 const Reseña = () => {
     const { id } = useParams();
+    const { darkMode } = useTheme();
     const [rating, setRating] = useState(null);
     const [hoverRating, setHoverRating] = useState(null);
     const [bookData, setBookData] = useState(null);
@@ -111,6 +113,13 @@ const Reseña = () => {
         checkFeedback();
     }, [id, userId, navigate]);
 
+    useEffect(() => {
+        // Actualización de tema basado en el estado de darkMode
+        document.body.className = darkMode
+            ? "bg-gray-800 text-white"
+            : "bg-gray-100 text-gray-900";
+    }, [darkMode]);
+
     if (feedbackExists || !bookData) {
         return (
             <div className="flex items-center justify-center h-screen">
@@ -123,8 +132,8 @@ const Reseña = () => {
     const labels = ["Horrible", "Malo", "Bueno", "Bien", "Excelente"];
 
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
-            <div className="bg-white shadow-md w-full max-w-5xl rounded-lg overflow-hidden">
+        <div className={`min-h-screen  flex flex-col items-center ${darkMode ? "bg-gray-800 text-white" : " text-gray-900"}`}>
+            <div className="shadow-md w-full max-w-5xl rounded-lg overflow-hidden">
                 {/* Header */}
                 <div className="bg-teal-500 text-white py-8 px-6 text-center">
                     <h2 className="text-2xl md:text-3xl font-bold">Cuéntanos qué piensas de</h2>
@@ -136,11 +145,11 @@ const Reseña = () => {
                     <img
                         src={coverUrl}
                         alt={title}
-                        className="w-40 h-40 md:w-48 md:h-48 rounded-md mb-6 lg:mb-0 lg:mr-8 shadow-md"
+                        className="w-full h-auto rounded-lg mb-6 lg:mb-0 lg:mr-8 shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl object-cover"
                     />
 
                     <div className="flex flex-col items-center w-full">
-                        <h3 className="text-xl font-semibold mb-6 text-center text-teal-900">
+                        <h3 className="text-xl font-semibold mb-6 text-center text-teal-600">
                             ¿Cómo lo calificarías?
                         </h3>
                         {/* Stars */}
@@ -159,7 +168,7 @@ const Reseña = () => {
                                         ★
                                     </button>
                                     {rating === index + 1 && (
-                                        <span className="text-sm mt-2 text-gray-700">{label}</span>
+                                        <span className="text-sm mt-2 text-gray-500">{label}</span>
                                     )}
                                 </div>
                             ))}
@@ -196,7 +205,7 @@ const Reseña = () => {
 
                         <button
                             onClick={() => navigate(`/inicio`)}
-                            className="mt-4 text-gray-500 underline text-sm"
+                            className="mt-4 text-gray-400 underline text-sm"
                         >
                             Saltar
                         </button>
