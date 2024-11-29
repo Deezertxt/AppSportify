@@ -59,7 +59,7 @@ function HeroSection() {
       <div className="flex flex-col md:flex-row items-center justify-between px-10 py-20 md:py-40 relative z-10">
         <div className="max-w-lg text-center md:text-left space-y-6">
           <motion.h1
-            className="text-5xl md:text-6xl font-extrabold leading-tight mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#508ca9] to-[#176082]"
+            className="text-5xl md:text-6xl font-extrabold leading-tight mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#508ca9] to-[#68a5c2]"
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
