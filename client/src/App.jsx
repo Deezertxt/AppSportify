@@ -27,16 +27,13 @@ import Contactanos from './pages/Contactanos';
 import { AuthProvider } from './context/authContext';
 import { ProtectedRoutes } from './context/ProtectedRoutes';
 import { LibraryProvider } from './context/libraryContext';
-import { PlayerProvider } from './context/PlayerContext';
 import { ThemeProvider } from './context/ThemeContext';
-import GlobalPlayer from './components/reproductor/GlobalPlayer';
 
 function App() {
     return (
         <AuthProvider>
             <ThemeProvider>
-            <LibraryProvider>
-                <PlayerProvider>
+            <LibraryProvider>          
                     <Routes>
                         <Route path="/" element={<HeroSection />} />
                         <Route path="/login" element={<Login />} />
@@ -66,9 +63,7 @@ function App() {
                         <Route path="/resenia/:id" element={<ProtectedRoutes><Reseña /></ProtectedRoutes>} />
                         <Route path="/verificar" element={<VerificarEmail />} />
                         <Route path="/recuperar" element={<RecuperarPassword />} />
-                    </Routes>
-                    <GlobalPlayer />
-                </PlayerProvider>
+                    </Routes>      
             </LibraryProvider>
             </ThemeProvider>
         </AuthProvider>

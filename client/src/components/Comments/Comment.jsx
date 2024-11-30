@@ -20,25 +20,19 @@ export const Comment = ({ comment }) => {
 
   const handleClickLike = async () => {
     try {
+      setContador((prev) => (hasLiked ? prev - 1 : prev + 1));
       const response = await toggleLikeFeedback(comment.id, userId);
-
+  
       if (response && response.data) {
-        const { feedback } = response.data;
-
-        // Actualizamos el contador de likes en el componente
-        if (hasLiked) {
-          setContador((prev) => prev - 1); // Reducir el contador local si ya tiene like
-        } else {
-          setContador((prev) => prev + 1); // Incrementar el contador local si no tiene like
-        }
-
-        // Actualizamos el estado global en el contexto si es necesario
-        toggleLikeComment(comment.id); // Esto actualiza el estado en el contexto global
+        
+        toggleLikeComment(comment.id); 
       }
     } catch (error) {
       console.error("Error al manejar el like:", error);
+      setContador((prev) => (hasLiked ? prev + 1 : prev - 1));
     }
   };
+  
 
   const formatTimeAgo = (timestamp) => {
     const now = new Date();
