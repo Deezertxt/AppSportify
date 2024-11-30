@@ -78,9 +78,12 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
   const isButtonDisabled = !email || !password || isLoading || emailHint;
 
   return (
-    <div className="relative w-full max-w-md mx-auto bg-gradient-to-r from-[#023047] to-[#1b6c92] text-white p-8 rounded-lg shadow-lg">
+    <div
+      id="modal-login"
+      className="relative w-full max-w-md mx-auto bg-gradient-to-r from-[#023047] to-[#1b6c92] text-white p-8 rounded-lg shadow-lg">
       {/* Botón para cerrar el modal */}
       <button
+        id="cerrar-modal-boton"
         type="button"
         onClick={closeModal}
         className="absolute top-2 right-2 text-gray-500 hover:text-white"
@@ -89,14 +92,18 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
       </button>
 
       <div className="flex flex-col items-center">
-        <img src="./logoS.svg" alt="Sportify logo" className="w-28 mb-4" />
+        <img
+          id="modal-logo"
+          src="./logoS.svg" alt="Sportify logo" className="w-28 mb-4" />
       </div>
 
-      <h2 className="text-2xl font-bold text-center mb-6">Inicio Sesión</h2>
+      <h2 id="modal-titulo" className="text-2xl font-bold text-center mb-6">Inicio Sesión</h2>
 
       {/* Mensajes de error o éxito */}
       {error && (
-        <p className="bg-red-100 text-red-700 border border-red-300 p-2 rounded-md mb-4">
+        <p
+          id="modal-error-mensaje"
+          className="bg-red-100 text-red-700 border border-red-300 p-2 rounded-md mb-4">
           {error}
         </p>
       )}
@@ -105,25 +112,27 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
 
       {/* Campo de correo electrónico */}
       <div className="relative mb-6">
-        <label className="block text-sm font-semibold mb-1">Correo electrónico <span className="text-red-500"> *</span></label>
+        <label id="email-etiqueta" className="block text-sm font-semibold mb-1">Correo electrónico <span className="text-red-500"> *</span></label>
         <input
+          id="email-input"
           type="text"
           value={email}
           onChange={handleEmailChange}
           placeholder="example@gmail.com"
           className="w-full pl-4 pr-4 py-2 bg-transparent border-b-2 border-white focus:border-[#219EBC] outline-none transition"
         />
-        <FiMail className="absolute top-2/3 right-3 transform -translate-y-1/2 text-xl text-gray-400 hover:text-gray-500" />
+        <FiMail id="email-icon" className="absolute top-2/3 right-3 transform -translate-y-1/2 text-xl text-gray-400 hover:text-gray-500" />
       </div>
 
       {emailHint && (
-        <p className="text-sm text-red-500 mb-2">{emailHint}</p>
+        <p id="email-hint" className="text-sm text-red-500 mb-2">{emailHint}</p>
       )}
 
       {/* Campo de contraseña */}
       <div className="relative mb-6">
-        <label className="block text-sm font-semibold mb-1">Contraseña <span className="text-red-500"> *</span></label>
+        <label id="password-etiqueta" className="block text-sm font-semibold mb-1">Contraseña <span className="text-red-500"> *</span></label>
         <input
+          id="password-input"
           type={showPassword ? "text" : "password"}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -131,6 +140,7 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
           className="w-full pl-4 pr-10 py-2 bg-transparent border-b-2 border-white focus:border-[#219EBC] outline-none transition"
         />
         <button
+          id="password-visibility-toggle"
           type="button"
           className="absolute top-2/3 right-3 transform -translate-y-1/2 text-gray-400 hover:text-gray-500"
           onClick={togglePasswordVisibility}
@@ -144,6 +154,7 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
 
       {/* Botón de inicio de sesión */}
       <button
+        id="login-boton"
         onClick={handleSubmit}
         className={`w-full py-3 mb-4 rounded-md ${isButtonDisabled
           ? "bg-gray-500 cursor-not-allowed"
@@ -155,15 +166,17 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
       </button>
 
       <button
+        id="olvido-password-boton"
         className="text-sm underline mb-4"
         onClick={handleForgotPassword}
       >
         ¿Olvidaste tu contraseña?
       </button>
 
-      <p className="text-center text-sm mb-4">
+      <p id="registro-link" className="text-center text-sm mb-4">
         ¿Aún no estás en Sportify?{" "}
         <button
+          id="registro-boton"
           className="font-bold text-[#219EBC] underline"
           onClick={openRegister}
         >
@@ -173,11 +186,12 @@ const ModalInicioSesion = ({ closeModal, openRegister }) => {
 
       <div className="flex items-center mb-4">
         <hr className="w-full border-gray-600" />
-        <span className="px-3 text-gray-400">O</span>
+        <span id="separador" className="px-3 text-gray-400">O</span>
         <hr className="w-full border-gray-600" />
       </div>
 
       <button
+        id="google-login-boton"
         onClick={handleGoogleSignin}
         className="w-full bg-blue-600 text-white py-3 rounded-md flex items-center justify-center hover:bg-blue-500 transition"
       >

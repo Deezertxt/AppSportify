@@ -5,6 +5,7 @@ const Modal = ({ isOpen, closeModal, children }) => {
 
   return (
     <motion.div
+      id={`modal-overlay-${id}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -13,6 +14,7 @@ const Modal = ({ isOpen, closeModal, children }) => {
       onClick={closeModal} // Cierra el modal al hacer clic fuera del contenido
     >
       <motion.div
+        id={`modal-contenido-${id}`}
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
