@@ -171,7 +171,7 @@ function Preview() {
             <button
               onClick={isBookSaved(parseInt(id, 10)) ? handleRemoveFromLibrary : handleSaveToLibrary}
               className={`flex items-center mt-6 ${isBookSaved(parseInt(id, 10))
-                ? "text-red-600 hover:text-red-800"
+                ? "text-blue-700 hover:text-blue-900"
                 : "text-blue-400 hover:text-blue-800"
                 } font-semibold py-2 px-4 transition-colors duration-300`}
             >

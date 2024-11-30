@@ -65,7 +65,7 @@ function PerfilUser() {
     return (
         <div className="max-w-4xl mx-auto shadow-md rounded-lg overflow-hidden">
             {/* Encabezado del perfil */}
-            <div className="bg-gradient-to-r from-blue-500 to-blue-400 text-white p-6 text-center">
+            <div className="bg-gradient-to-r from-[#023047] to-[#1b6c92] text-white p-6 text-center">
                 <img
                     className="w-24 h-24 mx-auto rounded-full border-4 border-white shadow-md"
                     src={profileData.profilePicUrl || "/default-profile.png"}

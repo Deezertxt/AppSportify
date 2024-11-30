@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { FiBookmark, FiCheckCircle, FiMoreVertical, FiChevronRight } from "react-icons/fi";
 import { addBookToLibraryCategory, deleteBookFromLibraryCategory, getUserLibraryCategory } from "../api/api";
 import Card from "../components/cards/Card";
-import ModalCards from "../components/modals/ModalCards"; // Opciones iniciales
-import ConfirmCancelModal from "../components/modals/ConfirmCancelModal"; // Confirmación
-import ModalReu from "../components/modals/ModalReu"; // Alerta
+import ModalCards from "../components/modals/ModalCards";
+import ConfirmCancelModal from "../components/modals/ConfirmCancelModal";
+import ModalReu from "../components/modals/ModalReu";
 import { useAuth } from "../context/authContext";
 import SkeletonCard from "../components/skeletons/SkeletonCard";
 import { FaArrowLeft } from "react-icons/fa";
@@ -19,8 +19,8 @@ const Biblioteca = () => {
     const [savedAudiobooks, setSavedAudiobooks] = useState([]);
     const [finishedAudiobooks, setFinishedAudiobooks] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeModal, setActiveModal] = useState(null); // { id, category, action }
-    const [showModal, setShowModal] = useState(null); // Maneja todos los modales
+    const [activeModal, setActiveModal] = useState(null); // { id, category }
+    const [showModal, setShowModal] = useState(null); // Maneja confirmación y alerta
     const [modalTitle, setModalTitle] = useState("");
     const [modalType, setModalType] = useState("success");
     const [modalMessage, setModalMessage] = useState("");
@@ -43,18 +43,17 @@ const Biblioteca = () => {
         );
     };
 
-    const handleOpenConfirmModal = (action) => {
-        // Cierra el modal de opciones antes de abrir el de confirmación
+    const handleCloseAllModals = () => {
+        setShowModal(null);
         setActiveModal(null);
-        setShowModal({ type: "confirm", action });
     };
 
     const showAlertMessage = (title, message, type) => {
         setModalTitle(title);
         setModalMessage(message);
         setModalType(type); // Define el tipo: "success" o "error"
-        setShowModal({ type: "alert", title, message, modalType: type }); // Muestra solo el modal de alerta
-        setTimeout(() => setShowModal(null), 2000); // Cierra el modal después de 2 segundos
+        setShowModal({ type: "alert" });
+        setTimeout(() => setShowModal(null), 2000); // Cierra el modal de alerta después de 2 segundos
     };
 
     const handleAddToRecommended = async () => {
@@ -159,19 +158,18 @@ const Biblioteca = () => {
                             {showOptions && (
                                 <button
                                     onClick={() => toggleModal(audiobook.id, category)}
-                                    className="absolute top-2 right-2 text-xl text-white hover:text-gray-600 focus:outline-none"
+                                    className="absolute top-2 right-2 text-xl text-gray-800 hover:text-gray-400 focus:outline-none"
                                 >
                                     <FiMoreVertical />
                                 </button>
                             )}
-                            {activeModal?.id === audiobook.id && activeModal?.category === category && (
+                            {activeModal?.id === audiobook.id && activeModal?.category === category && showModal?.type !== "confirm" && (
                                 <ModalCards
-                                    onAddToRecommended={() => handleOpenConfirmModal("recommend")}
-                                    onRemoveFromSaved={() => handleOpenConfirmModal("remove")}
+                                    onAddToRecommended={() => setShowModal({ type: "confirm", action: "recommend" })}
+                                    onRemoveFromSaved={() => setShowModal({ type: "confirm", action: "remove" })}
                                     onDetails={() => handleCardClick(audiobook.id)}
                                 />
                             )}
-
                         </div>
                     ))}
             </div>
@@ -188,10 +186,9 @@ const Biblioteca = () => {
                 Volver
             </button>
 
-            {/* Mostrar el modal de confirmación solo cuando es necesario */}
             {showModal?.type === "confirm" && (
                 <ConfirmCancelModal
-                    isOpen={showModal.type === "confirm"}
+                    isOpen={true}
                     onClose={() => setShowModal(null)}
                     onConfirm={showModal.action === "recommend" ? handleAddToRecommended : handleRemoveFromSaved}
                     title={showModal.action === "recommend" ? "Confirmar Recomendación" : "Confirmar Eliminación"}
@@ -199,7 +196,6 @@ const Biblioteca = () => {
                 />
             )}
 
-            {/* Mostrar el modal de alerta */}
             {showModal?.type === "alert" && (
                 <ModalReu
                     title={modalTitle}
@@ -209,7 +205,6 @@ const Biblioteca = () => {
                 />
             )}
 
-            {/* Renderiza las secciones de audiolibros */}
             {renderAudiobookSection("Guardados", <FiBookmark />, savedAudiobooks, "saved", true)}
             {renderAudiobookSection("Terminados", <FiCheckCircle />, finishedAudiobooks, "finished", false)}
         </div>
